@@ -10,9 +10,9 @@ func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
 	// Questionnaire routes
-	r.GET("/items", controllers.GetQuestionnaires)
-	r.GET("/items/:id", controllers.GetQuestionnaireByID)
-	r.POST("/items", controllers.CreateQuestionnaire)
+	r.GET("/questionnaires", controllers.GetQuestionnaires)
+	r.GET("/questionnaires/:id", controllers.GetQuestionnaireByID)
+	r.POST("/questionnaires", controllers.CreateQuestionnaire)
 
 	return r
 }
