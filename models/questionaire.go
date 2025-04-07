@@ -1,8 +1,8 @@
 package models
 
 type Questionnaire struct {
-	ID          uint   `json:"id" gorm:"primaryKey"`
+	ID          uint   `json:"id" gorm:"primaryKey;autoIncrement"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Form        int    `json:"form"`
+	Form        string `json:"form"`
 }

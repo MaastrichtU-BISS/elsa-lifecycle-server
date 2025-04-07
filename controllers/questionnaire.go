@@ -30,11 +30,11 @@ func GetQuestionnaireByID(c *gin.Context) {
 
 // POST /questionnaires - Insert a new questionnaire
 func CreateQuestionnaire(c *gin.Context) {
-	var newquestionnaire models.Questionnaire
-	if err := c.ShouldBindJSON(&newquestionnaire); err != nil {
+	var newQuestionnaire models.Questionnaire
+	if err := c.ShouldBindJSON(&newQuestionnaire); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	database.DB.Create(&newquestionnaire)
-	c.JSON(http.StatusOK, newquestionnaire)
+	database.DB.Create(&newQuestionnaire)
+	c.JSON(http.StatusOK, newQuestionnaire)
 }
