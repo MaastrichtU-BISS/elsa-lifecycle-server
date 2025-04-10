@@ -5,4 +5,5 @@ type Questionnaire struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Form        string `json:"form"`
+	FormName    string `json:"formName"`
 }
