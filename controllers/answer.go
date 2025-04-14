@@ -22,7 +22,7 @@ func GetAnswerByID(c *gin.Context) {
 	var answer models.Answer
 	id := c.Param("id")
 
-	if err := database.DB.First(&answer, id).Error; err != nil {
+	if err := database.DB.Preload("Questionnaire").First(&answer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
