@@ -16,5 +16,5 @@ func ConnectDB() {
 		panic("failed to connect database")
 	}
 
-	DB.AutoMigrate(&models.Questionnaire{})
+	DB.AutoMigrate(&models.Questionnaire{}, models.Answer{})
 }
