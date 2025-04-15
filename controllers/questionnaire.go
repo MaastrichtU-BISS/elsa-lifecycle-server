@@ -28,7 +28,7 @@ func GetQuestionnaireByID(c *gin.Context) {
 	c.JSON(http.StatusOK, questionnaire)
 }
 
-// DELETE /questionnaires/:id/delete - Delete questionnaire by ID
+// DELETE /questionnaires/:id - Delete questionnaire by ID
 func DeleteQuestionnaire(c *gin.Context) {
 	var questionnaire models.Questionnaire
 	id := c.Param("id")
