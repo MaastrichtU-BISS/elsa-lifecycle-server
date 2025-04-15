@@ -27,6 +27,7 @@ func SetupRouter() *gin.Engine {
 	r.GET("/questionnaires/:id/answers", controllers.GetAnswers)
 	r.GET("/answers/:id", controllers.GetAnswerByID)
 	r.POST("/questionnaires/:id/answers", controllers.CreateAnswer)
+	r.PUT("/answers/:id/edit", controllers.EditAnswer)
 
 	return r
 }

@@ -8,14 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GET /answers/questionnaires_id - Fetch all questionnaires
+// GET /questionnaires - Fetch all questionnaires
 func GetQuestionnaires(c *gin.Context) {
 	var questionnaires []models.Questionnaire
 	database.DB.Find(&questionnaires)
 	c.JSON(http.StatusOK, questionnaires)
 }
 
-// GET /answers/id - Fetch answer by ID
+// GET /questionnaires/:id - Fetch answer by ID
 func GetQuestionnaireByID(c *gin.Context) {
 	var questionnaire models.Questionnaire
 	id := c.Param("id")
@@ -28,13 +28,13 @@ func GetQuestionnaireByID(c *gin.Context) {
 	c.JSON(http.StatusOK, questionnaire)
 }
 
-// POST /answers - Insert a new answer
-func CreateAnswer(c *gin.Context) {
-	var newAnswer models.Answer
-	if err := c.ShouldBindJSON(&newAnswer); err != nil {
+// POST /questionnaires - Insert a new questionnaire
+func CreateQuestionnaire(c *gin.Context) {
+	var newQuestionnaire models.Questionnaire
+	if err := c.ShouldBindJSON(&newQuestionnaire); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	database.DB.Create(&newAnswer)
-	c.JSON(http.StatusOK, newAnswer)
+	database.DB.Create(&newQuestionnaire)
+	c.JSON(http.StatusOK, newQuestionnaire)
 }
