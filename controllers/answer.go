@@ -51,7 +51,7 @@ func EditAnswer(c *gin.Context) {
 
 	id := c.Param("id")
 	var existingAnswer models.Answer
-	if err := database.DB.First(&existingAnswer, id).Error; err != nil {
+	if err := database.DB.Preload("Questionnaire").First(&existingAnswer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Answer not found"})
 		return
 	}
