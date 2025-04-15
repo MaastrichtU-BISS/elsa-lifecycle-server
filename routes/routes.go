@@ -21,6 +21,7 @@ func SetupRouter() *gin.Engine {
 	// Questionnaire routes
 	r.GET("/questionnaires", controllers.GetQuestionnaires)
 	r.GET("/questionnaires/:id", controllers.GetQuestionnaireByID)
+	r.DELETE("/questionnaires/:id", controllers.DeleteQuestionnaire)
 	r.POST("/questionnaires", controllers.CreateQuestionnaire)
 
 	// Answer routes
