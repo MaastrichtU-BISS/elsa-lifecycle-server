@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GET /questionnaires/:id/answers - Fetch all answers that belong to a questionnaire
+// GET /answers/:id/answers - Fetch all answers that belong to a questionnaire
 func GetAnswers(c *gin.Context) {
 	var answers []models.Answer
 	questionnaire_id := c.Param("id")
@@ -30,7 +30,7 @@ func GetAnswerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
-// POST /questionnaires/:id/answers - Insert a new answer
+// POST /answers/:id/answers - Insert a new answer
 func CreateAnswer(c *gin.Context) {
 	var newAnswer models.Answer
 	if err := c.ShouldBindJSON(&newAnswer); err != nil {

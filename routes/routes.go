@@ -18,6 +18,9 @@ func SetupRouter() *gin.Engine {
 		AllowCredentials: true,                                                // Allow cookies if needed
 	}))
 
+	// images
+	r.Static("/uploads", "./uploads") // Serve static files from the "uploads" directory
+
 	// Questionnaire routes
 	r.GET("/questionnaires", controllers.GetQuestionnaires)
 	r.GET("/questionnaires/:id", controllers.GetQuestionnaireByID)
@@ -29,6 +32,12 @@ func SetupRouter() *gin.Engine {
 	r.GET("/answers/:id", controllers.GetAnswerByID)
 	r.POST("/questionnaires/:id/answers", controllers.CreateAnswer)
 	r.PUT("/answers/:id/edit", controllers.EditAnswer)
+
+	// Tool routes
+	r.GET("/tools", controllers.GetTools)
+	r.GET("/tools/:id", controllers.GetToolByID)
+	r.POST("/tools", controllers.CreateTool)
+	r.PUT("/tools/:id/edit", controllers.EditTool)
 
 	return r
 }
