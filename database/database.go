@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"server/models"
 
 	"gorm.io/driver/sqlite"
@@ -17,4 +18,15 @@ func ConnectDB() {
 	}
 
 	DB.AutoMigrate(&models.Questionnaire{}, models.Answer{}, models.Tool{})
+
+	seeders := []Seeder{
+		ToolSeeder{},
+		// Add other seeders here
+	}
+
+	for _, seeder := range seeders {
+		if err := seeder.Seed(DB); err != nil {
+			fmt.Print("Seeding failed: %v", err)
+		}
+	}
 }
