@@ -57,9 +57,19 @@ func EditAnswer(c *gin.Context) {
 	}
 
 	// Update only the fields sent in the request
-	if err := database.DB.Model(&existingAnswer).Updates(newAnswer).Error; err != nil {
+	if err := database.DB.Model(&existingAnswer).
+		Select("Form", "BinaryEvaluation").
+		Updates(&newAnswer).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update answer"})
 		return
 	}
-	c.JSON(http.StatusOK, existingAnswer)
+
+	//fetch the updated answer
+	var updatedAnswer models.Answer
+	if err := database.DB.Preload("Questionnaire").First(&updatedAnswer, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Answer not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedAnswer)
 }

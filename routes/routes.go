@@ -39,5 +39,8 @@ func SetupRouter() *gin.Engine {
 	r.POST("/tools", controllers.CreateTool)
 	r.PUT("/tools/:id/edit", controllers.EditTool)
 
+	// Recommendation routes
+	r.GET("/recommendations/:questionnaireId", controllers.GetRecommendations)
+
 	return r
 }
