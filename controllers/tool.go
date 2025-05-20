@@ -42,6 +42,7 @@ func CreateTool(c *gin.Context) {
 	title := c.PostForm("title")
 	description := c.PostForm("description")
 	url := c.PostForm("url")
+	// TODO: add tags and types
 
 	// Handle file upload
 	fileHeader, err := c.FormFile("cover")
@@ -67,6 +68,7 @@ func CreateTool(c *gin.Context) {
 		Description: description,
 		URL:         url,
 		Cover:       coverPath, // Save the relative path
+		// TODO: add tags and types
 	}
 
 	if result := database.DB.Create(&newTool); result.Error != nil {
@@ -87,7 +89,7 @@ func EditTool(c *gin.Context) {
 
 	id := c.Param("id")
 	var existingTool models.Tool
-	if err := database.DB.Preload("Questionnaire").First(&existingTool, id).Error; err != nil {
+	if err := database.DB.First(&existingTool, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}

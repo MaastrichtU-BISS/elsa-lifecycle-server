@@ -17,14 +17,24 @@ func ConnectDB() {
 		panic("failed to connect database")
 	}
 
-	DB.AutoMigrate(&models.Questionnaire{}, models.Answer{}, models.Tool{}, models.Recommendation{})
+	DB.AutoMigrate(&models.Lifecycle{},
+					&models.Phase{},
+					&models.Reflection{},
+					&models.Journal{},
+					&models.ReflectionAnswer{},
+					&models.JournalAnswer{},
+					&models.Tool{},
+					&models.Recommendation{})
 
 	seeders := []Seeder{
+		LifecycleSeeder{},
+		PhaseSeeder{},
+		ReflectionSeeder{},
+		ReflectionAnswerSeeder{},
+		JournalSeeder{},
+		JournalAnswerSeeder{},
 		ToolSeeder{},
-		QuestionnaireSeeder{},
 		RecommendationSeeder{},
-		AnswerSeeder{},
-		// Add other seeders here
 	}
 
 	for _, seeder := range seeders {

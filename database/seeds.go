@@ -11,6 +11,117 @@ type Seeder interface {
 	Clear(db *gorm.DB) error
 }
 
+// Lifecycle
+
+type LifecycleSeeder struct{}
+
+func (s LifecycleSeeder) Seed(db *gorm.DB) error {
+	lifecycles := []models.Lifecycle{
+		{
+			Title: "ELSA Recommendation Platform for Data Science Projects",
+			Description: "prototype",
+			General: `
+## Welcome to the ELSA Recommendation Platform for Data Science Projects
+
+As data science continues to shape the world around us, from healthcare and education to urban planning and policymaking, there is a growing need to ensure that the work we do is not only technically sound, but also ethically responsible, legally compliant, and socially aware.
+			
+That’s where this platform comes in.
+			
+The ELSA (Ethical, Legal, and Societal Aspects) Recommendation Platform is designed to support data scientists throughout the entire lifecycle of a project. Whether you're just starting to define your problem, collecting and preparing data, building models, or deploying results in real-world contexts, this platform helps you reflect on and act upon important questions like:
+
+- **Are we using data responsibly?**
+- **Have we considered the impact on individuals and communities?**
+- **What are the legal requirements or potential risks?**
+- **Who might be affected, and how are their interests being considered?**
+
+Instead of asking you to become an expert in ethics, law, or the social sciences, the platform offers practical guidance, curated tools, checklists, and methods tailored to each stage of the data science workflow. It also allows you to document your decisions and reflections in a structured, project-specific journal—helping you keep track of how and when these considerations have been addressed.
+
+Whether you’re part of a research team, a public-sector project, or an industry application, this platform aims to make it easier to build data-driven solutions that are not only innovative but also responsible and trustworthy.
+
+### What does this look like in practice?
+
+Imagine you're building a machine learning model to predict which patients are at risk of developing a chronic illness. In the early planning stages, the platform might prompt you to think about potential biases in your training data, or whether patients have consented to their data being used in this way. You might be directed to a checklist for assessing data protection compliance, or a tool for mapping potential societal impacts.
+
+Later, when you're training and evaluating your model, the platform could recommend fairness metrics or guidelines for documenting model performance across different population groups. As you prepare to deploy the model in a clinical setting, you might receive suggestions on transparency practices or legal frameworks relevant to medical AI tools.
+
+At each step, your reflections and decisions are captured in your project journal—building a transparent record of how ethical, legal, and societal aspects have been considered and addressed.`,
+			Introduction: `
+## Why Keep an ELSA Journal?
+
+### An ELSA journal is like version control for your ethical reasoning.
+
+It adds structure and traceability to a process that’s otherwise invisible — enabling smarter decisions, easier collaboration, and more robust, responsible systems.
+
+### An ELSA journal supports rigorous, transparent workflows
+
+Just like a lab notebook in experimental science, an ELSA journal captures the decision-making process, including what was considered, what was chosen, and why.
+
+This supports:
+
+- **Reproducibility:** Others (or your future self) can trace ethical and societal reasoning.
+- **Transparency:** Your rationale for handling fairness, privacy, or bias is documented, not buried in memory or Slack threads.
+
+### An ELSA journal helps to simplify compliance requirements and reviews
+
+Many data projects now fall under regulatory scrutiny (e.g. GDPR, AI Act, public procurement policies).
+
+The journal:
+
+- Acts as an audit trail for legal or ethical review.
+- Helps justify decisions made under uncertainty (e.g. why a certain dataset was excluded, or why a particular fairness metric was used).
+- Makes it easier to write final impact assessments, ethics summaries, or model documentation.
+
+### An ELSA journal encourages iterative reflection and course-correction
+
+Keeping track of ELSA-related concerns allows teams to:
+
+- Spot inconsistencies or blind spots early in the workflow.
+- Reflect on trade-offs (e.g., accuracy vs. fairness, complexity vs. explainability).
+- Capture insights that can feed into model or data revisions down the line.
+
+### An ELSA journal can help to improve cross-disciplinary collaboration
+
+For projects involving ethicists, legal experts, social scientists, or impacted stakeholders:
+
+- The journal creates a shared reference point for discussions.
+- It helps translate technical choices into accessible justifications for non-technical audiences.
+
+### An ELSA journal contributes to institutional learning and best practices
+
+Over time, a library of journal entries across projects:
+
+1. Becomes a living archive of lessons learned.
+2. Reveals recurring ethical bottlenecks or high-risk points in the pipeline.
+3. Helps build internal guidelines or even training materials based on real experience.`,
+		},
+	}
+	return db.Create(&lifecycles).Error
+}
+
+func (s LifecycleSeeder) Clear(db *gorm.DB) error {
+	return db.Exec("DELETE FROM lifecycles").Error
+}
+
+// Phase
+
+type PhaseSeeder struct{}
+
+func (s PhaseSeeder) Seed(db *gorm.DB) error {
+	phases := []models.Phase{
+		{
+			Number: 1,
+			Title: "Phase 1",
+			Description: "prototype",
+			LifecycleID: 1,
+		},
+	}
+	return db.Create(&phases).Error
+}
+
+func (s PhaseSeeder) Clear(db *gorm.DB) error {
+	return db.Exec("DELETE FROM phases").Error
+}
+
 // Tool
 
 type ToolSeeder struct{}
@@ -65,14 +176,14 @@ func (s ToolSeeder) Clear(db *gorm.DB) error {
 	return db.Exec("DELETE FROM tools").Error
 }
 
-// Questionnaire
+// Reflection
 
-type QuestionnaireSeeder struct{}
+type ReflectionSeeder struct{}
 
-func (s QuestionnaireSeeder) Seed(db *gorm.DB) error {
-	questionnaires := []models.Questionnaire{
+func (s ReflectionSeeder) Seed(db *gorm.DB) error {
+	reflections := []models.Reflection{
 		{
-			Name:        "Problem Definition/ Project Scoping",
+			Title:        "Problem Definition / Project Scoping",
 			Description: "As data science continues to shape the world around us, from healthcare and education to urban planning and policymaking, there is a growing need to ensure that the work we do is not only technically sound, but also ethically responsible, legally compliant, and socially aware.",
 			Form: `{
 					"@id": "https://repo.metadatacenter.org/templates/1ec51eb6-d07c-4f25-8299-1972b55b42b7",
@@ -804,27 +915,655 @@ func (s QuestionnaireSeeder) Seed(db *gorm.DB) error {
 					"bibo:status": "bibo:draft",
 					"$schema": "http://json-schema.org/draft-04/schema#"
 					}`,
-			FormName: "Reflection",
+			PhaseID: 1,
 		},
 	}
-	return db.Create(&questionnaires).Error
+	return db.Create(&reflections).Error
 }
 
-func (s QuestionnaireSeeder) Clear(db *gorm.DB) error {
-	return db.Exec("DELETE FROM questionnaires").Error
+func (s ReflectionSeeder) Clear(db *gorm.DB) error {
+	return db.Exec("DELETE FROM reflections").Error
 }
 
-// Questionnaire
+// ReflectionAnswer
 
-type AnswerSeeder struct{}
+type ReflectionAnswerSeeder struct{}
 
-func (s AnswerSeeder) Seed(db *gorm.DB) error {
-	answers := []models.Answer{}
+func (s ReflectionAnswerSeeder) Seed(db *gorm.DB) error {
+	answers := []models.ReflectionAnswer{}
 	return db.Create(&answers).Error
 }
 
-func (s AnswerSeeder) Clear(db *gorm.DB) error {
-	return db.Exec("DELETE FROM answers").Error
+func (s ReflectionAnswerSeeder) Clear(db *gorm.DB) error {
+	return db.Exec("DELETE FROM reflection_answers").Error
+}
+
+// Journal
+
+type JournalSeeder struct{}
+
+func (s JournalSeeder) Seed(db *gorm.DB) error {
+	journals := []models.Journal{
+		{
+			Title:        "",
+			Description: "",
+			Form: `{
+					"@id": "https://repo.metadatacenter.org/templates/170e74d2-e93d-4a54-9637-27aca7af14ca",
+					"@type": "https://schema.metadatacenter.org/core/Template",
+					"@context": {
+						"xsd": "http://www.w3.org/2001/XMLSchema#",
+						"pav": "http://purl.org/pav/",
+						"bibo": "http://purl.org/ontology/bibo/",
+						"oslc": "http://open-services.net/ns/core#",
+						"schema": "http://schema.org/",
+						"schema:name": {
+						"@type": "xsd:string"
+						},
+						"schema:description": {
+						"@type": "xsd:string"
+						},
+						"pav:createdOn": {
+						"@type": "xsd:dateTime"
+						},
+						"pav:createdBy": {
+						"@type": "@id"
+						},
+						"pav:lastUpdatedOn": {
+						"@type": "xsd:dateTime"
+						},
+						"oslc:modifiedBy": {
+						"@type": "@id"
+						}
+					},
+					"type": "object",
+					"title": "Journal template schema",
+					"description": "Journal template schema generated by the CEDAR Template Editor 2.7.1",
+					"_ui": {
+						"order": [
+						"actions-decisions",
+						"guidelines-tools-methods",
+						"notes-questions"
+						],
+						"propertyLabels": {
+						"actions-decisions": "actions-decisions",
+						"guidelines-tools-methods": "guidelines-tools-methods",
+						"notes-questions": "notes-questions"
+						},
+						"propertyDescriptions": {
+						"actions-decisions": "",
+						"guidelines-tools-methods": "",
+						"notes-questions": ""
+						}
+					},
+					"properties": {
+						"@context": {
+						"type": "object",
+						"properties": {
+							"rdfs": {
+							"type": "string",
+							"format": "uri",
+							"enum": [
+								"http://www.w3.org/2000/01/rdf-schema#"
+							]
+							},
+							"xsd": {
+							"type": "string",
+							"format": "uri",
+							"enum": [
+								"http://www.w3.org/2001/XMLSchema#"
+							]
+							},
+							"pav": {
+							"type": "string",
+							"format": "uri",
+							"enum": [
+								"http://purl.org/pav/"
+							]
+							},
+							"schema": {
+							"type": "string",
+							"format": "uri",
+							"enum": [
+								"http://schema.org/"
+							]
+							},
+							"oslc": {
+							"type": "string",
+							"format": "uri",
+							"enum": [
+								"http://open-services.net/ns/core#"
+							]
+							},
+							"skos": {
+							"type": "string",
+							"format": "uri",
+							"enum": [
+								"http://www.w3.org/2004/02/skos/core#"
+							]
+							},
+							"rdfs:label": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"xsd:string"
+								]
+								}
+							}
+							},
+							"schema:isBasedOn": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"@id"
+								]
+								}
+							}
+							},
+							"schema:name": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"xsd:string"
+								]
+								}
+							}
+							},
+							"schema:description": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"xsd:string"
+								]
+								}
+							}
+							},
+							"pav:derivedFrom": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"@id"
+								]
+								}
+							}
+							},
+							"pav:createdOn": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"xsd:dateTime"
+								]
+								}
+							}
+							},
+							"pav:createdBy": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"@id"
+								]
+								}
+							}
+							},
+							"pav:lastUpdatedOn": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"xsd:dateTime"
+								]
+								}
+							}
+							},
+							"oslc:modifiedBy": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"@id"
+								]
+								}
+							}
+							},
+							"skos:notation": {
+							"type": "object",
+							"properties": {
+								"@type": {
+								"type": "string",
+								"enum": [
+									"xsd:string"
+								]
+								}
+							}
+							},
+							"actions-decisions": {
+							"enum": [
+								"https://schema.metadatacenter.org/properties/e41c211e-c28b-48d0-9005-95ab7245e46c"
+							]
+							},
+							"guidelines-tools-methods": {
+							"enum": [
+								"https://schema.metadatacenter.org/properties/a33f7259-20d8-4f42-aa90-ff2ffbbf4f8f"
+							]
+							},
+							"notes-questions": {
+							"enum": [
+								"https://schema.metadatacenter.org/properties/ebc425cc-1ce1-476e-9149-3c3cb77aba15"
+							]
+							}
+						},
+						"required": [
+							"xsd",
+							"pav",
+							"schema",
+							"oslc",
+							"schema:isBasedOn",
+							"schema:name",
+							"schema:description",
+							"pav:createdOn",
+							"pav:createdBy",
+							"pav:lastUpdatedOn",
+							"oslc:modifiedBy"
+						],
+						"additionalProperties": false
+						},
+						"@id": {
+						"type": [
+							"string",
+							"null"
+						],
+						"format": "uri"
+						},
+						"@type": {
+						"oneOf": [
+							{
+							"type": "string",
+							"format": "uri"
+							},
+							{
+							"type": "array",
+							"minItems": 1,
+							"items": {
+								"type": "string",
+								"format": "uri"
+							},
+							"uniqueItems": true
+							}
+						]
+						},
+						"schema:isBasedOn": {
+						"type": "string",
+						"format": "uri"
+						},
+						"schema:name": {
+						"type": "string",
+						"minLength": 1
+						},
+						"schema:description": {
+						"type": "string"
+						},
+						"pav:derivedFrom": {
+						"type": "string",
+						"format": "uri"
+						},
+						"pav:createdOn": {
+						"type": [
+							"string",
+							"null"
+						],
+						"format": "date-time"
+						},
+						"pav:createdBy": {
+						"type": [
+							"string",
+							"null"
+						],
+						"format": "uri"
+						},
+						"pav:lastUpdatedOn": {
+						"type": [
+							"string",
+							"null"
+						],
+						"format": "date-time"
+						},
+						"oslc:modifiedBy": {
+						"type": [
+							"string",
+							"null"
+						],
+						"format": "uri"
+						},
+						"actions-decisions": {
+						"@type": "https://schema.metadatacenter.org/core/TemplateField",
+						"@context": {
+							"xsd": "http://www.w3.org/2001/XMLSchema#",
+							"pav": "http://purl.org/pav/",
+							"bibo": "http://purl.org/ontology/bibo/",
+							"oslc": "http://open-services.net/ns/core#",
+							"schema": "http://schema.org/",
+							"skos": "http://www.w3.org/2004/02/skos/core#",
+							"schema:name": {
+							"@type": "xsd:string"
+							},
+							"schema:description": {
+							"@type": "xsd:string"
+							},
+							"skos:prefLabel": {
+							"@type": "xsd:string"
+							},
+							"skos:altLabel": {
+							"@type": "xsd:string"
+							},
+							"pav:createdOn": {
+							"@type": "xsd:dateTime"
+							},
+							"pav:createdBy": {
+							"@type": "@id"
+							},
+							"pav:lastUpdatedOn": {
+							"@type": "xsd:dateTime"
+							},
+							"oslc:modifiedBy": {
+							"@type": "@id"
+							}
+						},
+						"type": "object",
+						"title": "actions-decisions field schema",
+						"description": "actions-decisions field schema generated by the CEDAR Template Editor 2.7.1",
+						"_ui": {
+							"inputType": "textarea"
+						},
+						"_valueConstraints": {
+							"requiredValue": true
+						},
+						"properties": {
+							"@type": {
+							"oneOf": [
+								{
+								"type": "string",
+								"format": "uri"
+								},
+								{
+								"type": "array",
+								"minItems": 1,
+								"items": {
+									"type": "string",
+									"format": "uri"
+								},
+								"uniqueItems": true
+								}
+							]
+							},
+							"@value": {
+							"type": [
+								"string",
+								"null"
+							]
+							},
+							"rdfs:label": {
+							"type": [
+								"string",
+								"null"
+							]
+							}
+						},
+						"required": [
+							"@value"
+						],
+						"schema:name": "actions-decisions",
+						"schema:description": "",
+						"pav:createdOn": "2025-05-20T01:06:40-07:00",
+						"pav:createdBy": "https://metadatacenter.org/users/d268159d-2c15-41cd-8a63-0f822fb56d26",
+						"pav:lastUpdatedOn": "2025-05-20T01:06:40-07:00",
+						"oslc:modifiedBy": "https://metadatacenter.org/users/d268159d-2c15-41cd-8a63-0f822fb56d26",
+						"schema:schemaVersion": "1.6.0",
+						"additionalProperties": false,
+						"skos:prefLabel": "Actions / Decisions",
+						"@id": "https://repo.metadatacenter.org/template-fields/fe584866-54e8-4946-b72c-8148eaacd826",
+						"$schema": "http://json-schema.org/draft-04/schema#"
+						},
+						"guidelines-tools-methods": {
+						"@type": "https://schema.metadatacenter.org/core/TemplateField",
+						"@context": {
+							"xsd": "http://www.w3.org/2001/XMLSchema#",
+							"pav": "http://purl.org/pav/",
+							"bibo": "http://purl.org/ontology/bibo/",
+							"oslc": "http://open-services.net/ns/core#",
+							"schema": "http://schema.org/",
+							"skos": "http://www.w3.org/2004/02/skos/core#",
+							"schema:name": {
+							"@type": "xsd:string"
+							},
+							"schema:description": {
+							"@type": "xsd:string"
+							},
+							"skos:prefLabel": {
+							"@type": "xsd:string"
+							},
+							"skos:altLabel": {
+							"@type": "xsd:string"
+							},
+							"pav:createdOn": {
+							"@type": "xsd:dateTime"
+							},
+							"pav:createdBy": {
+							"@type": "@id"
+							},
+							"pav:lastUpdatedOn": {
+							"@type": "xsd:dateTime"
+							},
+							"oslc:modifiedBy": {
+							"@type": "@id"
+							}
+						},
+						"type": "object",
+						"title": "guidelines-tools-methods field schema",
+						"description": "guidelines-tools-methods field schema generated by the CEDAR Template Editor 2.7.1",
+						"_ui": {
+							"inputType": "textarea"
+						},
+						"_valueConstraints": {
+							"requiredValue": true
+						},
+						"properties": {
+							"@type": {
+							"oneOf": [
+								{
+								"type": "string",
+								"format": "uri"
+								},
+								{
+								"type": "array",
+								"minItems": 1,
+								"items": {
+									"type": "string",
+									"format": "uri"
+								},
+								"uniqueItems": true
+								}
+							]
+							},
+							"@value": {
+							"type": [
+								"string",
+								"null"
+							]
+							},
+							"rdfs:label": {
+							"type": [
+								"string",
+								"null"
+							]
+							}
+						},
+						"required": [
+							"@value"
+						],
+						"schema:name": "guidelines-tools-methods",
+						"schema:description": "",
+						"pav:createdOn": "2025-05-20T01:06:40-07:00",
+						"pav:createdBy": "https://metadatacenter.org/users/d268159d-2c15-41cd-8a63-0f822fb56d26",
+						"pav:lastUpdatedOn": "2025-05-20T01:06:40-07:00",
+						"oslc:modifiedBy": "https://metadatacenter.org/users/d268159d-2c15-41cd-8a63-0f822fb56d26",
+						"schema:schemaVersion": "1.6.0",
+						"additionalProperties": false,
+						"skos:prefLabel": "Guidelines / Tools / Methods Used",
+						"@id": "https://repo.metadatacenter.org/template-fields/07c7f9d6-6d47-4415-98f2-0510c1dc37f8",
+						"$schema": "http://json-schema.org/draft-04/schema#"
+						},
+						"notes-questions": {
+						"@type": "https://schema.metadatacenter.org/core/TemplateField",
+						"@context": {
+							"xsd": "http://www.w3.org/2001/XMLSchema#",
+							"pav": "http://purl.org/pav/",
+							"bibo": "http://purl.org/ontology/bibo/",
+							"oslc": "http://open-services.net/ns/core#",
+							"schema": "http://schema.org/",
+							"skos": "http://www.w3.org/2004/02/skos/core#",
+							"schema:name": {
+							"@type": "xsd:string"
+							},
+							"schema:description": {
+							"@type": "xsd:string"
+							},
+							"skos:prefLabel": {
+							"@type": "xsd:string"
+							},
+							"skos:altLabel": {
+							"@type": "xsd:string"
+							},
+							"pav:createdOn": {
+							"@type": "xsd:dateTime"
+							},
+							"pav:createdBy": {
+							"@type": "@id"
+							},
+							"pav:lastUpdatedOn": {
+							"@type": "xsd:dateTime"
+							},
+							"oslc:modifiedBy": {
+							"@type": "@id"
+							}
+						},
+						"type": "object",
+						"title": "notes-questions field schema",
+						"description": "notes-questions field schema generated by the CEDAR Template Editor 2.7.1",
+						"_ui": {
+							"inputType": "textarea"
+						},
+						"_valueConstraints": {
+							"requiredValue": true
+						},
+						"properties": {
+							"@type": {
+							"oneOf": [
+								{
+								"type": "string",
+								"format": "uri"
+								},
+								{
+								"type": "array",
+								"minItems": 1,
+								"items": {
+									"type": "string",
+									"format": "uri"
+								},
+								"uniqueItems": true
+								}
+							]
+							},
+							"@value": {
+							"type": [
+								"string",
+								"null"
+							]
+							},
+							"rdfs:label": {
+							"type": [
+								"string",
+								"null"
+							]
+							}
+						},
+						"required": [
+							"@value"
+						],
+						"schema:name": "notes-questions",
+						"schema:description": "",
+						"pav:createdOn": "2025-05-20T01:06:40-07:00",
+						"pav:createdBy": "https://metadatacenter.org/users/d268159d-2c15-41cd-8a63-0f822fb56d26",
+						"pav:lastUpdatedOn": "2025-05-20T01:06:40-07:00",
+						"oslc:modifiedBy": "https://metadatacenter.org/users/d268159d-2c15-41cd-8a63-0f822fb56d26",
+						"schema:schemaVersion": "1.6.0",
+						"additionalProperties": false,
+						"skos:prefLabel": "Notes / Open Questions",
+						"@id": "https://repo.metadatacenter.org/template-fields/270781a8-2fa4-4481-85e6-541dd85356ab",
+						"$schema": "http://json-schema.org/draft-04/schema#"
+						}
+					},
+					"required": [
+						"@context",
+						"@id",
+						"schema:isBasedOn",
+						"schema:name",
+						"schema:description",
+						"pav:createdOn",
+						"pav:createdBy",
+						"pav:lastUpdatedOn",
+						"oslc:modifiedBy",
+						"actions-decisions",
+						"guidelines-tools-methods",
+						"notes-questions"
+					],
+					"schema:name": "Journal",
+					"schema:description": "",
+					"pav:createdOn": "2025-05-20T01:05:00-07:00",
+					"pav:createdBy": "https://metadatacenter.org/users/d268159d-2c15-41cd-8a63-0f822fb56d26",
+					"pav:lastUpdatedOn": "2025-05-20T01:06:40-07:00",
+					"oslc:modifiedBy": "https://metadatacenter.org/users/d268159d-2c15-41cd-8a63-0f822fb56d26",
+					"schema:schemaVersion": "1.6.0",
+					"additionalProperties": false,
+					"pav:version": "0.0.1",
+					"bibo:status": "bibo:draft",
+					"$schema": "http://json-schema.org/draft-04/schema#"
+					}`,
+		    PhaseID: 1,
+		},
+	}
+	return db.Create(&journals).Error
+}
+
+func (s JournalSeeder) Clear(db *gorm.DB) error {
+	return db.Exec("DELETE FROM journal").Error
+}
+
+// JournalAnswer
+
+type JournalAnswerSeeder struct{}
+
+func (s JournalAnswerSeeder) Seed(db *gorm.DB) error {
+	answers := []models.JournalAnswer{}
+	return db.Create(&answers).Error
+}
+
+func (s JournalAnswerSeeder) Clear(db *gorm.DB) error {
+	return db.Exec("DELETE FROM journal_answers").Error
 }
 
 // Recommendation
@@ -834,137 +1573,137 @@ type RecommendationSeeder struct{}
 func (s RecommendationSeeder) Seed(db *gorm.DB) error {
 	recommendations := []models.Recommendation{
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           1,
 			BinaryEvaluation: 0,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           2,
 			BinaryEvaluation: 0,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           3,
 			BinaryEvaluation: 0,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           4,
 			BinaryEvaluation: 0,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           5,
 			BinaryEvaluation: 0,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           1,
 			BinaryEvaluation: 1,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           2,
 			BinaryEvaluation: 2,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           3,
 			BinaryEvaluation: 4,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           4,
 			BinaryEvaluation: 8,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           1,
 			BinaryEvaluation: 3,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           2,
 			BinaryEvaluation: 3,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           3,
 			BinaryEvaluation: 5,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           4,
 			BinaryEvaluation: 5,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           1,
 			BinaryEvaluation: 6,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           3,
 			BinaryEvaluation: 6,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           1,
 			BinaryEvaluation: 7,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           4,
 			BinaryEvaluation: 9,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           3,
 			BinaryEvaluation: 10,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           4,
 			BinaryEvaluation: 10,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           5,
 			BinaryEvaluation: 10,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           1,
 			BinaryEvaluation: 11,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           3,
 			BinaryEvaluation: 11,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           4,
 			BinaryEvaluation: 11,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           2,
 			BinaryEvaluation: 12,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           1,
 			BinaryEvaluation: 13,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           5,
 			BinaryEvaluation: 13,
 		},
 		{
-			QuestionnaireID:  1,
+			ReflectionID:  1,
 			ToolID:           5,
 			BinaryEvaluation: 15,
 		},

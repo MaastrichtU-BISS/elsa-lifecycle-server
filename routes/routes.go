@@ -21,17 +21,29 @@ func SetupRouter() *gin.Engine {
 	// images
 	r.Static("/uploads", "./uploads") // Serve static files from the "uploads" directory
 
-	// Questionnaire routes
-	r.GET("/questionnaires", controllers.GetQuestionnaires)
-	r.GET("/questionnaires/:id", controllers.GetQuestionnaireByID)
-	r.DELETE("/questionnaires/:id", controllers.DeleteQuestionnaire)
-	r.POST("/questionnaires", controllers.CreateQuestionnaire)
+	// Lifecycle routes
+	r.GET("/lifecycles", controllers.GetLifecycles)
+	r.GET("/lifecycles/:id", controllers.GetLifecyclesByID)
+	r.GET("/lifecycles/:id/phases", controllers.GetPhases)
 
-	// Answer routes
-	r.GET("/questionnaires/:id/answers", controllers.GetAnswers)
-	r.GET("/answers/:id", controllers.GetAnswerByID)
-	r.POST("/questionnaires/:id/answers", controllers.CreateAnswer)
-	r.PUT("/answers/:id/edit", controllers.EditAnswer)
+	// Phase routes
+	r.GET("/phases/:id", controllers.GetPhaseById)
+
+	// Reflection routes
+	r.GET("/reflections/:id", controllers.GetReflectionByID)
+
+	// Journal routes
+	r.GET("/journals/:id", controllers.GetJournalByID)
+
+	// ReflectionAnswer routes
+	r.GET("/reflectionAnswers/:id", controllers.GetReflectionAnswerByID)
+	r.POST("/reflectionAnswers", controllers.CreateReflectionAnswer)
+	r.PUT("/reflectionAnswers/:id/edit", controllers.EditReflectionAnswer)
+
+	// JournalAnswer routes
+	r.GET("/journalAnswers/:id", controllers.GetJournalAnswerByID)
+	r.POST("/journalAnswers", controllers.CreateJournalAnswer)
+	r.PUT("/journalAnswers/:id/edit", controllers.EditJournalAnswer)
 
 	// Tool routes
 	r.GET("/tools", controllers.GetTools)
@@ -40,7 +52,7 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/tools/:id/edit", controllers.EditTool)
 
 	// Recommendation routes
-	r.GET("/recommendations/:questionnaireId", controllers.GetRecommendations)
+	r.GET("/recommendations/:reflectionId", controllers.GetRecommendations)
 
 	return r
 }
