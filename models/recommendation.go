@@ -2,8 +2,8 @@ package models
 
 type Recommendation struct {
 	ID               uint          `json:"id" gorm:"primaryKey;autoIncrement"`
-	QuestionnaireID  uint          `json:"questionnaireId"`
-	Questionnaire    Questionnaire `json:"questionnaire" gorm:"foreignKey:QuestionnaireID"`
+	ReflectionID  uint          `json:"reflectionId"`
+	Reflection    Reflection `json:"reflection" gorm:"foreignKey:ReflectionID"`
 	ToolID           uint          `json:"toolId"`
 	Tool             Tool          `gorm:"foreignKey:ToolID"`
 	BinaryEvaluation uint          `json:"binaryEvaluation"`
