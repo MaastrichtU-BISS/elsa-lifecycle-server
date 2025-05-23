@@ -20,7 +20,7 @@ func GetLifecyclesByID(c *gin.Context) {
 	var lifecycles models.Lifecycle
 	id := c.Param("id")
 
-	if err := database.DB.Preload("Phases.Reflection").Preload("Phases.Journal").First(&lifecycles, id).Error; err != nil {
+	if err := database.DB.Preload("Phases.Reflection.Answers").Preload("Phases.Journal.Answers").First(&lifecycles, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
