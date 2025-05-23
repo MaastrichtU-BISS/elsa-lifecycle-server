@@ -18,7 +18,7 @@ type LifecycleSeeder struct{}
 func (s LifecycleSeeder) Seed(db *gorm.DB) error {
 	lifecycles := []models.Lifecycle{
 		{
-			Title: "ELSA Recommendation Platform for Data Science Projects",
+			Title:       "ELSA Recommendation Platform for Data Science Projects",
 			Description: "prototype",
 			General: `
 ## Welcome to the ELSA Recommendation Platform for Data Science Projects
@@ -109,8 +109,8 @@ type PhaseSeeder struct{}
 func (s PhaseSeeder) Seed(db *gorm.DB) error {
 	phases := []models.Phase{
 		{
-			Number: 1,
-			Title: "Phase 1",
+			Number:      1,
+			Title:       "Problem Definition / Project Scoping",
 			Description: "prototype",
 			LifecycleID: 1,
 		},
@@ -183,7 +183,7 @@ type ReflectionSeeder struct{}
 func (s ReflectionSeeder) Seed(db *gorm.DB) error {
 	reflections := []models.Reflection{
 		{
-			Title:        "Problem Definition / Project Scoping",
+			Title:       "Problem Definition / Project Scoping",
 			Description: "As data science continues to shape the world around us, from healthcare and education to urban planning and policymaking, there is a growing need to ensure that the work we do is not only technically sound, but also ethically responsible, legally compliant, and socially aware.",
 			Form: `{
 					"@id": "https://repo.metadatacenter.org/templates/1ec51eb6-d07c-4f25-8299-1972b55b42b7",
@@ -945,7 +945,7 @@ type JournalSeeder struct{}
 func (s JournalSeeder) Seed(db *gorm.DB) error {
 	journals := []models.Journal{
 		{
-			Title:        "",
+			Title:       "",
 			Description: "",
 			Form: `{
 					"@id": "https://repo.metadatacenter.org/templates/170e74d2-e93d-4a54-9637-27aca7af14ca",
@@ -1543,7 +1543,7 @@ func (s JournalSeeder) Seed(db *gorm.DB) error {
 					"bibo:status": "bibo:draft",
 					"$schema": "http://json-schema.org/draft-04/schema#"
 					}`,
-		    PhaseID: 1,
+			PhaseID: 1,
 		},
 	}
 	return db.Create(&journals).Error
@@ -1573,137 +1573,137 @@ type RecommendationSeeder struct{}
 func (s RecommendationSeeder) Seed(db *gorm.DB) error {
 	recommendations := []models.Recommendation{
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           1,
 			BinaryEvaluation: 0,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           2,
 			BinaryEvaluation: 0,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           3,
 			BinaryEvaluation: 0,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           4,
 			BinaryEvaluation: 0,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           5,
 			BinaryEvaluation: 0,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           1,
 			BinaryEvaluation: 1,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           2,
 			BinaryEvaluation: 2,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           3,
 			BinaryEvaluation: 4,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           4,
 			BinaryEvaluation: 8,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           1,
 			BinaryEvaluation: 3,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           2,
 			BinaryEvaluation: 3,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           3,
 			BinaryEvaluation: 5,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           4,
 			BinaryEvaluation: 5,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           1,
 			BinaryEvaluation: 6,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           3,
 			BinaryEvaluation: 6,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           1,
 			BinaryEvaluation: 7,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           4,
 			BinaryEvaluation: 9,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           3,
 			BinaryEvaluation: 10,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           4,
 			BinaryEvaluation: 10,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           5,
 			BinaryEvaluation: 10,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           1,
 			BinaryEvaluation: 11,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           3,
 			BinaryEvaluation: 11,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           4,
 			BinaryEvaluation: 11,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           2,
 			BinaryEvaluation: 12,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           1,
 			BinaryEvaluation: 13,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           5,
 			BinaryEvaluation: 13,
 		},
 		{
-			ReflectionID:  1,
+			ReflectionID:     1,
 			ToolID:           5,
 			BinaryEvaluation: 15,
 		},
