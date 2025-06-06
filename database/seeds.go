@@ -1714,3 +1714,16 @@ func (s RecommendationSeeder) Seed(db *gorm.DB) error {
 func (s RecommendationSeeder) Clear(db *gorm.DB) error {
 	return db.Exec("DELETE FROM recommendations").Error
 }
+
+// JournalAnswer
+
+type RecommendationAnswerSeeder struct{}
+
+func (s RecommendationAnswerSeeder) Seed(db *gorm.DB) error {
+	answers := []models.JournalAnswer{}
+	return db.Create(&answers).Error
+}
+
+func (s RecommendationAnswerSeeder) Clear(db *gorm.DB) error {
+	return db.Exec("DELETE FROM recommendation_answers").Error
+}

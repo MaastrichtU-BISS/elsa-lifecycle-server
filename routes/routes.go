@@ -54,5 +54,10 @@ func SetupRouter() *gin.Engine {
 	// Recommendation routes
 	r.GET("/recommendations/:reflectionId", controllers.GetRecommendations)
 
+	// RecommendationAnswer routes
+	r.GET("/recommendationAnswers/:id", controllers.GetRecommendationAnswerByID)
+	r.POST("/recommendationAnswers", controllers.CreateRecommendationAnswer)
+	r.PUT("/recommendationAnswers/:id/edit", controllers.EditRecommendationAnswer)
+
 	return r
 }

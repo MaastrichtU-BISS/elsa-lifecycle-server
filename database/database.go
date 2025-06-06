@@ -18,13 +18,14 @@ func ConnectDB() {
 	}
 
 	DB.AutoMigrate(&models.Lifecycle{},
-					&models.Phase{},
-					&models.Reflection{},
-					&models.Journal{},
-					&models.ReflectionAnswer{},
-					&models.JournalAnswer{},
-					&models.Tool{},
-					&models.Recommendation{})
+		&models.Phase{},
+		&models.Reflection{},
+		&models.Journal{},
+		&models.ReflectionAnswer{},
+		&models.JournalAnswer{},
+		&models.Tool{},
+		&models.Recommendation{},
+		&models.RecommendationAnswer{})
 
 	seeders := []Seeder{
 		LifecycleSeeder{},
@@ -35,15 +36,16 @@ func ConnectDB() {
 		JournalAnswerSeeder{},
 		ToolSeeder{},
 		RecommendationSeeder{},
+		RecommendationAnswerSeeder{},
 	}
 
 	for _, seeder := range seeders {
 		if err := seeder.Clear(DB); err != nil {
-			fmt.Print("Clear failed: %v", err)
+			fmt.Printf("Clear failed: %v", err)
 		}
 
 		if err := seeder.Seed(DB); err != nil {
-			fmt.Print("Seeding failed: %v", err)
+			fmt.Printf("Seeding failed: %v", err)
 		}
 	}
 }

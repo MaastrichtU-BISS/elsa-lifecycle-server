@@ -99,5 +99,8 @@ func EditTool(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update answer"})
 		return
 	}
+
+	// TODO: Fetch the updated tool)
+
 	c.JSON(http.StatusOK, existingTool)
 }

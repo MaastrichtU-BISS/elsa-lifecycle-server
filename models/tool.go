@@ -4,7 +4,8 @@ type Tool struct {
 	ID          uint   `json:"id" gorm:"primaryKey;autoIncrement"`
 	Title       string `json:"title" gorm:"type:varchar(255);not null"`
 	Description string `json:"description" gorm:"type:text"`
-	URL         string `json:"url" gorm:"type:varchar(500);not null"`
+	URL         string `json:"url" gorm:"type:varchar(500)"`
+	Form        string `json:"form"`
 	Cover       string `json:"cover" gorm:"type:varchar(500)"` // Path or URL to image
 	Tags        string `json:"tags"`                           // Comma-separated tags
 	Type        string `json:"type"`                           // Comma-separated tags
