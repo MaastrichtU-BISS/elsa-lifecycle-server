@@ -74,10 +74,31 @@ func CreateRecommendationAnswer(c *gin.Context) {
 
 // PUT /recommendationAnswers/:id/edit - Edit an recommendationAnswer
 func EditRecommendationAnswer(c *gin.Context) {
-	var newAnswer models.RecommendationAnswer
-	if err := c.ShouldBindJSON(&newAnswer); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// Parse form data (10 MB max)
+	if err := c.Request.ParseMultipartForm(10 << 20); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse multipart form"})
 		return
+	}
+
+	// Read fields from the form
+	form := c.PostForm("form")
+
+	// Handle file upload
+	fileHeader, err := c.FormFile("file")
+	var filePath string
+	if err == nil {
+		// Save the uploaded file to the "uploads" directory
+		uploadDir := "./uploads/recommendation_answers"
+		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload/recommendations directory"})
+			return
+		}
+
+		filePath = filepath.Join(uploadDir, fileHeader.Filename)
+		if err := c.SaveUploadedFile(fileHeader, filePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			return
+		}
 	}
 
 	id := c.Param("id")
@@ -87,9 +108,15 @@ func EditRecommendationAnswer(c *gin.Context) {
 		return
 	}
 
+	// Create new recommendation_answer entry
+	newRecommendationAnswer := models.RecommendationAnswer{
+		Form: form,
+		File: filePath, // Save the relative path
+	}
+
 	// Update only the fields sent in the request
 	if err := database.DB.Model(&existingAnswer).
-		Updates(&newAnswer).Error; err != nil {
+		Updates(&newRecommendationAnswer).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update item"})
 		return
 	}
