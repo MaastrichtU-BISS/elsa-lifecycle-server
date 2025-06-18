@@ -56,7 +56,7 @@ func GetAnswers(c *gin.Context) {
 	journal_id := c.Param("id")
 
 	if err := database.DB.Where("journal_id = ?", journal_id).
-	Find(&answers).Error; err != nil {
+		Find(&answers).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

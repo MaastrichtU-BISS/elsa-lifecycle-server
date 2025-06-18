@@ -3,12 +3,32 @@ package database
 import (
 	"server/models"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Seeder interface {
 	Seed(db *gorm.DB) error
 	Clear(db *gorm.DB) error
+}
+
+// User
+
+type UserSeeder struct{}
+
+func (s UserSeeder) Seed(db *gorm.DB) error {
+	users := []models.User{
+		{
+			ID:           uuid.MustParse("d268159d-2c15-41cd-8a63-0f822fb56d26"),
+			Email:        "user1@example.com",
+			PasswordHash: "$2a$14$zmDbyQnfzUFvcihG7bzmtuIoxvL1oXJNyyrvsBaLM/cXgu5jJQVaS5", // "password"
+		},
+	}
+	return db.Create(&users).Error
+}
+
+func (s UserSeeder) Clear(db *gorm.DB) error {
+	return db.Exec("DELETE FROM users").Error
 }
 
 // Lifecycle

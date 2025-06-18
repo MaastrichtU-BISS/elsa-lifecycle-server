@@ -25,7 +25,8 @@ func ConnectDB() {
 		&models.JournalAnswer{},
 		&models.Tool{},
 		&models.Recommendation{},
-		&models.RecommendationAnswer{})
+		&models.RecommendationAnswer{},
+		&models.User{})
 
 	seeders := []Seeder{
 		LifecycleSeeder{},
@@ -37,6 +38,7 @@ func ConnectDB() {
 		ToolSeeder{},
 		RecommendationSeeder{},
 		RecommendationAnswerSeeder{},
+		UserSeeder{},
 	}
 
 	for _, seeder := range seeders {
