@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -9,6 +10,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // GET /recommendationAnswers/:id - Fetch recommendationAnswers by ID
@@ -18,6 +21,31 @@ func GetRecommendationAnswerByID(c *gin.Context) {
 
 	if err := database.DB.Preload("Recommendation").First(&answer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, answer)
+}
+
+// GET /recommendationAnswers?jid=:rid - Fetch recommendationAnswer by userId and recommendationlId
+func GetRecommendationAnswerByUserIdAndRecommendationID(c *gin.Context) {
+	var answer models.RecommendationAnswer
+	rid := c.Query("rid")
+	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+
+	result := database.DB.
+		Preload("Recommendation").
+		Where("recommendation_id = ? AND user_id = ?", rid, userId).
+		First(&answer)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			// Not found — return null or empty response, not 404
+			c.JSON(http.StatusOK, nil)
+			return
+		}
+		// Some other DB error
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch item"})
 		return
 	}
 
@@ -63,6 +91,8 @@ func CreateRecommendationAnswer(c *gin.Context) {
 		RecommendationID: uint(recommendationId),
 		File:             filePath, // Save the relative path
 	}
+
+	newRecommendationAnswer.UserID = uuid.MustParse(c.GetString("user_id"))
 
 	if result := database.DB.Create(&newRecommendationAnswer); result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})

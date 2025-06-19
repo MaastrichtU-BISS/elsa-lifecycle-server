@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"server/database"
 	"server/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // GET /reflectionAnswers/:id - Fetch reflectionAnswer by ID
@@ -28,10 +30,19 @@ func GetReflectionAnswerByUserIdAndReflectionID(c *gin.Context) {
 	rid := c.Query("rid")
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
 
-	if err := database.DB.Preload("Reflection").
+	result := database.DB.
+		Preload("Reflection").
 		Where("reflection_id = ? AND user_id = ?", rid, userId).
-		First(&answer).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Items not found"})
+		First(&answer)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			// Not found — return null or empty response, not 404
+			c.JSON(http.StatusOK, nil)
+			return
+		}
+		// Some other DB error
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch item"})
 		return
 	}
 

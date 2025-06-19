@@ -64,11 +64,13 @@ func SetupRouter() *gin.Engine {
 
 		// JournalAnswer routes
 		protected.GET("/journalAnswers/:id", controllers.GetJournalAnswerByID)
+		protected.GET("/journalAnswers", controllers.GetJournalAnswerByUserIdAndJournalID)
 		protected.POST("/journalAnswers", controllers.CreateJournalAnswer)
 		protected.PUT("/journalAnswers/:id/edit", controllers.EditJournalAnswer)
 
 		// RecommendationAnswer routes
 		protected.GET("/recommendationAnswers/:id", controllers.GetRecommendationAnswerByID)
+		protected.GET("/recommendationAnswers", controllers.GetRecommendationAnswerByUserIdAndRecommendationID)
 		protected.POST("/recommendationAnswers", controllers.CreateRecommendationAnswer)
 		protected.PUT("/recommendationAnswers/:id/edit", controllers.EditRecommendationAnswer)
 	}
