@@ -58,6 +58,7 @@ func SetupRouter() *gin.Engine {
 
 		// ReflectionAnswer routes
 		protected.GET("/reflectionAnswers/:id", controllers.GetReflectionAnswerByID)
+		protected.GET("/reflectionAnswers", controllers.GetReflectionAnswerByUserIdAndReflectionID)
 		protected.POST("/reflectionAnswers", controllers.CreateReflectionAnswer)
 		protected.PUT("/reflectionAnswers/:id/edit", controllers.EditReflectionAnswer)
 

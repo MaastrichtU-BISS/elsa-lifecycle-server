@@ -56,8 +56,8 @@ func GetReflectionAnswers(c *gin.Context) {
 	reflection_id := c.Param("id")
 
 	if err := database.DB.
-	Where("reflection_id = ?", reflection_id).
-	Find(&answers).Error; err != nil {
+		Where("reflection_id = ?", reflection_id).
+		Find(&answers).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

@@ -6,6 +6,7 @@ import (
 	"server/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // GET /reflectionAnswers/:id - Fetch reflectionAnswer by ID
@@ -21,6 +22,22 @@ func GetReflectionAnswerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
+// GET /reflectionAnswers?rid=:rid - Fetch reflectionAnswer by ID
+func GetReflectionAnswerByUserIdAndReflectionID(c *gin.Context) {
+	var answer models.ReflectionAnswer
+	rid := c.Query("rid")
+	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+
+	if err := database.DB.Preload("Reflection").
+		Where("reflection_id = ? AND user_id = ?", rid, userId).
+		First(&answer).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Items not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, answer)
+}
+
 // POST /reflectionAnswers - Insert a new reflectionAnswer
 func CreateReflectionAnswer(c *gin.Context) {
 	var newAnswer models.ReflectionAnswer
@@ -28,6 +45,8 @@ func CreateReflectionAnswer(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	newAnswer.UserID = uuid.MustParse(c.GetString("user_id")) // Assuming user ID is stored in context after authentication
 	database.DB.Create(&newAnswer)
 	c.JSON(http.StatusOK, newAnswer)
 }
