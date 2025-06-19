@@ -2,7 +2,6 @@
 package controllers
 
 import (
-	"fmt"
 	"server/database"
 	"server/models"
 	"server/utils"
@@ -12,11 +11,17 @@ import (
 
 func Register(c *gin.Context) {
 	var input struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		Email           string `json:"email"`
+		Password        string `json:"password"`
+		ConfirmPassword string `json:"confirmPassword"`
 	}
 	if err := c.BindJSON(&input); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if input.Password != input.ConfirmPassword {
+		c.JSON(400, gin.H{"error": "Passwords do not match"})
 		return
 	}
 
@@ -28,7 +33,8 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Registered successfully"})
+	token, _ := utils.GenerateJWT(user.ID)
+	c.JSON(200, gin.H{"token": token})
 }
 
 func Login(c *gin.Context) {
@@ -46,11 +52,6 @@ func Login(c *gin.Context) {
 		c.JSON(401, gin.H{"error": "User not found"})
 		return
 	}
-
-	fmt.Println(input.Password)
-	fmt.Println(user)
-	hashed, _ := utils.HashPassword(input.Password)
-	fmt.Println(hashed)
 
 	if !utils.CheckPasswordHash(input.Password, user.PasswordHash) {
 		c.JSON(401, gin.H{"error": "Wrong password"})
