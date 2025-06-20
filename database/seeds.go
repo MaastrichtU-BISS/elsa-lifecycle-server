@@ -119,6 +119,7 @@ Over time, a library of journal entries across projects:
 }
 
 func (s LifecycleSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'lifecycles'")
 	return db.Exec("DELETE FROM lifecycles").Error
 }
 
@@ -145,6 +146,7 @@ func (s PhaseSeeder) Seed(db *gorm.DB) error {
 }
 
 func (s PhaseSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'phases'")
 	return db.Exec("DELETE FROM phases").Error
 }
 
@@ -986,6 +988,7 @@ func (s ToolSeeder) Seed(db *gorm.DB) error {
 }
 
 func (s ToolSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'tools'")
 	return db.Exec("DELETE FROM tools").Error
 }
 
@@ -2577,6 +2580,7 @@ func (s ReflectionSeeder) Seed(db *gorm.DB) error {
 }
 
 func (s ReflectionSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'reflections'")
 	return db.Exec("DELETE FROM reflections").Error
 }
 
@@ -2590,6 +2594,7 @@ func (s ReflectionAnswerSeeder) Seed(db *gorm.DB) error {
 }
 
 func (s ReflectionAnswerSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'reflection_answers'")
 	return db.Exec("DELETE FROM reflection_answers").Error
 }
 
@@ -3610,6 +3615,7 @@ func (s JournalSeeder) Seed(db *gorm.DB) error {
 }
 
 func (s JournalSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'journal'")
 	return db.Exec("DELETE FROM journal").Error
 }
 
@@ -3623,6 +3629,7 @@ func (s JournalAnswerSeeder) Seed(db *gorm.DB) error {
 }
 
 func (s JournalAnswerSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'journal_answers'")
 	return db.Exec("DELETE FROM journal_answers").Error
 }
 
@@ -3777,6 +3784,7 @@ func (s RecommendationSeeder) Seed(db *gorm.DB) error {
 }
 
 func (s RecommendationSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'recommendations'")
 	return db.Exec("DELETE FROM recommendations").Error
 }
 
@@ -3790,5 +3798,6 @@ func (s RecommendationAnswerSeeder) Seed(db *gorm.DB) error {
 }
 
 func (s RecommendationAnswerSeeder) Clear(db *gorm.DB) error {
+	db.Exec("DELETE FROM sqlite_sequence WHERE name = 'recommendation_answers'")
 	return db.Exec("DELETE FROM recommendation_answers").Error
 }
