@@ -15,7 +15,6 @@ func GetRecommendations(c *gin.Context) {
 	binaryEvaluation := c.Query("binaryEvaluation")
 
 	if err := database.DB.Preload("Tool").
-		Preload("Answers").
 		Where("reflection_id = ? AND binary_evaluation = ?", reflectionId, binaryEvaluation).
 		Find(&recommendations).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Items not found"})

@@ -19,7 +19,7 @@ func GetRecommendationAnswerByID(c *gin.Context) {
 	var answer models.RecommendationAnswer
 	id := c.Param("id")
 
-	if err := database.DB.Preload("Recommendation").First(&answer, id).Error; err != nil {
+	if err := database.DB.Preload("Recommendation.Tool").First(&answer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
@@ -34,7 +34,7 @@ func GetRecommendationAnswerByUserIdAndRecommendationID(c *gin.Context) {
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
 
 	result := database.DB.
-		Preload("Recommendation").
+		Preload("Recommendation.Tool").
 		Where("recommendation_id = ? AND user_id = ?", rid, userId).
 		First(&answer)
 
@@ -94,8 +94,16 @@ func CreateRecommendationAnswer(c *gin.Context) {
 
 	newRecommendationAnswer.UserID = uuid.MustParse(c.GetString("user_id"))
 
-	if result := database.DB.Create(&newRecommendationAnswer); result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+	// Step 1: Create the record
+	if err := database.DB.Create(&newRecommendationAnswer).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Step 2: Reload with preloads
+	if err := database.DB.Preload("Recommendation.Tool").
+		First(&newRecommendationAnswer, newRecommendationAnswer.ID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -133,7 +141,7 @@ func EditRecommendationAnswer(c *gin.Context) {
 
 	id := c.Param("id")
 	var existingAnswer models.RecommendationAnswer
-	if err := database.DB.Preload("Recommendation").First(&existingAnswer, id).Error; err != nil {
+	if err := database.DB.First(&existingAnswer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
@@ -153,7 +161,7 @@ func EditRecommendationAnswer(c *gin.Context) {
 
 	//fetch the updated answer
 	var updatedAnswer models.RecommendationAnswer
-	if err := database.DB.Preload("Recommendation").First(&updatedAnswer, id).Error; err != nil {
+	if err := database.DB.Preload("Recommendation.Tool").First(&updatedAnswer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}

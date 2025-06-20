@@ -13,7 +13,7 @@ func GetReflectionByID(c *gin.Context) {
 	var reflection models.Reflection
 	id := c.Param("id")
 
-	if err := database.DB.Preload("ReflectionAnswers").First(&reflection, id).Error; err != nil {
+	if err := database.DB.First(&reflection, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}

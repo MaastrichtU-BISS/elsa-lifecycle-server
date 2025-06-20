@@ -7,5 +7,4 @@ type Journal struct {
 	Form        string `json:"form"`
 	PhaseID     uint   `json:"phaseId"`
 	Phase       Phase  `gorm:"foreignKey:PhaseID"`
-	Answers     []JournalAnswer
 }

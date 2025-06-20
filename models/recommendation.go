@@ -7,5 +7,4 @@ type Recommendation struct {
 	ToolID           uint       `json:"toolId"`
 	Tool             Tool       `gorm:"foreignKey:ToolID"`
 	BinaryEvaluation uint       `json:"binaryEvaluation"`
-	Answers          []RecommendationAnswer
 }

@@ -13,7 +13,7 @@ func GetJournalByID(c *gin.Context) {
 	var journal models.Journal
 	id := c.Param("id")
 
-	if err := database.DB.Preload("JournalAnswers").First(&journal, id).Error; err != nil {
+	if err := database.DB.First(&journal, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
