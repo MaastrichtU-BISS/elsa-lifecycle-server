@@ -2,6 +2,17 @@
 
 ## How to run?
 
+Install Go on your system https://go.dev/doc/install
+
+### Windows?
+Also install mingw-w64 GCC through https://www.msys2.org/. GCC is used to run C code.
+
+Enable C code to run using Go, since sqlite relies on it (see [go.mod](./go.mod))
+
+```bash
+go env -w CGO_ENABLED=1
+```
+
 To run the project locally in development mode, you can run the following command:
 ```bash
 go run .
