@@ -1,10 +1,10 @@
 package models
 
-type Questionnaire struct {
+type Journal struct {
 	ID          uint   `json:"id" gorm:"primaryKey;autoIncrement"`
-	Name        string `json:"name"`
+	Title       string `json:"title"`
 	Description string `json:"description"`
 	Form        string `json:"form"`
-	FormName    string `json:"formName"`
-	Answers     []Answer
+	PhaseID     uint   `json:"phaseId"`
+	Phase       Phase  `gorm:"foreignKey:PhaseID"`
 }

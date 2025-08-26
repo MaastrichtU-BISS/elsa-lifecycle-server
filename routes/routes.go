@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"server/controllers"
+	"server/utils"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -82,17 +83,61 @@ func SetupRouter() *gin.Engine {
 	cfg := buildCORSConfigFromString(os.Getenv("CORS_ALLOW_ORIGINS"))
 	r.Use(cors.New(cfg))
 
-	// Questionnaire routes
-	r.GET("/questionnaires", controllers.GetQuestionnaires)
-	r.GET("/questionnaires/:id", controllers.GetQuestionnaireByID)
-	r.DELETE("/questionnaires/:id", controllers.DeleteQuestionnaire)
-	r.POST("/questionnaires", controllers.CreateQuestionnaire)
+	// images
+	r.Static("/uploads", "./uploads") // Serve static files from the "uploads" directory
 
-	// Answer routes
-	r.GET("/questionnaires/:id/answers", controllers.GetAnswers)
-	r.GET("/answers/:id", controllers.GetAnswerByID)
-	r.POST("/questionnaires/:id/answers", controllers.CreateAnswer)
-	r.PUT("/answers/:id/edit", controllers.EditAnswer)
+	// authentication routes
+	r.POST("/auth/register", controllers.Register)
+	r.POST("/auth/login", controllers.Login)
+
+	// Lifecycle routes
+	r.GET("/lifecycles", controllers.GetLifecycles)
+	r.GET("/lifecycles/:id", controllers.GetLifecyclesByID)
+	r.GET("/lifecycles/:id/phases", controllers.GetPhases)
+
+	// Phase routes
+	r.GET("/phases/:id", controllers.GetPhaseById)
+
+	// Reflection routes
+	r.GET("/reflections/:id", controllers.GetReflectionByID)
+
+	// Journal routes
+	r.GET("/journals/:id", controllers.GetJournalByID)
+
+	// Tool routes
+	r.GET("/tools", controllers.GetTools)
+	r.GET("/tools/:id", controllers.GetToolByID)
+	r.POST("/tools", controllers.CreateTool)
+	r.PUT("/tools/:id/edit", controllers.EditTool)
+
+	// Recommendation routes
+	r.GET("/recommendations/:reflectionId", controllers.GetRecommendations)
+
+	// Protected routes
+	protected := r.Group("/")
+	protected.Use(utils.AuthMiddleware())
+	{
+		// User routes
+		protected.GET("/user", controllers.GetUser)
+
+		// ReflectionAnswer routes
+		protected.GET("/reflectionAnswers/:id", controllers.GetReflectionAnswerByID)
+		protected.GET("/reflectionAnswers", controllers.GetReflectionAnswerByUserIdAndReflectionID)
+		protected.POST("/reflectionAnswers", controllers.CreateReflectionAnswer)
+		protected.PUT("/reflectionAnswers/:id/edit", controllers.EditReflectionAnswer)
+
+		// JournalAnswer routes
+		protected.GET("/journalAnswers/:id", controllers.GetJournalAnswerByID)
+		protected.GET("/journalAnswers", controllers.GetJournalAnswerByUserIdAndJournalID)
+		protected.POST("/journalAnswers", controllers.CreateJournalAnswer)
+		protected.PUT("/journalAnswers/:id/edit", controllers.EditJournalAnswer)
+
+		// RecommendationAnswer routes
+		protected.GET("/recommendationAnswers/:id", controllers.GetRecommendationAnswerByID)
+		protected.GET("/recommendationAnswers", controllers.GetRecommendationAnswerByUserIdAndRecommendationID)
+		protected.POST("/recommendationAnswers", controllers.CreateRecommendationAnswer)
+		protected.PUT("/recommendationAnswers/:id/edit", controllers.EditRecommendationAnswer)
+	}
 
 	return r
 }

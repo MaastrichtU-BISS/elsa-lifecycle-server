@@ -3,7 +3,7 @@ package database
 import (
 	"os"
 	"log"
-
+	"fmt"
 	"server/models"
 
 	"gorm.io/driver/sqlite"
@@ -27,5 +27,37 @@ func ConnectDB() {
 		log.Fatalf("failed to connect database (%s): %v", dbPath, err)
 	}
 
-	DB.AutoMigrate(&models.Questionnaire{}, models.Answer{})
+	DB.AutoMigrate(&models.Lifecycle{},
+		&models.Phase{},
+		&models.Reflection{},
+		&models.Journal{},
+		&models.ReflectionAnswer{},
+		&models.JournalAnswer{},
+		&models.Tool{},
+		&models.Recommendation{},
+		&models.RecommendationAnswer{},
+		&models.User{})
+
+	seeders := []Seeder{
+		LifecycleSeeder{},
+		PhaseSeeder{},
+		ReflectionSeeder{},
+		ReflectionAnswerSeeder{},
+		JournalSeeder{},
+		JournalAnswerSeeder{},
+		ToolSeeder{},
+		RecommendationSeeder{},
+		RecommendationAnswerSeeder{},
+		UserSeeder{},
+	}
+
+	for _, seeder := range seeders {
+		if err := seeder.Clear(DB); err != nil {
+			fmt.Printf("Clear failed: %v", err)
+		}
+
+		if err := seeder.Seed(DB); err != nil {
+			fmt.Printf("Seeding failed: %v", err)
+		}
+	}
 }
