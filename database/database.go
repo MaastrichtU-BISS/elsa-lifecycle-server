@@ -1,6 +1,9 @@
 package database
 
 import (
+	"os"
+	"log"
+
 	"server/models"
 
 	"gorm.io/driver/sqlite"
@@ -11,9 +14,17 @@ var DB *gorm.DB
 
 func ConnectDB() {
 	var err error
-	DB, err = gorm.Open(sqlite.Open("database/db/elsa.db"), &gorm.Config{})
+	// default path (absolute path used in the Docker image)
+	defaultPath := "/app/database/db/elsa.db"
+	// allow override from environment variable DB_PATH
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = defaultPath
+	}
+
+	DB, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		log.Fatalf("failed to connect database (%s): %v", dbPath, err)
 	}
 
 	DB.AutoMigrate(&models.Questionnaire{}, models.Answer{})
