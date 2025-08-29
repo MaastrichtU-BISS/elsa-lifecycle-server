@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"server/models"
@@ -37,30 +36,4 @@ func ConnectDB() {
 		&models.Recommendation{},
 		&models.RecommendationAnswer{},
 		&models.User{})
-
-	// Only run seeders if SEED environment variable is set to TRUE (case-insensitive)
-	if os.Getenv("SEED") == "TRUE" || os.Getenv("SEED") == "true" {
-		seeders := []Seeder{
-			LifecycleSeeder{},
-			PhaseSeeder{},
-			ReflectionSeeder{},
-			ReflectionAnswerSeeder{},
-			JournalSeeder{},
-			JournalAnswerSeeder{},
-			ToolSeeder{},
-			RecommendationSeeder{},
-			RecommendationAnswerSeeder{},
-			UserSeeder{},
-		}
-
-		for _, seeder := range seeders {
-			if err := seeder.Clear(DB); err != nil {
-				fmt.Printf("Clear failed: %v", err)
-			}
-
-			if err := seeder.Seed(DB); err != nil {
-				fmt.Printf("Seeding failed: %v", err)
-			}
-		}
-	}
 }
