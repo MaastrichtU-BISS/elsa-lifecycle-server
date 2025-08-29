@@ -13,10 +13,28 @@ Enable C code to run using Go, since sqlite relies on it (see [go.mod](./go.mod)
 go env -w CGO_ENABLED=1
 ```
 
-To run the project locally in development mode, you can run the following command:
+
+To run the project locally in development mode:
+
 ```bash
 go run .
 ```
+
+### Seeding the database
+
+By default, the database is not seeded. To seed the database (clear and insert demo data), set the environment variable `SEED=TRUE` when starting the server:
+
+```bash
+SEED=TRUE go run .
+```
+
+You can also use this with a custom database path:
+
+```bash
+SEED=TRUE DB_PATH="/tmp/my-elsa.db" go run .
+```
+
+**Warning:** Seeding will clear and repopulate the relevant tables. Only use this in development or when you want to reset the database.
 
 ## Class diagram
 First draft of the class / model diagram can be found below. This is made using drawio where the xml metadata is encapsulated in the .png metadata. This can be edited in VS Code using the [Draw.io Integration plugin](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio).
@@ -75,12 +93,20 @@ Use an absolute `DB_PATH` when running the container to avoid ambiguity.
 
 ## Run as Docker image
 
-Run the image with the default DB path (the image contains no DB file by default — mount a volume or set `DB_PATH`):
 
-	# mount a host directory that contains (or will contain) the DB
-	docker run -p 8080:8080 -v $(pwd)/db:/app/database/db ghcr.io/maastrichtu-biss/elsa-lifecycle-server
+### Seeding the database in Docker
 
-Or explicitly point to a host path inside the container with `DB_PATH`:
+To seed the database when running in Docker, set the `SEED` environment variable:
 
-	docker run -p 8080:8080 -e DB_PATH="/db/elsa.sqlite" -v $(pwd)/db:/db ghcr.io/maastrichtu-biss/elsa-lifecycle-server
+```bash
+docker run -p 8080:8080 -e SEED=TRUE -v $(pwd)/db:/app/database/db ghcr.io/maastrichtu-biss/elsa-lifecycle-server
+```
+
+You can combine this with a custom database path:
+
+```bash
+docker run -p 8080:8080 -e SEED=TRUE -e DB_PATH="/db/elsa.sqlite" -v $(pwd)/db:/db ghcr.io/maastrichtu-biss/elsa-lifecycle-server
+```
+
+**Warning:** Seeding will clear and repopulate the relevant tables. Only use this in development or when you want to reset the database.
 
