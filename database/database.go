@@ -1,9 +1,9 @@
 package database
 
 import (
-	"os"
-	"log"
 	"fmt"
+	"log"
+	"os"
 	"server/models"
 
 	"gorm.io/driver/sqlite"
@@ -14,8 +14,8 @@ var DB *gorm.DB
 
 func ConnectDB() {
 	var err error
-	// default path (absolute path used in the Docker image)
-	defaultPath := "/app/database/db/elsa.db"
+	// default path (relative path used both local and Docker environments)
+	defaultPath := "./database/db/elsa.db"
 	// allow override from environment variable DB_PATH
 	dbPath := os.Getenv("DB_PATH")
 	if dbPath == "" {
