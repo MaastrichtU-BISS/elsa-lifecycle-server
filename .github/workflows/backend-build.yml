@@ -18,7 +18,7 @@ jobs:
       
       - name: Extract branch name
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
         id: extract_branch
       
       - name: downcase REPO
@@ -35,17 +35,7 @@ jobs:
       - name: Build container
         id: docker_build
         uses: docker/build-push-action@v4
-        if: steps.extract_branch.outputs.branch != 'main'
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ env.REPO }}:${{ steps.extract_branch.outputs.branch }}
-      
-      - name: Build container
-        id: docker_build_main
-        uses: docker/build-push-action@v4
-        if: steps.extract_branch.outputs.branch == 'main'
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ env.REPO }}:${{ steps.extract_branch.outputs.branch }}, ghcr.io/${{ env.REPO }}:latest
+          tags: ghcr.io/${{ env.REPO }}:${{ steps.extract_branch.outputs.branch == 'main' && 'latest' || steps.extract_branch.outputs.branch }}
