@@ -2,7 +2,37 @@
   {
     "Title": "Journal 1",
     "Description": "Journal description",
-    "Form": "{}",
+    "FormFile": "forms/generic_journal_form.jsonld",
     "PhaseID": 1
+  },
+  {
+    "Title": "Journal 1",
+    "Description": "Journal description",
+    "FormFile": "forms/generic_journal_form.jsonld",
+    "PhaseID": 2
+  },
+  {
+    "Title": "Journal 1",
+    "Description": "Journal description",
+    "FormFile": "forms/generic_journal_form.jsonld",
+    "PhaseID": 3
+  },
+  {
+    "Title": "Journal 1",
+    "Description": "Journal description",
+    "FormFile": "forms/generic_journal_form.jsonld",
+    "PhaseID": 4
+  },
+  {
+    "Title": "Journal 1",
+    "Description": "Journal description",
+    "FormFile": "forms/generic_journal_form.jsonld",
+    "PhaseID": 5
+  },
+  {
+    "Title": "Journal 1",
+    "Description": "Journal description",
+    "FormFile": "forms/generic_journal_form.jsonld",
+    "PhaseID": 6
   }
 ]
