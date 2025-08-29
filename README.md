@@ -20,19 +20,102 @@ To run the project locally in development mode:
 go run .
 ```
 
-### Seeding the database
 
-By default, the database is not seeded. To seed the database (clear and insert demo data), set the environment variable `SEED=TRUE` when starting the server:
+# Seeding the database
 
-```bash
-SEED=TRUE go run .
-```
-
-You can also use this with a custom database path:
+The recommended way to seed the database (clear and insert demo data) is to use the dedicated seeder CLI:
 
 ```bash
-SEED=TRUE DB_PATH="/tmp/my-elsa.db" go run .
+go run cmd/seed/main.go
 ```
+
+This will load all seed data from the `database/seeds/` directory (including JSON and JSON-LD files) and populate the database accordingly.
+
+You can also specify a custom database path by setting the `DB_PATH` environment variable:
+
+```bash
+DB_PATH="/tmp/my-elsa.db" go run cmd/seed/main.go
+```
+
+## Seed Files and Schemas
+
+All seed data is located in the `database/seeds/` directory. The following files are used:
+
+### users.json
+- **Schema:**
+	- `ID` (string, UUID)
+	- `Email` (string)
+	- `PasswordHash` (string)
+
+### lifecycles.json
+- **Schema:**
+	- `Title` (string)
+	- `Description` (string)
+	- `General` (string, markdown)
+	- `Introduction` (string, markdown)
+
+### phases.json
+- **Schema:**
+	- `Number` (integer)
+	- `Title` (string)
+	- `Description` (string)
+	- `LifecycleID` (integer, foreign key)
+
+### tools.json
+- **Schema:**
+	- `Title` (string)
+	- `Description` (string)
+	- `URL` (string)
+	- `Cover` (string)
+	- `Tags` (string)
+	- `Type` (string)
+	- `FormFile` (string, path to JSON-LD in `database/seeds/forms/`)
+
+### reflections.json
+- **Schema:**
+	- `Title` (string)
+	- `Description` (string)
+	- `FormFile` (string, path to JSON-LD in `database/seeds/forms/`)
+	- `PhaseID` (integer, foreign key)
+
+### reflection_answers.json
+- **Schema:**
+	- `Form` (string, JSON)
+	- `BinaryEvaluation` (integer)
+	- `ReflectionID` (integer, foreign key)
+	- `UserID` (string, UUID)
+
+### journals.json
+- **Schema:**
+	- `Title` (string)
+	- `Description` (string)
+	- `FormFile` (string, path to JSON-LD in `database/seeds/forms/`)
+	- `PhaseID` (integer, foreign key)
+
+### journal_answers.json
+- **Schema:**
+	- `Form` (string, JSON)
+	- `JournalID` (integer, foreign key)
+	- `UserID` (string, UUID)
+
+### recommendations.json
+- **Schema:**
+	- `ReflectionID` (integer, foreign key)
+	- `ToolID` (integer, foreign key)
+	- `BinaryEvaluation` (integer)
+
+### recommendation_answers.json
+- **Schema:**
+	- `Form` (string, JSON)
+	- `File` (string, optional)
+	- `RecommendationID` (integer, foreign key)
+	- `UserID` (string, UUID)
+
+### forms/ (directory)
+- Contains referenced JSON-LD form files, e.g.:
+	- `value_sensitive_design.jsonld`
+	- `reflection_phase1.jsonld`
+	- `generic_journal_form.jsonld`
 
 **Warning:** Seeding will clear and repopulate the relevant tables. Only use this in development or when you want to reset the database.
 
@@ -91,22 +174,18 @@ When running inside the provided Docker image the application runs from `/app`, 
 
 Use an absolute `DB_PATH` when running the container to avoid ambiguity.
 
-## Run as Docker image
+# Run as Docker image
 
 
 ### Seeding the database in Docker
 
-To seed the database when running in Docker, set the `SEED` environment variable:
+To seed the database when running in Docker, run the seeder CLI inside the container. For example:
 
 ```bash
-docker run -p 8080:8080 -e SEED=TRUE -v $(pwd)/db:/app/database/db ghcr.io/maastrichtu-biss/elsa-lifecycle-server
+docker run --rm -e DB_PATH="/app/database/db/elsa.db" -v $(pwd)/database:/app/database ghcr.io/maastrichtu-biss/elsa-lifecycle-server go run cmd/seed/main.go
 ```
 
-You can combine this with a custom database path:
-
-```bash
-docker run -p 8080:8080 -e SEED=TRUE -e DB_PATH="/db/elsa.sqlite" -v $(pwd)/db:/db ghcr.io/maastrichtu-biss/elsa-lifecycle-server
-```
+Adjust the `DB_PATH` and volume mounts as needed for your setup.
 
 **Warning:** Seeding will clear and repopulate the relevant tables. Only use this in development or when you want to reset the database.
 
