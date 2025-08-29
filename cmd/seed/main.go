@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -93,7 +92,7 @@ func main() {
 	readSeed("database/seeds/tools.json", &tools)
 	for i, t := range tools {
 		if t.FormFile != "" {
-			formData, err := ioutil.ReadFile(filepath.Join("database/seeds", t.FormFile))
+			formData, err := os.ReadFile(filepath.Join("database/seeds", t.FormFile))
 			if err == nil {
 				tools[i].Form = string(formData)
 			}
@@ -109,19 +108,26 @@ func main() {
 		})
 	}
 
-	// Reflections
+	// Reflections (with JSON-LD form)
 	var reflections []struct {
 		Title       string `json:"Title"`
 		Description string `json:"Description"`
-		Form        string `json:"Form"`
+		FormFile    string `json:"FormFile"`
+		Form        string `json:"-"`
 		PhaseID     uint   `json:"PhaseID"`
 	}
 	readSeed("database/seeds/reflections.json", &reflections)
-	for _, r := range reflections {
+	for i, r := range reflections {
+		if r.FormFile != "" {
+			formData, err := os.ReadFile(filepath.Join("database/seeds", r.FormFile))
+			if err == nil {
+				reflections[i].Form = string(formData)
+			}
+		}
 		db.Create(&models.Reflection{
 			Title:       r.Title,
 			Description: r.Description,
-			Form:        r.Form,
+			Form:        reflections[i].Form,
 			PhaseID:     r.PhaseID,
 		})
 	}
@@ -148,19 +154,26 @@ func main() {
 		})
 	}
 
-	// Journals
+	// Journals (with JSON-LD form)
 	var journals []struct {
 		Title       string `json:"Title"`
 		Description string `json:"Description"`
-		Form        string `json:"Form"`
+		FormFile    string `json:"FormFile"`
+		Form        string `json:"-"`
 		PhaseID     uint   `json:"PhaseID"`
 	}
 	readSeed("database/seeds/journals.json", &journals)
-	for _, j := range journals {
+	for i, j := range journals {
+		if j.FormFile != "" {
+			formData, err := os.ReadFile(filepath.Join("database/seeds", j.FormFile))
+			if err == nil {
+				journals[i].Form = string(formData)
+			}
+		}
 		db.Create(&models.Journal{
 			Title:       j.Title,
 			Description: j.Description,
-			Form:        j.Form,
+			Form:        journals[i].Form,
 			PhaseID:     j.PhaseID,
 		})
 	}
@@ -226,7 +239,7 @@ func main() {
 }
 
 func readSeed(path string, v interface{}) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", path, err)
 		os.Exit(1)
