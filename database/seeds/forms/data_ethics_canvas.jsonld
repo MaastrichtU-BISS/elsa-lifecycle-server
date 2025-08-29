@@ -1,0 +1,6 @@
+{
+  "@context": "https://schema.org/",
+  "@type": "CreativeWork",
+  "name": "Data Ethics Canvas",
+  "description": "A JSON-LD example for Data Ethics Canvas."
+}
