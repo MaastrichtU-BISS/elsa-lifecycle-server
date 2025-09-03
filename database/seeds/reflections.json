@@ -1,8 +1,50 @@
 [
   {
-    "Title": "Reflection 1",
-    "Description": "Reflection description",
-    "FormFile": "forms/reflection_phase1.jsonld",
+    "Title": "Reflection",
+    "Description": "Phase 1 - Problem Definition / Project Scoping",
+    "FormFile": "forms/reflections/reflection_phase1.jsonld",
     "PhaseID": 1
+  },
+  {
+    "Title": "Reflection",
+    "Description": "Phase 2 - Data Collection / Acquisition",
+    "FormFile": "forms/reflections/reflection_phase2.jsonld",
+    "PhaseID": 2
+  },
+  {
+    "Title": "Reflection",
+    "Description": "Phase 3 - Data Cleaning / Preparation",
+    "FormFile": "forms/reflections/reflection_phase3.jsonld",
+    "PhaseID": 3
+  },
+  {
+    "Title": "Reflection",
+    "Description": "Phase 4 - Modeling / Algorithm Development",
+    "FormFile": "forms/reflections/reflection_phase4.jsonld",
+    "PhaseID": 4
+  },
+  {
+    "Title": "Reflection",
+    "Description": "Phase 5 - Evaluation / Validation",
+    "FormFile": "forms/reflections/reflection_phase5.jsonld",
+    "PhaseID": 5
+  },
+  {
+    "Title": "Reflection",
+    "Description": "Phase 6 - Deployment / Implementation",
+    "FormFile": "forms/reflections/reflection_phase6.jsonld",
+    "PhaseID": 6
+  },
+  {
+    "Title": "Reflection",
+    "Description": "Phase 7 - Monitoring / Maintenance",
+    "FormFile": "forms/reflections/reflection_phase7.jsonld",
+    "PhaseID": 7
+  },
+  {
+    "Title": "Reflection",
+    "Description": "Phase 8 - Documentation / Communication",
+    "FormFile": "forms/reflections/reflection_phase8.jsonld",
+    "PhaseID": 8
   }
 ]

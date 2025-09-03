@@ -2,37 +2,49 @@
   {
     "Number": 1,
     "Title": "Problem Definition / Project Scoping",
-    "Description": "prototype",
+    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 2,
     "Title": "Data Collection / Acquisition",
-    "Description": "prototype",
+    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 3,
-    "Title": "Model development",
-    "Description": "Model training",
+    "Title": "Data Cleaning / Preparation",
+    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 4,
-    "Title": "Product evaluation",
-    "Description": "Testing before release",
+    "Title": "Modeling / Algorithm Development",
+    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 5,
-    "Title": "Product release / commissioning",
-    "Description": "Testing in the hospital environment",
+    "Title": "Evaluation / Validation",
+    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 6,
-    "Title": "Product monitoring",
-    "Description": "Testing the AI product whether it behaves as intended",
+    "Title": "Deployment / Implementation",
+    "Description": "pending",
+    "LifecycleID": 1
+  },
+  {
+    "Number": 7,
+    "Title": "Monitoring / Maintenance",
+    "Description": "pending",
+    "LifecycleID": 1
+  },
+  {
+    "Number": 8,
+    "Title": "Documentation / Communication",
+    "Description": "pending",
     "LifecycleID": 1
   }
 ]

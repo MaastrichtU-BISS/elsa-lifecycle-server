@@ -3153,30 +3153,6 @@ func (s JournalSeeder) Seed(db *gorm.DB) error {
 			Form:        generalJournalForm,
 			PhaseID:     2,
 		},
-		{
-			Title:       "",
-			Description: "",
-			Form:        generalJournalForm,
-			PhaseID:     3,
-		},
-		{
-			Title:       "",
-			Description: "",
-			Form:        generalJournalForm,
-			PhaseID:     4,
-		},
-		{
-			Title:       "",
-			Description: "",
-			Form:        generalJournalForm,
-			PhaseID:     5,
-		},
-		{
-			Title:       "",
-			Description: "",
-			Form:        generalJournalForm,
-			PhaseID:     6,
-		},
 	}
 	return db.Create(&journals).Error
 }
