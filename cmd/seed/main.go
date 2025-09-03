@@ -47,6 +47,30 @@ func main() {
 	database.ConnectDB()
 	db := database.DB
 
+	// drop and recreate all tables
+	db.Migrator().DropTable(
+		&models.User{},
+		&models.Lifecycle{},
+		&models.Phase{},
+		&models.Tool{},
+		&models.Reflection{},
+		&models.ReflectionAnswer{},
+		&models.Journal{},
+		&models.JournalAnswer{},
+		&models.Recommendation{},
+		&models.RecommendationAnswer{},
+	)
+	db.AutoMigrate(&models.User{},
+		&models.Lifecycle{},
+		&models.Phase{},
+		&models.Tool{},
+		&models.Reflection{},
+		&models.ReflectionAnswer{},
+		&models.Journal{},
+		&models.JournalAnswer{},
+		&models.Recommendation{},
+		&models.RecommendationAnswer{})
+
 	// Users
 	var users []UserSeed
 	readSeed("database/seeds/users.json", &users)
