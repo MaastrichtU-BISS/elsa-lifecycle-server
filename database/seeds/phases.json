@@ -1,0 +1,38 @@
+[
+  {
+    "Number": 1,
+    "Title": "Problem Definition / Project Scoping",
+    "Description": "prototype",
+    "LifecycleID": 1
+  },
+  {
+    "Number": 2,
+    "Title": "Data Collection / Acquisition",
+    "Description": "prototype",
+    "LifecycleID": 1
+  },
+  {
+    "Number": 3,
+    "Title": "Model development",
+    "Description": "Model training",
+    "LifecycleID": 1
+  },
+  {
+    "Number": 4,
+    "Title": "Product evaluation",
+    "Description": "Testing before release",
+    "LifecycleID": 1
+  },
+  {
+    "Number": 5,
+    "Title": "Product release / commissioning",
+    "Description": "Testing in the hospital environment",
+    "LifecycleID": 1
+  },
+  {
+    "Number": 6,
+    "Title": "Product monitoring",
+    "Description": "Testing the AI product whether it behaves as intended",
+    "LifecycleID": 1
+  }
+]

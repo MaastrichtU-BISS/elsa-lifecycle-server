@@ -1,0 +1,677 @@
+[
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 4
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 5
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 6
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 7
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 12
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 13
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           1,
+        "BinaryEvaluation": 14
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 4
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 5
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 6
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 7
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 12
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           2,
+        "BinaryEvaluation": 13
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 4
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 6
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 12
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           3,
+        "BinaryEvaluation": 14
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           5,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           5,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           5,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           5,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           5,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           5,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           5,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           5,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           9,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           9,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           9,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           9,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           9,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           9,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           9,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           9,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           10,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           10,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           10,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           10,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           10,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           10,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           10,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           10,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           12,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           12,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           12,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           12,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           12,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           12,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           12,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           12,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           4,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           13,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           13,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           13,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           13,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           13,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           13,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           14,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           14,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           14,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           14,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           14,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           14,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           14,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           14,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           19,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           19,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           19,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           19,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           19,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           19,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           19,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           19,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           20,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           20,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           20,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           20,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           20,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           20,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           15,
+        "BinaryEvaluation": 20
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           20,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           23,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           23,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           23,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           23,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           23,
+        "BinaryEvaluation": 8
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           23,
+        "BinaryEvaluation": 9
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           23,
+        "BinaryEvaluation": 10
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           23,
+        "BinaryEvaluation": 11
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           25,
+        "BinaryEvaluation": 0
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           25,
+        "BinaryEvaluation": 1
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           25,
+        "BinaryEvaluation": 2
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           25,
+        "BinaryEvaluation": 3
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           25,
+        "BinaryEvaluation": 4
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           25,
+        "BinaryEvaluation": 5
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           25,
+        "BinaryEvaluation": 6
+    },
+    {
+        "ReflectionID":     1,
+        "ToolID":           25,
+        "BinaryEvaluation": 7
+    }
+]

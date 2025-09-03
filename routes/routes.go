@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -15,8 +16,9 @@ import (
 // buildCORSConfigFromString builds a cors.Config from a comma-separated origins string.
 // It supports simple glob-style wildcards where '*' -> '.*' and '?' -> '.'.
 // Examples:
-//   "http://example.com,https://*.example.org"
-//   "http://localhost:*"
+//
+//	"http://example.com,https://*.example.org"
+//	"http://localhost:*"
 func buildCORSConfigFromString(env string) cors.Config {
 	// defaults
 	if strings.TrimSpace(env) == "" {
@@ -44,12 +46,12 @@ func buildCORSConfigFromString(env string) cors.Config {
 			// convert glob to regexp: escape then replace escaped '*' and '?' back to regex
 			esc := regexp.QuoteMeta(p)
 			esc = strings.ReplaceAll(esc, "\\*", ".*")
-			esc = strings.ReplaceAll(esc, "\\?", ".")
 			re, err := regexp.Compile("^" + esc + "$")
 			if err == nil {
 				regexps = append(regexps, re)
+			} else {
+				log.Printf("Invalid CORS origin pattern '%s': %v", p, err)
 			}
-			// if compile fails, skip the pattern
 		} else {
 			exacts = append(exacts, p)
 		}
