@@ -65,7 +65,11 @@ func CreateRecommendationAnswer(c *gin.Context) {
 	recommendationId, err := strconv.ParseUint(c.PostForm("recommendationId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse recommendationId to uint64"})
+		return
 	}
+	
+	// Parse checked_done boolean field
+	checkedDone := c.PostForm("checked_done") == "true"
 
 	// Handle file upload
 	fileHeader, err := c.FormFile("file")
@@ -90,6 +94,7 @@ func CreateRecommendationAnswer(c *gin.Context) {
 		Form:             form,
 		RecommendationID: uint(recommendationId),
 		File:             filePath, // Save the relative path
+		CheckedDone:      checkedDone,
 	}
 
 	newRecommendationAnswer.UserID = uuid.MustParse(c.GetString("user_id"))
@@ -120,6 +125,9 @@ func EditRecommendationAnswer(c *gin.Context) {
 
 	// Read fields from the form
 	form := c.PostForm("form")
+	
+	// Parse checked_done boolean field
+	checkedDone := c.PostForm("checked_done") == "true"
 
 	// Handle file upload
 	fileHeader, err := c.FormFile("file")
@@ -148,12 +156,15 @@ func EditRecommendationAnswer(c *gin.Context) {
 
 	// Create new recommendation_answer entry
 	newRecommendationAnswer := models.RecommendationAnswer{
-		Form: form,
-		File: filePath, // Save the relative path
+		Form:        form,
+		File:        filePath, // Save the relative path
+		CheckedDone: checkedDone,
 	}
 
 	// Update only the fields sent in the request
 	if err := database.DB.Model(&existingAnswer).
+		// Without Select, checkedDone would not be updated if false
+		Select("form", "file", "checked_done").
 		Updates(&newRecommendationAnswer).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update item"})
 		return
