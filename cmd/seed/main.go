@@ -41,6 +41,7 @@ type ToolSeed struct {
 	Type        string `json:"Type"`
 	FormFile    string `json:"FormFile"`
 	Form        string `json:"-"`
+	FileUpload  bool   `json:"FileUpload"`
 }
 
 func main() {
@@ -129,6 +130,7 @@ func main() {
 			Tags:        t.Tags,
 			Type:        t.Type,
 			Form:        tools[i].Form,
+			FileUpload:  t.FileUpload,
 		})
 	}
 

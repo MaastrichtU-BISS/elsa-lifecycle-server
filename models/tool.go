@@ -6,6 +6,7 @@ type Tool struct {
 	Description string `json:"description" gorm:"type:text"`
 	URL         string `json:"url" gorm:"type:varchar(500)"`
 	Form        string `json:"form"`
+	FileUpload  bool   `json:"file_upload" gorm:"default:false"`
 	Cover       string `json:"cover" gorm:"type:varchar(500)"` // Path or URL to image
 	Tags        string `json:"tags"`                           // Comma-separated tags
 	Type        string `json:"type"`                           // Comma-separated tags
