@@ -14,7 +14,8 @@
     "URL": "https://realkm.com/wp-content/uploads/2023/05/Problem-Framing-Canvas-Handbook.pdf",
     "Cover": "",
     "Tags": "Problem,Framing",
-    "Type": "Mapping, Tool, Canvas"
+    "Type": "Mapping, Tool, Canvas",
+    "FileUpload": true
   },
   {
     "Title": "Stakeholder Mapping Tool",
@@ -45,7 +46,6 @@
     "Description": "Checklist for ensuring compliance with the General Data Protection Regulation.",
     "URL": "https://gdpr.eu/checklist/",
     "Cover": "",
-    "Tags": "",
     "Type": "Checklist"
   },
   {
@@ -53,191 +53,144 @@
     "Description": "Guidelines for making data Findable, Accessible, Interoperable, and Reusable.",
     "URL": "https://www.go-fair.org/fair-principles/",
     "Cover": "",
-    "Tags": "",
     "Type": "Guidelines"
   },
   {
     "Title": "Datasheets for Datasets",
     "Description": "Standardized documentation approach for datasets.",
     "URL": "https://arxiv.org/abs/1803.09010",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Missing Data Bias Tool",
     "Description": "Tool to assess potential bias introduced by missing data.",
     "URL": "https://arxiv.org/pdf/2406.16846",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Fairlearn",
     "Description": "Toolkit to assess and mitigate fairness issues in machine learning.",
     "URL": "https://fairlearn.org/",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Model Cards",
     "Description": "Templates for transparent reporting of model characteristics.",
     "URL": "https://modelcards.withgoogle.com/about",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "AI Fairness 360",
     "Description": "IBM's toolkit for detecting and mitigating bias in ML models.",
     "URL": "https://research.ibm.com/blog/ai-fairness-360",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "What-If Tool",
     "Description": "Interactive visual tool for exploring ML model performance and fairness.",
     "URL": "https://pair-code.github.io/what-if-tool/",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Algorithm Impact Assessment (Ada Lovelace Institute)",
     "Description": "Framework for assessing the impact of algorithms before deployment (healthcare focus)",
     "URL": "https://www.adalovelaceinstitute.org/resource/aia-user-guide/",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "NIST AI Risk Management Framework",
     "Description": "Framework for managing AI-related risks across the lifecycle.",
     "URL": "https://www.nist.gov/itl/ai-risk-management-framework",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "What is AI transparency? A comprehensive guide",
     "Description": "Guide to improve AI transparency.",
     "URL": "https://www.zendesk.nl/blog/ai-transparency/#",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "AI Impact Assessment (AIIA)",
     "Description": "A tool to set up responsible AI projects.",
     "URL": "https://www.government.nl/documents/publications/2023/03/02/ai-impact-assessment",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Assessment List for Trustworthy Artificial Intelligence (ALTAI)",
     "Description": "The tool supports the actionability the key requirements outlined by the  Ethics Guidelines for Trustworthy Artificial Intelligence (AI)",
     "URL": "https://digital-strategy.ec.europa.eu/en/library/assessment-list-trustworthy-artificial-intelligence-altai-self-assessment",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Data Protection Impact Assessment",
     "Description": "A DPIA is an instrument for mapping the privacy risks of a data processing operation beforehand. ",
     "URL": "https://www.autoriteitpersoonsgegevens.nl/en/themes/basic-gdpr/gdpr-in-practice/data-protection-impact-assessment-dpia",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "The Fairness Handbook",
     "Description": "This book provides an introduction to algorithmic fairness and bias for everyone whose work involves data and/or algorithms. With the Fairness Pipeline, we then offer a step-by-step plan to evaluate a model for biases and to mitigate these problems.",
     "URL": "https://openresearch.amsterdam/en/page/87589/the-fairness-handbook",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Framework for Meaningful Engagement",
     "Description": "Human rights impact assessments of AI systems require meaningful engagement of those most affected. ECNL and SocietyInside have created a Framework aiming to address this need.",
     "URL": "https://ecnl.org/publications/framework-meaningful-engagement-human-rights-impact-assessments-ai",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Data Ethics Decision Aid (DEDA)",
     "Description": "The Data Ethics Decision Aid (DEDA) helps data analysts, project managers and policy makers to recognize ethical issues in data projects, data management and data policies",
     "URL": "https://deda.dataschool.nl/en/",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Data Ethics Guidebook",
     "Description": "this guidebook establishes baseline practices for reducing the risk of causing harm through unethical approaches.",
     "URL": "https://www.betterevaluation.org/sites/default/files/2023-06/FINAL-data-ethics-guidebook.pdf",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Data Ethics toolkit",
     "Description": "the companion toolkit allows the user to capture insights and create feedback loops within your team and community. The toolkit contains stories from the field that capture the real-world experiences of practitioners grappling with how to do evaluation more ethically.",
     "URL": "https://www.betterevaluation.org/sites/default/files/2023-06/FINAL-data-ethics-toolkit.pdf",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Data Ethics Guidelines",
     "Description": "In this booklet you get a set of data ethics principles and guidelines that may help the integration of data ethics in your data processing activities. We present the principles, a detailed questionnaire and a FAQ on data ethics.",
     "URL": "https://dataethics.eu/wp-content/uploads/Dataethics-uk.pdf",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Data Ethics in the Participatory Sciences Toolkit",
     "Description": "The toolkit aims to help project leaders understand their role as data handlers in identifying, satisfying, and/or balancing ethical obligations of a project to participants, partners, science, and society.",
     "URL": "https://participatorysciences.org/resources/data-ethics/",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Data Management Plans tool",
     "Description": "Simplifying data management and sharing plans for researchers and institutions with the DMP Tool’s efficient, best practice-oriented, and compliance-designed approach",
     "URL": "https://dmptool.org/",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Registry of Research Data Repositories ",
     "Description": "re3data.org is a comprehensive registry of research data repositories that is global and covers all research disciplines. You can use re3data to find repositories where you can discover and deposit datasets that support research such as experimental and simulation data; images, sound, and video; surveys and observations; physical samples; laboratory and clinical trial data; software source code; genomic and geospatial data; and more.",
     "URL": "https://www.re3data.org/",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": "Open Access Directory",
     "Description": "The Open Access Directory (OAD) is a compendium of simple factual lists about open access (OA) to science and scholarship, maintained by the OA community at large",
     "URL": "https://oad.simmons.edu/oadwiki/Main_Page",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   },
   {
     "Title": " Protected Access Repositories",
     "Description": "A “PA” (Protected Access) notation may be added to open data badges if sensitive, personal data are available only from an approved third party repository that manages access to data to qualified researchers through a documented process. To be eligible for an open data badge with such a notation, the repository must publicly describe the steps necessary to obtain the data and detailed data documentation (e.g. variable names and allowed values) must be made available publicly.",
     "URL": "https://osf.io/tvyxz/wiki/8.%20Approved%20Protected%20Access%20Repositories/",
-    "Cover": "",
-    "Tags": "",
-    "Type": ""
+    "Cover": ""
   }
 ]

@@ -33,15 +33,15 @@ type PhaseSeed struct {
 }
 
 type ToolSeed struct {
-	Title       string `json:"Title"`
-	Description string `json:"Description"`
-	URL         string `json:"URL"`
-	Cover       string `json:"Cover"`
-	Tags        string `json:"Tags"`
-	Type        string `json:"Type"`
-	FormFile    string `json:"FormFile"`
-	Form        string `json:"-"`
-	FileUpload  bool   `json:"FileUpload"`
+	Title       string  `json:"Title"`
+	Description string  `json:"Description"`
+	URL         string  `json:"URL"`
+	Cover       string  `json:"Cover"`
+	Tags        *string `json:"Tags" gorm:"default:null"`
+	Type        *string `json:"Type" gorm:"default:null"`
+	FormFile    string  `json:"FormFile"`
+	Form        string  `json:"-"`
+	FileUpload  bool    `json:"FileUpload"`
 }
 
 func main() {
