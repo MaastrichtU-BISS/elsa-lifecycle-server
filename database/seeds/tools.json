@@ -6,7 +6,7 @@
     "Cover": "",
     "Tags": "Values,Stakeholders",
     "Type": "Method",
-    "FormFile": "forms/value_sensitive_design.jsonld"
+    "FormFile": "forms/value_sensitive_design.json"
   },
   {
     "Title": "Problem Framing Canvas",
