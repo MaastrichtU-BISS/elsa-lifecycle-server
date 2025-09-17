@@ -1,49 +1,33 @@
 [
   {
-    "Title": "Journal",
-    "Description": "Phase 1 - Problem Definition / Project Scoping",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
     "PhaseID": 1
   },
   {
-    "Title": "Journal",
-    "Description": "Phase 2 - Data Collection / Acquisition",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
     "PhaseID": 2
   },
   {
-    "Title": "Journal",
-    "Description": "Phase 3 - Data Cleaning / Preparation",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
     "PhaseID": 3
   },
   {
-    "Title": "Journal",
-    "Description": "Phase 4 - Modeling / Algorithm Development",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
     "PhaseID": 4
   },
   {
-    "Title": "Journal",
-    "Description": "Phase 5 - Evaluation / Validation",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
     "PhaseID": 5
   },
   {
-    "Title": "Journal",
-    "Description": "Phase 6 - Deployment / Implementation",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
     "PhaseID": 6
   },
   {
-    "Title": "Journal",
-    "Description": "Phase 7 - Monitoring / Maintenance",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
     "PhaseID": 7
   },
   {
-    "Title": "Journal",
-    "Description": "Phase 8 - Documentation / Communication",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
     "PhaseID": 8
   }

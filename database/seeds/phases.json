@@ -2,49 +2,41 @@
   {
     "Number": 1,
     "Title": "Problem Definition / Project Scoping",
-    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 2,
     "Title": "Data Collection / Acquisition",
-    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 3,
     "Title": "Data Cleaning / Preparation",
-    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 4,
     "Title": "Modeling / Algorithm Development",
-    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 5,
     "Title": "Evaluation / Validation",
-    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 6,
     "Title": "Deployment / Implementation",
-    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 7,
     "Title": "Monitoring / Maintenance",
-    "Description": "pending",
     "LifecycleID": 1
   },
   {
     "Number": 8,
     "Title": "Documentation / Communication",
-    "Description": "pending",
     "LifecycleID": 1
   }
 ]
