@@ -21,8 +21,9 @@ type UserSeed struct {
 type LifecycleSeed struct {
 	Title        string `json:"Title"`
 	Description  string `json:"Description"`
-	General      string `json:"General"`
+	Welcome      string `json:"Welcome"`
 	Introduction string `json:"Introduction"`
+	Journal      string `json:"Journal"`
 }
 
 type PhaseSeed struct {
@@ -95,8 +96,9 @@ func main() {
 		db.Create(&models.Lifecycle{
 			Title:        l.Title,
 			Description:  l.Description,
-			General:      l.General,
+			Welcome:      l.Welcome,
 			Introduction: l.Introduction,
+			Journal:      l.Journal,
 		})
 	}
 
