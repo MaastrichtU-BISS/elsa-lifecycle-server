@@ -3363,5 +3363,1360 @@
     "ReflectionID": 2,
     "ToolID": 30,
     "BinaryEvaluation": 30
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 1,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 1,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 1,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 1,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 1,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 1,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 1,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 1,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 3,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 3,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 3,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 3,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 3,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 3,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 3,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 3,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 4,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 5,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 6,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 6,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 6,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 6,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 6,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 6,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 6,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 6,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 7,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 7,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 7,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 7,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 7,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 7,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 7,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 7,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 8,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 8,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 8,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 8,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 8,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 8,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 8,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 8,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 9,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 10,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 11,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 11,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 11,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 11,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 11,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 11,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 11,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 11,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 12,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 7
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 13,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 14,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 14,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 14,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 14,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 14,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 14,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 14,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 14,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 15,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 17,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 17,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 17,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 17,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 17,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 17,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 17,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 17,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 19,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 20,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 21,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 21,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 21,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 21,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 21,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 21,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 21,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 21,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 7
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 22,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 23,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 24,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 25,
+    "BinaryEvaluation": 14
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 5
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 7
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 26,
+    "BinaryEvaluation": 13
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 0
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 1
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 2
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 3
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 4
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 6
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 8
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 9
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 10
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 11
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 12
+  },
+  {
+    "ReflectionID": 3,
+    "ToolID": 27,
+    "BinaryEvaluation": 14
   }
 ]
