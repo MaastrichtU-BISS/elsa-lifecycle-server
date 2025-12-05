@@ -1,42 +1,17 @@
 [
   {
-    "Number": 1,
-    "Title": "Problem Definition / Project Scoping",
+    "Title": "Problem Definition / Stakeholders",
+    "Description": "Before any data is collected or models are built, it's crucial to define the problem space. This stage shapes the project's direction and impact. Early ethical, legal, and societal reflections help ensure that the goals are clear, legitimate, and sensitive to the needs and rights of all stakeholders.",
     "LifecycleID": 1
   },
   {
-    "Number": 2,
     "Title": "Data Collection / Acquisition",
+    "Description": "Gathering data introduces immediate ethical and legal responsibilities. Decisions about what data to collect, from whom, and how, can embed biases or privacy risks into the project from the start. This stage focuses on ensuring data is responsibly sourced and appropriate for the intended purpose.",
     "LifecycleID": 1
   },
   {
-    "Number": 3,
-    "Title": "Data Cleaning / Preparation",
-    "LifecycleID": 1
-  },
-  {
-    "Number": 4,
-    "Title": "Modeling / Algorithm Development",
-    "LifecycleID": 1
-  },
-  {
-    "Number": 5,
-    "Title": "Evaluation / Validation",
-    "LifecycleID": 1
-  },
-  {
-    "Number": 6,
-    "Title": "Deployment / Implementation",
-    "LifecycleID": 1
-  },
-  {
-    "Number": 7,
-    "Title": "Monitoring / Maintenance",
-    "LifecycleID": 1
-  },
-  {
-    "Number": 8,
-    "Title": "Documentation / Communication",
+    "Title": "Documentation / Missing Data",
+    "Description": "Preparing data for modelling involves many invisible choices that can have ethical consequences. Handling missing data, filtering, and normalizing can inadvertently introduce bias or exclude important perspectives. Careful reflection at this stage helps maintain data integrity and fairness.",
     "LifecycleID": 1
   }
 ]
