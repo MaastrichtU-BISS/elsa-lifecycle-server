@@ -20,7 +20,7 @@ func GetLifecyclesByID(c *gin.Context) {
 	var lifecycles models.Lifecycle
 	id := c.Param("id")
 
-	if err := database.DB.Preload("Phases.Reflection").Preload("Phases.Journal").First(&lifecycles, id).Error; err != nil {
+	if err := database.DB.Preload("Phases.Reflections").Preload("Phases.Journal").First(&lifecycles, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
@@ -29,16 +29,16 @@ func GetLifecyclesByID(c *gin.Context) {
 }
 
 // GET lifecycles/:id/phases - Fetch all phases given a lifecycle ID
-func GetPhases(c *gin.Context) {
-	var phases models.Phase
-	id := c.Param("id")
+// func GetPhases(c *gin.Context) {
+// 	var phases models.Phase
+// 	id := c.Param("id")
 
-	if err := database.DB.Preload("Reflection").
-		Where("lifecycle_id = ?", id).
-		Find(&phases).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
-		return
-	}
+// 	if err := database.DB.Preload("Reflections").
+// 		Where("lifecycle_id = ?", id).
+// 		Find(&phases).Error; err != nil {
+// 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, phases)
-}
+// 	c.JSON(http.StatusOK, phases)
+// }
