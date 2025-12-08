@@ -136,14 +136,24 @@ func main() {
 
 	// Reflections (with JSON-LD form)
 	var reflections []struct {
+		FormFile       string `json:"FormFile"`
+		Form           string `json:"Form"`
 		Description    string `json:"Description"`
 		Title          string `json:"Title"`
 		Considerations string `json:"Considerations"`
 		PhaseID        uint   `json:"PhaseID"`
 	}
 	readSeed("database/seeds/reflections.json", &reflections)
-	for _, r := range reflections {
+	for i, r := range reflections {
+		if r.FormFile != "" {
+			formData, err := os.ReadFile(filepath.Join("database/seeds", r.FormFile))
+			if err == nil {
+				reflections[i].Form = string(formData)
+			}
+		}
+
 		db.Create(&models.Reflection{
+			Form:           reflections[i].Form,
 			Description:    r.Description,
 			Title:          r.Title,
 			Considerations: r.Considerations,
@@ -153,10 +163,9 @@ func main() {
 
 	// ReflectionAnswers
 	var reflectionAnswers []struct {
-		AnswerText         string `json:"AnswerText"`
-		GetRecommendations bool   `json:"GetRecommendations"`
-		ReflectionID       uint   `json:"ReflectionID"`
-		UserID             string `json:"UserID"`
+		Form         string `json:"Form"`
+		ReflectionID uint   `json:"ReflectionID"`
+		UserID       string `json:"UserID"`
 	}
 	readSeed("database/seeds/reflection_answers.json", &reflectionAnswers)
 	for _, ra := range reflectionAnswers {
@@ -166,10 +175,9 @@ func main() {
 			continue
 		}
 		db.Create(&models.ReflectionAnswer{
-			GetRecommendations: ra.GetRecommendations,
-			AnswerText:         ra.AnswerText,
-			ReflectionID:       ra.ReflectionID,
-			UserID:             userID,
+			Form:         ra.Form,
+			ReflectionID: ra.ReflectionID,
+			UserID:       userID,
 		})
 	}
 

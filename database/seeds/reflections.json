@@ -2,37 +2,43 @@
   {
     "Title": "Problem Definition",
     "Description": "Can you describe the problem that your project is trying to solve?",
-    "Considerations": "[\"What makes this problem important or worth addressing.\", \"How the problem could be seen from different perspectives (e.g. technical, social, ethical, or organisational).\", \"· Whether reframing the problem might change how you would approach or solve it.\"]",
+    "Considerations": "[\"What makes this problem important or worth addressing.\", \"How the problem could be seen from different perspectives (e.g. technical, social, ethical, or organisational).\", \"Whether reframing the problem might change how you would approach or solve it.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "PhaseID": 1
   },
   {
     "Title": "Stakeholders",
     "Description": "Can you describe the people and groups connected to this project?",
     "Considerations": "[\"Who the key stakeholders are (e.g. users, communities, organisations, policymakers, or others indirectly affected).\", \"How different groups might experience the project’s outcomes differently — both positively and negatively.\", \"Whether any voices or perspectives might be missing.\", \"What kinds of engagement, dialogue, or collaboration could help make the project more inclusive or responsive to stakeholders’ needs.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "PhaseID": 1
   },
   {
     "Title": "Data Collection",
     "Description": "Can you describe your approach to data collection?",
     "Considerations": "[\"How appropriate, legitimate, and transparent your data sources are.\", \"Whether you’re collecting only the data that’s necessary for your purpose (data minimization).\", \"How you ensure that participants or data subjects are treated fairly and respectfully in the process.\", \"Whether the data you’re using could reflect or reinforce structural biases or inequalities.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "PhaseID": 2
   },
   {
     "Title": "Privacy and Consent",
     "Description": "Model building is where technical innovation meets real-world impact. Decisions about features, training data, model types, and trade-offs directly affect fairness, transparency, and safety. Embedding ELSA thinking here helps align the technical system with broader human and societal values.",
     "Considerations": "[\"Whether informed consent has been clearly communicated and genuinely obtained where needed.\", \"How privacy is protected throughout data collection, storage, and sharing.\", \"Whether participants understand how their data will be used and what control they have over it.\", \"Any potential risks of surveillance, tracking, or unintended data exposure — and how these could be mitigated.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "PhaseID": 2
   },
   {
     "Title": "Documentation",
     "Description": "Can you describe how you will manage and document your data?",
     "Considerations": "[\"What kinds of preprocessing decisions you’ve made (e.g., handling missing data, imputation, filtering, normalization).\", \"Whether these decisions are clearly documented and can be explained or defended.\", \"How you ensure that data transformations don’t introduce bias or distort results.\", \"Whether your documentation would allow others to replicate or audit your process with confidence.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "PhaseID": 3
   },
   {
     "Title": "Missing Data",
     "Description": "Can you describe about how bias might appear in your data preparation?",
     "Considerations": "[\"Whether missing or incomplete data could reflect hidden biases or structural inequalities.\", \"If any groups are disproportionately affected by how data is cleaned, filtered, or excluded.\", \"How sensitive variables (e.g., race, gender, location, income) are identified, used, or protected.\", \"What checks or safeguards you have in place to ensure fairness and transparency in these steps.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "PhaseID": 3
   }
 ]
