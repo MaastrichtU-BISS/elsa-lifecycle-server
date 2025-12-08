@@ -12,10 +12,15 @@ import (
 func GetRecommendations(c *gin.Context) {
 	var recommendations []models.Recommendation
 	reflectionId := c.Param("reflectionId")
-	binaryEvaluation := c.Query("binaryEvaluation")
+	getRecommendations := c.Query("getRecommendations") == "true"
+
+	if !getRecommendations {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "getRecommendations query parameter must be 'true'"})
+		return
+	}
 
 	if err := database.DB.Preload("Tool").
-		Where("reflection_id = ? AND binary_evaluation = ?", reflectionId, binaryEvaluation).
+		Where("reflection_id = ?", reflectionId).
 		Find(&recommendations).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Items not found"})
 		return
