@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"server/database"
 	"server/models"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -56,6 +58,7 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	var lifecycle models.Lifecycle
 	if err := database.DB.
 		Preload("Phases.Reflections").
+		Preload("Phases.Journal").
 		Where("id = ?", lifecycleID).
 		First(&lifecycle).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Lifecycle not found"})
@@ -64,15 +67,39 @@ func GenerateLifecyclePDF(c *gin.Context) {
 
 	// For each reflection, get the user's answer and recommendations
 	type ReflectionData struct {
-		Reflection      models.Reflection
-		Answer          *models.ReflectionAnswer
-		Recommendations []models.Recommendation
+		Reflection            models.Reflection
+		Answer                *models.ReflectionAnswer
+		Recommendations       []models.Recommendation
+		RecommendationAnswers map[uint]*models.RecommendationAnswer
 	}
 
-	phaseDataMap := make(map[uint][]ReflectionData)
+	type PhaseData struct {
+		Phase              models.Phase
+		JournalAnswer      *models.JournalAnswer
+		ReflectionDataList []ReflectionData
+	}
+
+	var phaseDataList []PhaseData
 
 	for _, phase := range lifecycle.Phases {
 		var reflectionDataList []ReflectionData
+
+		// Get user's journal answer for this phase
+		var journalAnswer models.JournalAnswer
+		var journalAnswerPtr *models.JournalAnswer
+		if phase.Journal != nil {
+			fmt.Printf("DEBUG: Phase %d has Journal ID: %d\n", phase.ID, phase.Journal.ID)
+			if err := database.DB.
+				Where("journal_id = ? AND user_id = ?", phase.Journal.ID, userUUID).
+				First(&journalAnswer).Error; err == nil {
+				journalAnswerPtr = &journalAnswer
+				fmt.Printf("DEBUG: Found JournalAnswer ID: %d, Form: %s\n", journalAnswer.ID, journalAnswer.Form[:50])
+			} else {
+				fmt.Printf("DEBUG: No JournalAnswer found for journal_id=%d user_id=%s, error: %v\n", phase.Journal.ID, userUUID, err)
+			}
+		} else {
+			fmt.Printf("DEBUG: Phase %d has no Journal\n", phase.ID)
+		}
 
 		for _, reflection := range phase.Reflections {
 			// Get user's answer to this reflection
@@ -93,14 +120,30 @@ func GenerateLifecyclePDF(c *gin.Context) {
 				Where("reflection_id = ?", reflection.ID).
 				Find(&recommendations)
 
+			// Get user's recommendation answers that are checked done
+			recommendationAnswers := make(map[uint]*models.RecommendationAnswer)
+			for _, rec := range recommendations {
+				var recAnswer models.RecommendationAnswer
+				if err := database.DB.
+					Where("recommendation_id = ? AND user_id = ? AND checked_done = ?", rec.ID, userUUID, true).
+					First(&recAnswer).Error; err == nil {
+					recommendationAnswers[rec.ID] = &recAnswer
+				}
+			}
+
 			reflectionDataList = append(reflectionDataList, ReflectionData{
-				Reflection:      reflection,
-				Answer:          answerPtr,
-				Recommendations: recommendations,
+				Reflection:            reflection,
+				Answer:                answerPtr,
+				Recommendations:       recommendations,
+				RecommendationAnswers: recommendationAnswers,
 			})
 		}
 
-		phaseDataMap[phase.ID] = reflectionDataList
+		phaseDataList = append(phaseDataList, PhaseData{
+			Phase:              phase,
+			JournalAnswer:      journalAnswerPtr,
+			ReflectionDataList: reflectionDataList,
+		})
 	}
 
 	// Create PDF
@@ -109,19 +152,19 @@ func GenerateLifecyclePDF(c *gin.Context) {
 
 	// Title
 	pdf.SetFont("Arial", "B", 24)
-	pdf.CellFormat(0, 15, lifecycle.Title, "", 1, "C", false, 0, "")
+	pdf.CellFormat(0, 15, stripMarkdown(lifecycle.Title), "", 1, "C", false, 0, "")
 	pdf.Ln(5)
 
 	// Description
 	if lifecycle.Description != "" {
 		pdf.SetFont("Arial", "", 12)
-		pdf.MultiCell(0, 6, lifecycle.Description, "", "L", false)
+		renderMarkdownText(pdf, lifecycle.Description, 12)
 		pdf.Ln(3)
 	}
 
-	// Username
+	// Username (without "User:" prefix)
 	pdf.SetFont("Arial", "I", 11)
-	pdf.CellFormat(0, 6, fmt.Sprintf("User: %s", user.Email), "", 1, "L", false, 0, "")
+	pdf.CellFormat(0, 6, user.Email, "", 1, "L", false, 0, "")
 
 	// Date and time of generation
 	pdf.CellFormat(0, 6, fmt.Sprintf("Generated: %s", time.Now().Format("January 2, 2006 at 3:04 PM")), "", 1, "L", false, 0, "")
@@ -131,8 +174,7 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	if lifecycle.Welcome != "" {
 		pdf.SetFont("Arial", "B", 16)
 		pdf.CellFormat(0, 10, "Welcome", "", 1, "L", false, 0, "")
-		pdf.SetFont("Arial", "", 12)
-		pdf.MultiCell(0, 6, lifecycle.Welcome, "", "L", false)
+		renderMarkdownText(pdf, lifecycle.Welcome, 12)
 		pdf.Ln(5)
 	}
 
@@ -140,74 +182,152 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	if lifecycle.Introduction != "" {
 		pdf.SetFont("Arial", "B", 16)
 		pdf.CellFormat(0, 10, "Introduction", "", 1, "L", false, 0, "")
-		pdf.SetFont("Arial", "", 12)
-		pdf.MultiCell(0, 6, lifecycle.Introduction, "", "L", false)
+		renderMarkdownText(pdf, lifecycle.Introduction, 12)
 		pdf.Ln(8)
 	}
 
 	// Phases
-	for _, phase := range lifecycle.Phases {
+	for _, phaseData := range phaseDataList {
+		// Check page break before phase title
+		if pdf.GetY() > 250 {
+			pdf.AddPage()
+		}
+
 		// Phase Title
 		pdf.SetFont("Arial", "B", 18)
-		pdf.CellFormat(0, 10, phase.Title, "", 1, "L", false, 0, "")
+		pdf.CellFormat(0, 10, cleanText(stripMarkdown(phaseData.Phase.Title)), "", 1, "L", false, 0, "")
 		pdf.Ln(2)
 
 		// Phase Description
-		if phase.Description != "" {
-			pdf.SetFont("Arial", "", 12)
-			pdf.MultiCell(0, 6, phase.Description, "", "L", false)
+		if phaseData.Phase.Description != "" {
+			renderMarkdownText(pdf, phaseData.Phase.Description, 12)
 			pdf.Ln(5)
 		}
 
 		// Reflections for this phase
-		reflectionDataList := phaseDataMap[phase.ID]
-		for _, reflData := range reflectionDataList {
+		for _, reflData := range phaseData.ReflectionDataList {
+			// Check page break before reflection title
+			if pdf.GetY() > 250 {
+				pdf.AddPage()
+			}
 			// Reflection Title
 			pdf.SetFont("Arial", "B", 14)
-			pdf.CellFormat(0, 8, reflData.Reflection.Title, "", 1, "L", false, 0, "")
+			pdf.CellFormat(0, 8, cleanText(stripMarkdown(reflData.Reflection.Title)), "", 1, "L", false, 0, "")
 			pdf.Ln(1)
 
 			// Reflection Description
 			if reflData.Reflection.Description != "" {
-				pdf.SetFont("Arial", "", 11)
-				pdf.MultiCell(0, 5, reflData.Reflection.Description, "", "L", false)
+				renderMarkdownText(pdf, reflData.Reflection.Description, 11)
 				pdf.Ln(2)
 			}
 
-			// Consideration
+			// Considerations
 			if reflData.Reflection.Considerations != "" {
-				pdf.SetFont("Arial", "I", 11)
-				pdf.MultiCell(0, 5, fmt.Sprintf("Considerations: %s", reflData.Reflection.Considerations), "", "L", false)
+				// Check page break
+				if pdf.GetY() > 250 {
+					pdf.AddPage()
+				}
+
+				pdf.SetFont("Arial", "B", 11)
+				pdf.CellFormat(0, 6, "In your answer, you might consider:", "", 1, "L", false, 0, "")
+
+				// Parse considerations as JSON array
+				var considerations []string
+				if err := json.Unmarshal([]byte(reflData.Reflection.Considerations), &considerations); err == nil {
+					pdf.SetFont("Arial", "", 11)
+					for _, consideration := range considerations {
+						pdf.MultiCell(0, 5, fmt.Sprintf("  - %s", cleanText(stripMarkdown(consideration))), "", "L", false)
+					}
+				} else {
+					// Fallback if not JSON, just render as text
+					renderMarkdownText(pdf, reflData.Reflection.Considerations, 11)
+				}
 				pdf.Ln(2)
 			}
 
 			// Answer
 			if reflData.Answer != nil && reflData.Answer.Form != "" {
-				pdf.SetFont("Arial", "", 11)
-				pdf.MultiCell(0, 5, fmt.Sprintf("Answer: %s", reflData.Answer.Form), "", "L", false)
-				pdf.Ln(3)
+				// Check page break
+				if pdf.GetY() > 250 {
+					pdf.AddPage()
+				}
+
+				pdf.SetFont("Arial", "B", 11)
+				pdf.CellFormat(0, 6, "Answer:", "", 1, "L", false, 0, "")
+				// Parse and render reflection answer fields (without showing titles)
+				renderFields(pdf, reflData.Answer.Form, 11, []FieldConfig{
+					{Key: "free_text", Title: "", Style: ""},
+					{Key: "get_recommendations", Title: "", Style: "I"},
+				}, false)
+				pdf.Ln(4)
 			}
 
-			// Recommendations
-			if len(reflData.Recommendations) > 0 {
-				pdf.SetFont("Arial", "B", 12)
-				pdf.CellFormat(0, 6, "Recommendations:", "", 1, "L", false, 0, "")
+			// Recommended Tools Used (only those checked done by user)
+			var usedRecommendations []models.Recommendation
+			for _, rec := range reflData.Recommendations {
+				if _, exists := reflData.RecommendationAnswers[rec.ID]; exists {
+					usedRecommendations = append(usedRecommendations, rec)
+				}
+			}
 
-				for _, rec := range reflData.Recommendations {
+			if len(usedRecommendations) > 0 {
+				// Check page break
+				if pdf.GetY() > 250 {
+					pdf.AddPage()
+				}
+
+				pdf.SetFont("Arial", "B", 12)
+				pdf.CellFormat(0, 6, "Recommended Tools Used:", "", 1, "L", false, 0, "")
+
+				for _, rec := range usedRecommendations {
 					pdf.SetFont("Arial", "", 10)
-					recText := fmt.Sprintf("- %s", rec.Tool.Title)
+					// Title and description in black
+					recText := fmt.Sprintf("  - %s", cleanText(stripMarkdown(rec.Tool.Title)))
 					if rec.Tool.Description != "" {
-						recText += fmt.Sprintf(": %s", rec.Tool.Description)
-					}
-					if rec.Tool.URL != "" {
-						recText += fmt.Sprintf(" (%s)", rec.Tool.URL)
+						recText += fmt.Sprintf(": %s", cleanText(stripMarkdown(rec.Tool.Description)))
 					}
 					pdf.MultiCell(0, 5, recText, "", "L", false)
+
+					// URL in light blue if present
+					if rec.Tool.URL != "" {
+						pdf.SetTextColor(70, 130, 180) // Light blue color (Steel Blue)
+						pdf.SetFont("Arial", "U", 10)  // Underlined
+						pdf.SetX(pdf.GetX() + 5)       // Indent 5mm from left margin
+						pdf.MultiCell(0, 5, rec.Tool.URL, "", "L", false)
+						pdf.SetTextColor(0, 0, 0)    // Reset to black
+						pdf.SetFont("Arial", "", 10) // Reset font
+					}
 				}
-				pdf.Ln(2)
+				pdf.Ln(4)
 			}
 
 			pdf.Ln(4)
+		}
+
+		// Journal Answer at the end of the phase
+		if phaseData.JournalAnswer != nil && phaseData.JournalAnswer.Form != "" {
+			fmt.Printf("DEBUG: Rendering Journal for Phase, JournalAnswer ID: %d, Form length: %d\n", phaseData.JournalAnswer.ID, len(phaseData.JournalAnswer.Form))
+			// Check page break - only break if less than 40mm remaining on page
+			if pdf.GetY() > 257 {
+				pdf.AddPage()
+			}
+
+			pdf.SetFont("Arial", "B", 14)
+			pdf.CellFormat(0, 8, "Journal", "", 1, "L", false, 0, "")
+			pdf.Ln(1)
+			// Parse and render journal fields (with titles shown)
+			renderFields(pdf, phaseData.JournalAnswer.Form, 11, []FieldConfig{
+				{Key: "actions-decisions", Title: "Actions / Decisions", Style: ""},
+				{Key: "guidelines-tools-methods", Title: "Guidelines / Tools / Methods Used", Style: ""},
+				{Key: "notes-questions", Title: "Notes / Open Questions", Style: ""},
+			}, true)
+			pdf.Ln(4)
+		} else {
+			if phaseData.JournalAnswer == nil {
+				fmt.Printf("DEBUG: JournalAnswer is nil for this phase\n")
+			} else {
+				fmt.Printf("DEBUG: JournalAnswer.Form is empty for this phase\n")
+			}
 		}
 
 		pdf.Ln(3)
@@ -228,6 +348,131 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	c.Header("Content-Type", "application/pdf")
 	c.Data(http.StatusOK, "application/pdf", buf.Bytes())
+}
+
+// stripMarkdown removes basic markdown syntax for cleaner PDF output
+func stripMarkdown(text string) string {
+	// Remove markdown headers
+	text = strings.ReplaceAll(text, "### ", "")
+	text = strings.ReplaceAll(text, "## ", "")
+	text = strings.ReplaceAll(text, "# ", "")
+
+	// Remove bold/italic markers - be thorough
+	text = strings.ReplaceAll(text, "**", "")
+	text = strings.ReplaceAll(text, "__", "")
+	// Only remove single * and _ if they're markers, not part of text
+	text = strings.ReplaceAll(text, " * ", " ")
+	text = strings.ReplaceAll(text, " _ ", " ")
+
+	return strings.TrimSpace(text)
+}
+
+// cleanText removes problematic UTF-8 characters
+func cleanText(text string) string {
+	// Replace common UTF-8 encoding issues using hex codes
+	replacements := map[string]string{
+		"\xe2\x80\x99": "'",   // Smart apostrophe
+		"\xe2\x80\x9c": "\"",  // Left double quote
+		"\xe2\x80\x9d": "\"",  // Right double quote
+		"\xe2\x80\x93": "-",   // En dash
+		"\xe2\x80\x94": "-",   // Em dash
+		"\xe2\x80\xa6": "...", // Ellipsis
+		"\xc2\xa0":     " ",   // Non-breaking space
+		"\xc2":         "",    // Stray Â character
+	}
+
+	for old, new := range replacements {
+		text = strings.ReplaceAll(text, old, new)
+	}
+
+	return text
+}
+
+// FieldConfig defines a field to extract from form JSON
+type FieldConfig struct {
+	Key   string // JSON key to extract
+	Title string // Optional title to display (for journal fields)
+	Style string // Font style: "", "I" for italic, "B" for bold
+}
+
+// renderFields parses JSON and extracts specified fields, optionally showing titles
+func renderFields(pdf *gofpdf.Fpdf, formJSON string, fontSize float64, fields []FieldConfig, showTitles bool) {
+	var formData map[string]interface{}
+	if err := json.Unmarshal([]byte(formJSON), &formData); err != nil {
+		// If not valid JSON, render as plain text
+		pdf.SetFont("Arial", "", fontSize)
+		pdf.MultiCell(0, 5, cleanText(stripMarkdown(formJSON)), "", "L", false)
+		return
+	}
+
+	for _, field := range fields {
+		// Handle both flat string values and nested @value structure
+		var value string
+		var ok bool
+
+		// First try to get as string (for reflection answers)
+		if value, ok = formData[field.Key].(string); !ok {
+			// Try to get as object with @value (for journal answers)
+			if fieldData, ok := formData[field.Key].(map[string]interface{}); ok {
+				value, ok = fieldData["@value"].(string)
+			}
+		}
+
+		if ok && value != "" {
+			// Render title in bold if showTitles is true
+			if showTitles && field.Title != "" {
+				pdf.SetFont("Arial", "B", fontSize)
+				pdf.MultiCell(0, 6, field.Title, "", "L", false)
+				pdf.Ln(1)
+			}
+
+			// Render value with specified style
+			style := field.Style
+			if style == "" {
+				style = ""
+			}
+			pdf.SetFont("Arial", style, fontSize)
+			pdf.MultiCell(0, 5, cleanText(stripMarkdown(value)), "", "L", false)
+			pdf.SetFont("Arial", "", fontSize) // Reset to normal
+			pdf.Ln(4)
+		}
+	}
+}
+
+// renderMarkdownText renders text with basic markdown parsing
+func renderMarkdownText(pdf *gofpdf.Fpdf, text string, fontSize float64) {
+	lines := strings.Split(text, "\n")
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			pdf.Ln(3)
+			continue
+		}
+
+		// Handle headers
+		if strings.HasPrefix(line, "### ") {
+			pdf.SetFont("Arial", "B", fontSize+2)
+			pdf.MultiCell(0, 5, strings.TrimPrefix(line, "### "), "", "L", false)
+			pdf.SetFont("Arial", "", fontSize)
+		} else if strings.HasPrefix(line, "## ") {
+			pdf.SetFont("Arial", "B", fontSize+4)
+			pdf.MultiCell(0, 6, strings.TrimPrefix(line, "## "), "", "L", false)
+			pdf.SetFont("Arial", "", fontSize)
+		} else if strings.HasPrefix(line, "# ") {
+			pdf.SetFont("Arial", "B", fontSize+6)
+			pdf.MultiCell(0, 7, strings.TrimPrefix(line, "# "), "", "L", false)
+			pdf.SetFont("Arial", "", fontSize)
+		} else if strings.HasPrefix(line, "- ") || strings.HasPrefix(line, "* ") {
+			// Bullet points - strip ** from them
+			pdf.SetFont("Arial", "", fontSize)
+			pdf.MultiCell(0, 5, cleanText("  "+stripMarkdown(line)), "", "L", false)
+		} else {
+			// Regular text - strip markdown and clean
+			pdf.SetFont("Arial", "", fontSize)
+			pdf.MultiCell(0, 5, cleanText(stripMarkdown(line)), "", "L", false)
+		}
+	}
 }
 
 // GET lifecycles/:id/phases - Fetch all phases given a lifecycle ID
