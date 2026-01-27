@@ -7,5 +7,4 @@ type Phase struct {
 	LifecycleID uint         `json:"lifecycleId"`                             // Foreign key to the lifecycle
 	Lifecycle   Lifecycle    `gorm:"foreignKey:LifecycleID"`                  // Relationship to the lifecycle
 	Reflections []Reflection `gorm:"foreignKey:PhaseID"`                      // Relationship to reflections
-	Journal     *Journal
 }

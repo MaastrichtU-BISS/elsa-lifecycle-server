@@ -183,9 +183,10 @@ func main() {
 
 	// Journals (with JSON-LD form)
 	var journals []struct {
-		FormFile string `json:"FormFile"`
-		Form     string `json:"-"`
-		PhaseID  uint   `json:"PhaseID"`
+		FormFile     string `json:"FormFile"`
+		Form         string `json:"-"`
+		Title        string `json:"Title"`
+		ReflectionID uint   `json:"ReflectionID"`
 	}
 	readSeed("database/seeds/journals.json", &journals)
 	for i, j := range journals {
@@ -196,8 +197,9 @@ func main() {
 			}
 		}
 		db.Create(&models.Journal{
-			Form:    journals[i].Form,
-			PhaseID: j.PhaseID,
+			Form:         journals[i].Form,
+			Title:        j.Title,
+			ReflectionID: j.ReflectionID,
 		})
 	}
 

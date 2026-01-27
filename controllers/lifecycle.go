@@ -27,7 +27,7 @@ func GetLifecyclesByID(c *gin.Context) {
 	var lifecycles models.Lifecycle
 	id := c.Param("id")
 
-	if err := database.DB.Preload("Phases.Reflections").Preload("Phases.Journal").First(&lifecycles, id).Error; err != nil {
+	if err := database.DB.Preload("Phases.Reflections").Preload("Phases.Reflections.Journal").First(&lifecycles, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
@@ -58,7 +58,7 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	var lifecycle models.Lifecycle
 	if err := database.DB.
 		Preload("Phases.Reflections").
-		Preload("Phases.Journal").
+		Preload("Phases.Reflections.Journal").
 		Where("id = ?", lifecycleID).
 		First(&lifecycle).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Lifecycle not found"})
@@ -69,13 +69,13 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	type ReflectionData struct {
 		Reflection            models.Reflection
 		Answer                *models.ReflectionAnswer
+		JournalAnswer         *models.JournalAnswer
 		Recommendations       []models.Recommendation
 		RecommendationAnswers map[uint]*models.RecommendationAnswer
 	}
 
 	type PhaseData struct {
 		Phase              models.Phase
-		JournalAnswer      *models.JournalAnswer
 		ReflectionDataList []ReflectionData
 	}
 
@@ -83,23 +83,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 
 	for _, phase := range lifecycle.Phases {
 		var reflectionDataList []ReflectionData
-
-		// Get user's journal answer for this phase
-		var journalAnswer models.JournalAnswer
-		var journalAnswerPtr *models.JournalAnswer
-		if phase.Journal != nil {
-			fmt.Printf("DEBUG: Phase %d has Journal ID: %d\n", phase.ID, phase.Journal.ID)
-			if err := database.DB.
-				Where("journal_id = ? AND user_id = ?", phase.Journal.ID, userUUID).
-				First(&journalAnswer).Error; err == nil {
-				journalAnswerPtr = &journalAnswer
-				fmt.Printf("DEBUG: Found JournalAnswer ID: %d, Form: %s\n", journalAnswer.ID, journalAnswer.Form[:50])
-			} else {
-				fmt.Printf("DEBUG: No JournalAnswer found for journal_id=%d user_id=%s, error: %v\n", phase.Journal.ID, userUUID, err)
-			}
-		} else {
-			fmt.Printf("DEBUG: Phase %d has no Journal\n", phase.ID)
-		}
 
 		for _, reflection := range phase.Reflections {
 			// Get user's answer to this reflection
@@ -111,6 +94,17 @@ func GenerateLifecyclePDF(c *gin.Context) {
 			var answerPtr *models.ReflectionAnswer
 			if answerErr == nil {
 				answerPtr = &answer
+			}
+
+			// Get user's journal answer for this reflection
+			var journalAnswer models.JournalAnswer
+			var journalAnswerPtr *models.JournalAnswer
+			if reflection.Journal != nil {
+				if err := database.DB.
+					Where("journal_id = ? AND user_id = ?", reflection.Journal.ID, userUUID).
+					First(&journalAnswer).Error; err == nil {
+					journalAnswerPtr = &journalAnswer
+				}
 			}
 
 			// Get recommendations for this reflection
@@ -134,6 +128,7 @@ func GenerateLifecyclePDF(c *gin.Context) {
 			reflectionDataList = append(reflectionDataList, ReflectionData{
 				Reflection:            reflection,
 				Answer:                answerPtr,
+				JournalAnswer:         journalAnswerPtr,
 				Recommendations:       recommendations,
 				RecommendationAnswers: recommendationAnswers,
 			})
@@ -141,7 +136,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 
 		phaseDataList = append(phaseDataList, PhaseData{
 			Phase:              phase,
-			JournalAnswer:      journalAnswerPtr,
 			ReflectionDataList: reflectionDataList,
 		})
 	}
@@ -283,9 +277,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 					pdf.SetFont("Arial", "", 10)
 					// Title and description in black
 					recText := fmt.Sprintf("  - %s", cleanText(stripMarkdown(rec.Tool.Title)))
-					if rec.Tool.Description != "" {
-						recText += fmt.Sprintf(": %s", cleanText(stripMarkdown(rec.Tool.Description)))
-					}
 					pdf.MultiCell(0, 5, recText, "", "L", false)
 
 					// URL in light blue if present
@@ -301,33 +292,25 @@ func GenerateLifecyclePDF(c *gin.Context) {
 				pdf.Ln(4)
 			}
 
-			pdf.Ln(4)
-		}
+			// Journal Answer after each reflection (if it has one)
+			if reflData.JournalAnswer != nil && reflData.JournalAnswer.Form != "" {
+				// Check page break - only break if less than 40mm remaining on page
+				if pdf.GetY() > 257 {
+					pdf.AddPage()
+				}
 
-		// Journal Answer at the end of the phase
-		if phaseData.JournalAnswer != nil && phaseData.JournalAnswer.Form != "" {
-			fmt.Printf("DEBUG: Rendering Journal for Phase, JournalAnswer ID: %d, Form length: %d\n", phaseData.JournalAnswer.ID, len(phaseData.JournalAnswer.Form))
-			// Check page break - only break if less than 40mm remaining on page
-			if pdf.GetY() > 257 {
-				pdf.AddPage()
+				pdf.SetFont("Arial", "B", 14)
+				pdf.CellFormat(0, 8, "Journal", "", 1, "L", false, 0, "")
+				pdf.Ln(1)
+				// Parse and render journal fields (with titles shown)
+				renderFields(pdf, reflData.JournalAnswer.Form, 11, []FieldConfig{
+					{Key: "actions-decisions", Title: "Actions / Decisions", Style: ""},
+					{Key: "other-considerations", Title: "Other Considerations", Style: ""},
+				}, true)
+				pdf.Ln(4)
 			}
 
-			pdf.SetFont("Arial", "B", 14)
-			pdf.CellFormat(0, 8, "Journal", "", 1, "L", false, 0, "")
-			pdf.Ln(1)
-			// Parse and render journal fields (with titles shown)
-			renderFields(pdf, phaseData.JournalAnswer.Form, 11, []FieldConfig{
-				{Key: "actions-decisions", Title: "Actions / Decisions", Style: ""},
-				{Key: "guidelines-tools-methods", Title: "Guidelines / Tools / Methods Used", Style: ""},
-				{Key: "notes-questions", Title: "Notes / Open Questions", Style: ""},
-			}, true)
 			pdf.Ln(4)
-		} else {
-			if phaseData.JournalAnswer == nil {
-				fmt.Printf("DEBUG: JournalAnswer is nil for this phase\n")
-			} else {
-				fmt.Printf("DEBUG: JournalAnswer.Form is empty for this phase\n")
-			}
 		}
 
 		pdf.Ln(3)

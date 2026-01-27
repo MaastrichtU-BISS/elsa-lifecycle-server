@@ -1,8 +1,9 @@
 package models
 
 type Journal struct {
-	ID      uint   `json:"id" gorm:"primaryKey;autoIncrement"`
-	Form    string `json:"form"`
-	PhaseID uint   `json:"phaseId"`
-	Phase   Phase  `gorm:"foreignKey:PhaseID"`
+	ID           uint       `json:"id" gorm:"primaryKey;autoIncrement"`
+	Title        string     `json:"title" gorm:"type:varchar(255)"`
+	Form         string     `json:"form"`
+	ReflectionID uint       `json:"reflectionId"`
+	Reflection   Reflection `gorm:"foreignKey:ReflectionID"`
 }

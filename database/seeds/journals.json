@@ -1,34 +1,32 @@
 [
   {
+    "Title": "Journal",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
-    "PhaseID": 1
+    "ReflectionID": 1
   },
   {
+    "Title": "Journal",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
-    "PhaseID": 2
+    "ReflectionID": 2
   },
   {
+    "Title": "Journal",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
-    "PhaseID": 3
+    "ReflectionID": 3
   },
   {
+    "Title": "Journal",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
-    "PhaseID": 4
+    "ReflectionID": 4
   },
   {
+    "Title": "Journal",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
-    "PhaseID": 5
+    "ReflectionID": 5
   },
   {
+    "Title": "Journal",
     "FormFile": "forms/journals/generic_journal_form.jsonld",
-    "PhaseID": 6
-  },
-  {
-    "FormFile": "forms/journals/generic_journal_form.jsonld",
-    "PhaseID": 7
-  },
-  {
-    "FormFile": "forms/journals/generic_journal_form.jsonld",
-    "PhaseID": 8
+    "ReflectionID": 6
   }
 ]
