@@ -68,6 +68,7 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	type ReflectionData struct {
 		Reflection            models.Reflection
 		Answer                *models.ReflectionAnswer
+		FurtherAnswer         *models.FurtherReflectionAnswer
 		Recommendations       []models.Recommendation
 		RecommendationAnswers map[uint]*models.RecommendationAnswer
 	}
@@ -94,6 +95,15 @@ func GenerateLifecyclePDF(c *gin.Context) {
 				answerPtr = &answer
 			}
 
+			// Get user's further reflection answer
+			var furtherAnswer models.FurtherReflectionAnswer
+			var furtherAnswerPtr *models.FurtherReflectionAnswer
+			if err := database.DB.
+				Where("reflection_id = ? AND user_id = ?", reflection.ID, userUUID).
+				First(&furtherAnswer).Error; err == nil {
+				furtherAnswerPtr = &furtherAnswer
+			}
+
 			// Get recommendations for this reflection
 			var recommendations []models.Recommendation
 			database.DB.
@@ -115,6 +125,7 @@ func GenerateLifecyclePDF(c *gin.Context) {
 			reflectionDataList = append(reflectionDataList, ReflectionData{
 				Reflection:            reflection,
 				Answer:                answerPtr,
+				FurtherAnswer:         furtherAnswerPtr,
 				Recommendations:       recommendations,
 				RecommendationAnswers: recommendationAnswers,
 			})
@@ -232,7 +243,7 @@ func GenerateLifecyclePDF(c *gin.Context) {
 					pdf.AddPage()
 				}
 
-				pdf.SetFont("Arial", "B", 11)
+				pdf.SetFont("Arial", "B", 12)
 				pdf.CellFormat(0, 6, "Answer:", "", 1, "L", false, 0, "")
 				// Parse and render reflection answer fields (without showing titles)
 				renderFields(pdf, reflData.Answer.Form, 11, []FieldConfig{
@@ -275,6 +286,21 @@ func GenerateLifecyclePDF(c *gin.Context) {
 						pdf.SetFont("Arial", "", 10) // Reset font
 					}
 				}
+				pdf.Ln(4)
+			}
+
+			// Further Reflections
+			if reflData.FurtherAnswer != nil && reflData.FurtherAnswer.Form != "" {
+				// Check page break
+				if pdf.GetY() > 250 {
+					pdf.AddPage()
+				}
+
+				pdf.SetFont("Arial", "B", 12)
+				pdf.CellFormat(0, 6, "Further Reflections", "", 1, "L", false, 0, "")
+				renderFields(pdf, reflData.FurtherAnswer.Form, 11, []FieldConfig{
+					{Key: "further-reflection", Title: "", Style: ""},
+				}, false)
 				pdf.Ln(4)
 			}
 
