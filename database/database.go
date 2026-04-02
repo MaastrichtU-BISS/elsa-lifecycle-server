@@ -33,6 +33,7 @@ func ConnectDB() {
 		&models.Phase{},
 		&models.Reflection{},
 		&models.ReflectionAnswer{},
+		&models.FurtherReflectionAnswer{},
 		&models.Tool{},
 		&models.Recommendation{},
 		&models.RecommendationAnswer{},

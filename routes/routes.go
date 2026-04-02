@@ -128,6 +128,12 @@ func SetupRouter() *gin.Engine {
 		protected.POST("/reflectionAnswers", controllers.CreateReflectionAnswer)
 		protected.PUT("/reflectionAnswers/:id/edit", controllers.EditReflectionAnswer)
 
+		// FurtherReflectionAnswer routes
+		protected.GET("/furtherReflectionAnswers/:id", controllers.GetFurtherReflectionAnswerByID)
+		protected.GET("/furtherReflectionAnswers", controllers.GetFurtherReflectionAnswerByUserIdAndReflectionID)
+		protected.POST("/furtherReflectionAnswers", controllers.CreateFurtherReflectionAnswer)
+		protected.PUT("/furtherReflectionAnswers/:id/edit", controllers.EditFurtherReflectionAnswer)
+
 		// RecommendationAnswer routes
 		protected.GET("/recommendationAnswers/:id", controllers.GetRecommendationAnswerByID)
 		protected.GET("/recommendationAnswers", controllers.GetRecommendationAnswerByUserIdAndRecommendationID)

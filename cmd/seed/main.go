@@ -56,6 +56,7 @@ func main() {
 		&models.Tool{},
 		&models.Reflection{},
 		&models.ReflectionAnswer{},
+		&models.FurtherReflectionAnswer{},
 		&models.Recommendation{},
 		&models.RecommendationAnswer{},
 	)
@@ -65,6 +66,7 @@ func main() {
 		&models.Tool{},
 		&models.Reflection{},
 		&models.ReflectionAnswer{},
+		&models.FurtherReflectionAnswer{},
 		&models.Recommendation{},
 		&models.RecommendationAnswer{})
 
@@ -132,12 +134,14 @@ func main() {
 
 	// Reflections (with JSON-LD form)
 	var reflections []struct {
-		FormFile       string `json:"FormFile"`
-		Form           string `json:"Form"`
-		Description    string `json:"Description"`
-		Title          string `json:"Title"`
-		Considerations string `json:"Considerations"`
-		PhaseID        uint   `json:"PhaseID"`
+		FormFile                  string `json:"FormFile"`
+		Form                      string `json:"Form"`
+		FurtherReflectionFormFile string `json:"FurtherReflectionFormFile"`
+		FurtherReflectionForm     string `json:"-"`
+		Description               string `json:"Description"`
+		Title                     string `json:"Title"`
+		Considerations            string `json:"Considerations"`
+		PhaseID                   uint   `json:"PhaseID"`
 	}
 	readSeed("database/seeds/reflections.json", &reflections)
 	for i, r := range reflections {
@@ -147,13 +151,20 @@ func main() {
 				reflections[i].Form = string(formData)
 			}
 		}
+		if r.FurtherReflectionFormFile != "" {
+			formData, err := os.ReadFile(filepath.Join("database/seeds", r.FurtherReflectionFormFile))
+			if err == nil {
+				reflections[i].FurtherReflectionForm = string(formData)
+			}
+		}
 
 		db.Create(&models.Reflection{
-			Form:           reflections[i].Form,
-			Description:    r.Description,
-			Title:          r.Title,
-			Considerations: r.Considerations,
-			PhaseID:        r.PhaseID,
+			Form:                  reflections[i].Form,
+			FurtherReflectionForm: reflections[i].FurtherReflectionForm,
+			Description:           r.Description,
+			Title:                 r.Title,
+			Considerations:        r.Considerations,
+			PhaseID:               r.PhaseID,
 		})
 	}
 
@@ -173,6 +184,26 @@ func main() {
 		db.Create(&models.ReflectionAnswer{
 			Form:         ra.Form,
 			ReflectionID: ra.ReflectionID,
+			UserID:       userID,
+		})
+	}
+
+	// FurtherReflectionAnswers
+	var furtherReflectionAnswers []struct {
+		Form         string `json:"Form"`
+		ReflectionID uint   `json:"ReflectionID"`
+		UserID       string `json:"UserID"`
+	}
+	readSeed("database/seeds/further_reflection_answers.json", &furtherReflectionAnswers)
+	for _, fra := range furtherReflectionAnswers {
+		userID, err := uuid.Parse(fra.UserID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Invalid UUID for further reflection answer: %s\n", fra.UserID)
+			continue
+		}
+		db.Create(&models.FurtherReflectionAnswer{
+			Form:         fra.Form,
+			ReflectionID: fra.ReflectionID,
 			UserID:       userID,
 		})
 	}
