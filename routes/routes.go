@@ -103,9 +103,6 @@ func SetupRouter() *gin.Engine {
 	// Reflection routes
 	r.GET("/reflections/:id", controllers.GetReflectionByID)
 
-	// Journal routes
-	r.GET("/journals/:id", controllers.GetJournalByID)
-
 	// Tool routes
 	r.GET("/tools", controllers.GetTools)
 	r.GET("/tools/:id", controllers.GetToolByID)
@@ -130,12 +127,6 @@ func SetupRouter() *gin.Engine {
 		protected.GET("/reflectionAnswers", controllers.GetReflectionAnswerByUserIdAndReflectionID)
 		protected.POST("/reflectionAnswers", controllers.CreateReflectionAnswer)
 		protected.PUT("/reflectionAnswers/:id/edit", controllers.EditReflectionAnswer)
-
-		// JournalAnswer routes
-		protected.GET("/journalAnswers/:id", controllers.GetJournalAnswerByID)
-		protected.GET("/journalAnswers", controllers.GetJournalAnswerByUserIdAndJournalID)
-		protected.POST("/journalAnswers", controllers.CreateJournalAnswer)
-		protected.PUT("/journalAnswers/:id/edit", controllers.EditJournalAnswer)
 
 		// RecommendationAnswer routes
 		protected.GET("/recommendationAnswers/:id", controllers.GetRecommendationAnswerByID)

@@ -27,7 +27,7 @@ func GetLifecyclesByID(c *gin.Context) {
 	var lifecycles models.Lifecycle
 	id := c.Param("id")
 
-	if err := database.DB.Preload("Phases.Reflections").Preload("Phases.Reflections.Journal").First(&lifecycles, id).Error; err != nil {
+	if err := database.DB.Preload("Phases.Reflections").First(&lifecycles, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
@@ -58,7 +58,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	var lifecycle models.Lifecycle
 	if err := database.DB.
 		Preload("Phases.Reflections").
-		Preload("Phases.Reflections.Journal").
 		Where("id = ?", lifecycleID).
 		First(&lifecycle).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Lifecycle not found"})
@@ -69,7 +68,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 	type ReflectionData struct {
 		Reflection            models.Reflection
 		Answer                *models.ReflectionAnswer
-		JournalAnswer         *models.JournalAnswer
 		Recommendations       []models.Recommendation
 		RecommendationAnswers map[uint]*models.RecommendationAnswer
 	}
@@ -96,17 +94,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 				answerPtr = &answer
 			}
 
-			// Get user's journal answer for this reflection
-			var journalAnswer models.JournalAnswer
-			var journalAnswerPtr *models.JournalAnswer
-			if reflection.Journal != nil {
-				if err := database.DB.
-					Where("journal_id = ? AND user_id = ?", reflection.Journal.ID, userUUID).
-					First(&journalAnswer).Error; err == nil {
-					journalAnswerPtr = &journalAnswer
-				}
-			}
-
 			// Get recommendations for this reflection
 			var recommendations []models.Recommendation
 			database.DB.
@@ -128,7 +115,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 			reflectionDataList = append(reflectionDataList, ReflectionData{
 				Reflection:            reflection,
 				Answer:                answerPtr,
-				JournalAnswer:         journalAnswerPtr,
 				Recommendations:       recommendations,
 				RecommendationAnswers: recommendationAnswers,
 			})
@@ -292,24 +278,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 				pdf.Ln(4)
 			}
 
-			// Journal Answer after each reflection (if it has one)
-			if reflData.JournalAnswer != nil && reflData.JournalAnswer.Form != "" {
-				// Check page break - only break if less than 40mm remaining on page
-				if pdf.GetY() > 257 {
-					pdf.AddPage()
-				}
-
-				pdf.SetFont("Arial", "B", 14)
-				pdf.CellFormat(0, 8, "Journal", "", 1, "L", false, 0, "")
-				pdf.Ln(1)
-				// Parse and render journal fields (with titles shown)
-				renderFields(pdf, reflData.JournalAnswer.Form, 11, []FieldConfig{
-					{Key: "actions-decisions", Title: "Actions / Decisions", Style: ""},
-					{Key: "other-considerations", Title: "Other Considerations", Style: ""},
-				}, true)
-				pdf.Ln(4)
-			}
-
 			pdf.Ln(4)
 		}
 
@@ -374,7 +342,7 @@ func cleanText(text string) string {
 // FieldConfig defines a field to extract from form JSON
 type FieldConfig struct {
 	Key   string // JSON key to extract
-	Title string // Optional title to display (for journal fields)
+	Title string // Optional title to display
 	Style string // Font style: "", "I" for italic, "B" for bold
 }
 
@@ -395,7 +363,7 @@ func renderFields(pdf *gofpdf.Fpdf, formJSON string, fontSize float64, fields []
 
 		// First try to get as string (for reflection answers)
 		if value, ok = formData[field.Key].(string); !ok {
-			// Try to get as object with @value (for journal answers)
+			// Try to get as object with @value.
 			if fieldData, ok := formData[field.Key].(map[string]interface{}); ok {
 				value, ok = fieldData["@value"].(string)
 			}

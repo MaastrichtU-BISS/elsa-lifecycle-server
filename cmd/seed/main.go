@@ -56,8 +56,6 @@ func main() {
 		&models.Tool{},
 		&models.Reflection{},
 		&models.ReflectionAnswer{},
-		&models.Journal{},
-		&models.JournalAnswer{},
 		&models.Recommendation{},
 		&models.RecommendationAnswer{},
 	)
@@ -67,8 +65,6 @@ func main() {
 		&models.Tool{},
 		&models.Reflection{},
 		&models.ReflectionAnswer{},
-		&models.Journal{},
-		&models.JournalAnswer{},
 		&models.Recommendation{},
 		&models.RecommendationAnswer{})
 
@@ -178,48 +174,6 @@ func main() {
 			Form:         ra.Form,
 			ReflectionID: ra.ReflectionID,
 			UserID:       userID,
-		})
-	}
-
-	// Journals (with JSON-LD form)
-	var journals []struct {
-		FormFile     string `json:"FormFile"`
-		Form         string `json:"-"`
-		Title        string `json:"Title"`
-		ReflectionID uint   `json:"ReflectionID"`
-	}
-	readSeed("database/seeds/journals.json", &journals)
-	for i, j := range journals {
-		if j.FormFile != "" {
-			formData, err := os.ReadFile(filepath.Join("database/seeds", j.FormFile))
-			if err == nil {
-				journals[i].Form = string(formData)
-			}
-		}
-		db.Create(&models.Journal{
-			Form:         journals[i].Form,
-			Title:        j.Title,
-			ReflectionID: j.ReflectionID,
-		})
-	}
-
-	// JournalAnswers
-	var journalAnswers []struct {
-		Form      string `json:"Form"`
-		JournalID uint   `json:"JournalID"`
-		UserID    string `json:"UserID"`
-	}
-	readSeed("database/seeds/journal_answers.json", &journalAnswers)
-	for _, ja := range journalAnswers {
-		userID, err := uuid.Parse(ja.UserID)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Invalid UUID for journal answer: %s\n", ja.UserID)
-			continue
-		}
-		db.Create(&models.JournalAnswer{
-			Form:      ja.Form,
-			JournalID: ja.JournalID,
-			UserID:    userID,
 		})
 	}
 

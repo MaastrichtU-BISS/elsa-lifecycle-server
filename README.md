@@ -85,19 +85,6 @@ All seed data is located in the `database/seeds/` directory. The following files
 	- `ReflectionID` (integer, foreign key)
 	- `UserID` (string, UUID)
 
-### journals.json
-- **Schema:**
-	- `Title` (string)
-	- `Description` (string)
-	- `FormFile` (string, path to JSON-LD in `database/seeds/forms/`)
-	- `PhaseID` (integer, foreign key)
-
-### journal_answers.json
-- **Schema:**
-	- `Form` (string, JSON)
-	- `JournalID` (integer, foreign key)
-	- `UserID` (string, UUID)
-
 ### recommendations.json
 - **Schema:**
 	- `ReflectionID` (integer, foreign key)
@@ -115,7 +102,6 @@ All seed data is located in the `database/seeds/` directory. The following files
 - Contains referenced JSON-LD form files, e.g.:
 	- `value_sensitive_design.jsonld`
 	- `reflection_phase1.jsonld`
-	- `generic_journal_form.jsonld`
 
 **Warning:** Seeding will clear and repopulate the relevant tables. Only use this in development or when you want to reset the database.
 

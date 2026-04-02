@@ -8,5 +8,4 @@ type Reflection struct {
 	Form           string `json:"form" gorm:"type:text;not null"`
 	PhaseID        uint   `json:"phaseId"`
 	Phase          Phase  `gorm:"foreignKey:PhaseID"` // Relationship to the phase
-	Journal        *Journal
 }
