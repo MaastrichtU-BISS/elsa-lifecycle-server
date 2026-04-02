@@ -78,12 +78,18 @@ func GenerateLifecyclePDF(c *gin.Context) {
 		ReflectionDataList []ReflectionData
 	}
 
+	// Optional reflectionId filter
+	reflectionIDParam := c.Query("reflectionId")
+
 	var phaseDataList []PhaseData
 
 	for _, phase := range lifecycle.Phases {
 		var reflectionDataList []ReflectionData
 
 		for _, reflection := range phase.Reflections {
+			if reflectionIDParam != "" && fmt.Sprintf("%d", reflection.ID) != reflectionIDParam {
+				continue
+			}
 			// Get user's answer to this reflection
 			var answer models.ReflectionAnswer
 			answerErr := database.DB.
@@ -131,50 +137,55 @@ func GenerateLifecyclePDF(c *gin.Context) {
 			})
 		}
 
-		phaseDataList = append(phaseDataList, PhaseData{
-			Phase:              phase,
-			ReflectionDataList: reflectionDataList,
-		})
+		if len(reflectionDataList) > 0 {
+			phaseDataList = append(phaseDataList, PhaseData{
+				Phase:              phase,
+				ReflectionDataList: reflectionDataList,
+			})
+		}
 	}
 
 	// Create PDF
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
 
-	// Title
-	pdf.SetFont("Arial", "B", 24)
-	pdf.CellFormat(0, 15, stripMarkdown(lifecycle.Title), "", 1, "C", false, 0, "")
-	pdf.Ln(5)
+	if reflectionIDParam == "" {
 
-	// Description
-	if lifecycle.Description != "" {
-		pdf.SetFont("Arial", "", 12)
-		renderMarkdownText(pdf, lifecycle.Description, 12)
-		pdf.Ln(3)
-	}
-
-	// Username (without "User:" prefix)
-	pdf.SetFont("Arial", "I", 11)
-	pdf.CellFormat(0, 6, user.Email, "", 1, "L", false, 0, "")
-
-	// Date and time of generation
-	pdf.CellFormat(0, 6, fmt.Sprintf("Generated: %s", time.Now().Format("January 2, 2006 at 3:04 PM")), "", 1, "L", false, 0, "")
-	pdf.Ln(8)
-
-	// Welcome section
-	if lifecycle.Welcome != "" {
-		pdf.SetFont("Arial", "B", 16)
-		pdf.CellFormat(0, 10, "Welcome", "", 1, "L", false, 0, "")
-		renderMarkdownText(pdf, lifecycle.Welcome, 12)
+		// Title
+		pdf.SetFont("Arial", "B", 24)
+		pdf.CellFormat(0, 15, stripMarkdown(lifecycle.Title), "", 1, "C", false, 0, "")
 		pdf.Ln(5)
-	}
 
-	// Introduction section
-	if lifecycle.Introduction != "" {
-		pdf.SetFont("Arial", "B", 16)
-		pdf.CellFormat(0, 10, "Introduction", "", 1, "L", false, 0, "")
-		renderMarkdownText(pdf, lifecycle.Introduction, 12)
+		// Username (without "User:" prefix)
+		pdf.SetFont("Arial", "I", 11)
+		pdf.CellFormat(0, 6, user.Email, "", 1, "L", false, 0, "")
+
+		// Date and time of generation
+		pdf.CellFormat(0, 6, fmt.Sprintf("Generated: %s", time.Now().Format("January 2, 2006 at 3:04 PM")), "", 1, "L", false, 0, "")
 		pdf.Ln(8)
+
+		// Description
+		if lifecycle.Description != "" {
+			pdf.SetFont("Arial", "", 12)
+			renderMarkdownText(pdf, lifecycle.Description, 12)
+			pdf.Ln(3)
+		}
+
+		// Welcome section
+		if lifecycle.Welcome != "" {
+			pdf.SetFont("Arial", "B", 16)
+			pdf.CellFormat(0, 10, "Welcome", "", 1, "L", false, 0, "")
+			renderMarkdownText(pdf, lifecycle.Welcome, 12)
+			pdf.Ln(5)
+		}
+
+		// Introduction section
+		if lifecycle.Introduction != "" {
+			pdf.SetFont("Arial", "B", 16)
+			pdf.CellFormat(0, 10, "Introduction", "", 1, "L", false, 0, "")
+			renderMarkdownText(pdf, lifecycle.Introduction, 12)
+			pdf.Ln(8)
+		}
 	}
 
 	// Phases
