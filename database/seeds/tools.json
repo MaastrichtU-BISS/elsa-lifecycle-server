@@ -5,8 +5,7 @@
     "URL": "https://vsdesign.org/",
     "Cover": "",
     "Tags": "Values,Stakeholders",
-    "Type": "Method",
-    "FormFile": "forms/value_sensitive_design.json"
+    "Type": "Method"
   },
   {
     "Title": "Problem Framing Canvas",
@@ -14,8 +13,7 @@
     "URL": "https://realkm.com/wp-content/uploads/2023/05/Problem-Framing-Canvas-Handbook.pdf",
     "Cover": "",
     "Tags": "Problem,Framing",
-    "Type": "Mapping, Tool, Canvas",
-    "FileUpload": true
+    "Type": "Mapping, Tool, Canvas"
   },
   {
     "Title": "Stakeholder Mapping Tool",
