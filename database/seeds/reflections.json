@@ -25,7 +25,7 @@
   },
   {
     "Title": "Privacy and Consent",
-    "Description": "Model building is where technical innovation meets real-world impact. Decisions about features, training data, model types, and trade-offs directly affect fairness, transparency, and safety. Embedding ELSA thinking here helps align the technical system with broader human and societal values.",
+    "Description": "Can you describe how your project will handle consent and privacy concerns?",
     "Considerations": "[\"Whether informed consent has been clearly communicated and genuinely obtained where needed.\", \"How privacy is protected throughout data collection, storage, and sharing.\", \"Whether participants understand how their data will be used and what control they have over it.\", \"Any potential risks of surveillance, tracking, or unintended data exposure — and how these could be mitigated.\"]",
     "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
@@ -41,7 +41,7 @@
   },
   {
     "Title": "Missing Data",
-    "Description": "Can you describe about how bias might appear in your data preparation?",
+    "Description": "Can you describe how bias might emerge during your data preparation process?",
     "Considerations": "[\"Whether missing or incomplete data could reflect hidden biases or structural inequalities.\", \"If any groups are disproportionately affected by how data is cleaned, filtered, or excluded.\", \"How sensitive variables (e.g., race, gender, location, income) are identified, used, or protected.\", \"What checks or safeguards you have in place to ensure fairness and transparency in these steps.\"]",
     "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
