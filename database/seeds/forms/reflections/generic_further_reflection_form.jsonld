@@ -202,7 +202,7 @@
         "inputType": "textarea"
       },
       "_valueConstraints": {
-        "requiredValue": false
+        "requiredValue": true
       },
       "properties": {
         "@type": {
