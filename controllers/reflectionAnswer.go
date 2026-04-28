@@ -94,3 +94,24 @@ func EditReflectionAnswer(c *gin.Context) {
 
 	c.JSON(http.StatusOK, updatedAnswer)
 }
+
+func GetLatestReflectionAnswerForUser(c *gin.Context) {
+	var answer models.ReflectionAnswer
+	userId := c.GetString("user_id") 
+	result := database.DB.
+		Preload("Reflection.Phase.Lifecycle").
+		Preload("Reflection.Phase").
+		Preload("Reflection").
+		Where("user_id = ?", userId).
+		Order("created_at desc").
+		First(&answer)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusOK, nil)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch item"})
+		return
+	}
+	c.JSON(http.StatusOK, answer.Reflection.Phase.Lifecycle)
+}
