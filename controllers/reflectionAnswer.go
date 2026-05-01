@@ -112,7 +112,7 @@ func GetLatestReflectionAnswerForUser(c *gin.Context) {
 	       Joins("JOIN phases ON reflections.phase_id = phases.id").
 	       Joins("JOIN lifecycles ON phases.lifecycle_id = lifecycles.id").
 	       Where("reflection_answers.user_id = ?", userId).
-	       Order("reflection_answers.created_at DESC").
+	       Order("reflection_answers.updated_at DESC").
 	       Limit(1).
 	       Scan(&result).Error
 
