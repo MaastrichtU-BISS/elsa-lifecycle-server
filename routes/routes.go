@@ -140,6 +140,9 @@ func SetupRouter() *gin.Engine {
 		protected.GET("/recommendationAnswers", controllers.GetRecommendationAnswerByUserIdAndRecommendationID)
 		protected.POST("/recommendationAnswers", controllers.CreateRecommendationAnswer)
 		protected.PUT("/recommendationAnswers/:id/edit", controllers.EditRecommendationAnswer)
+
+        // Progress endpoint
+        protected.GET("/progress/last-updated", controllers.GetLastUpdatedLifecycleItemForUser)
 	}
 
 	return r
