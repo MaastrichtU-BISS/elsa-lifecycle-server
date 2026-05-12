@@ -1,20 +1,92 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"server/database"
 	"server/models"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
+	"gorm.io/gorm"
 )
 
 type LastUpdatedItem struct {
 	Type           string    `json:"type"`
 	Title          string    `json:"title"`
+	ToolID         uint      `json:"toolId,omitempty"`
 	LifecycleID    uint      `json:"lifecycleId"`
 	LifecycleTitle string    `json:"lifecycleTitle"`
 	UpdatedAt      time.Time `json:"updatedAt"`
+}
+
+const (
+	ActivityReflection        = "reflection"
+	ActivityFurtherReflection = "further_reflection"
+	ActivityRecommendation    = "recommendation"
+)
+
+type latestLifecycleResults struct {
+	reflection        *models.ReflectionAnswer
+	furtherReflection *models.FurtherReflectionAnswer
+	recommendation    *models.RecommendationAnswer
+}
+
+func fetchFirst[T any](query *gorm.DB, dest *T) error {
+	return query.First(dest).Error
+}
+
+func preloadReflectionLifecycle(db *gorm.DB) *gorm.DB {
+	return db.
+		Preload("Reflection").
+		Preload("Reflection.Phase").
+		Preload("Reflection.Phase.Lifecycle")
+}
+
+func latestByUser(db *gorm.DB, userID string) *gorm.DB {
+	return db.
+		Where("user_id = ?", userID).
+		Order("updated_at DESC")
+}
+
+func preloadRecommendationLifecycle(db *gorm.DB) *gorm.DB {
+	return db.
+		Preload("Recommendation").
+		Preload("Recommendation.Reflection").
+		Preload("Recommendation.Reflection.Phase").
+		Preload("Recommendation.Reflection.Phase.Lifecycle")
+}
+
+func toLastUpdatedItemReflection(a models.ReflectionAnswer) LastUpdatedItem {
+	return LastUpdatedItem{
+		Type:           ActivityReflection,
+		Title:          a.Reflection.Title,
+		LifecycleID:    a.Reflection.Phase.LifecycleID,
+		LifecycleTitle: a.Reflection.Phase.Lifecycle.Title,
+		UpdatedAt:      a.UpdatedAt,
+	}
+}
+
+func toLastUpdatedItemFurtherReflection(a models.FurtherReflectionAnswer) LastUpdatedItem {
+	return LastUpdatedItem{
+		Type:           ActivityFurtherReflection,
+		Title:          a.Reflection.Title,
+		LifecycleID:    a.Reflection.Phase.LifecycleID,
+		LifecycleTitle: a.Reflection.Phase.Lifecycle.Title,
+		UpdatedAt:      a.UpdatedAt,
+	}
+}
+
+func toLastUpdatedItemRecommendation(a models.RecommendationAnswer) LastUpdatedItem {
+	return LastUpdatedItem{
+		Type:           ActivityRecommendation,
+		Title:          a.Recommendation.Reflection.Title,
+		ToolID:         a.Recommendation.ToolID,
+		LifecycleID:    a.Recommendation.Reflection.Phase.LifecycleID,
+		LifecycleTitle: a.Recommendation.Reflection.Phase.Lifecycle.Title,
+		UpdatedAt:      a.UpdatedAt,
+	}
 }
 
 func pickLatest(current *LastUpdatedItem, candidate LastUpdatedItem) *LastUpdatedItem {
@@ -27,84 +99,66 @@ func pickLatest(current *LastUpdatedItem, candidate LastUpdatedItem) *LastUpdate
 
 // GET /progress/last-updated - Get the last updated answer (reflection, further reflection, or recommendation) for the user
 func GetLastUpdatedLifecycleItemForUser(c *gin.Context) {
-	userId := c.GetString("user_id")
-	db := database.DB
+	userID := c.GetString("user_id")
+
+	results := latestLifecycleResults{}
+
+	g, ctx := errgroup.WithContext(c.Request.Context())
+	db := database.DB.WithContext(ctx)
+
+	g.Go(func() error {
+		var a models.ReflectionAnswer
+		err := fetchFirst(latestByUser(preloadReflectionLifecycle(db), userID), &a)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil
+			}
+			return err
+		}
+		results.reflection = &a
+		return nil
+	})
+
+	g.Go(func() error {
+		var a models.FurtherReflectionAnswer
+		err := fetchFirst(latestByUser(preloadReflectionLifecycle(db), userID), &a)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil
+			}
+			return err
+		}
+		results.furtherReflection = &a
+		return nil
+	})
+
+	g.Go(func() error {
+		var a models.RecommendationAnswer
+		err := fetchFirst(latestByUser(preloadRecommendationLifecycle(db), userID), &a)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil
+			}
+			return err
+		}
+		results.recommendation = &a
+		return nil
+	})
+
+	if err := g.Wait(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "database error"})
+		return
+	}
 	var latest *LastUpdatedItem
-
-	var reflectionAnswer models.ReflectionAnswer
-	reflectionTx := db.
-		Preload("Reflection").
-		Preload("Reflection.Phase").
-		Preload("Reflection.Phase.Lifecycle").
-		Where("user_id = ?", userId).
-		Order("updated_at DESC").
-		Limit(1).
-		Find(&reflectionAnswer)
-	if reflectionTx.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch reflection answer"})
-		return
+	if results.reflection != nil {
+		latest = pickLatest(latest, toLastUpdatedItemReflection(*results.reflection))
 	}
-	if reflectionTx.RowsAffected > 0 {
-		latest = pickLatest(latest, LastUpdatedItem{
-			Type:           "reflection",
-			Title:          reflectionAnswer.Reflection.Title,
-			LifecycleID:    reflectionAnswer.Reflection.Phase.LifecycleID,
-			LifecycleTitle: reflectionAnswer.Reflection.Phase.Lifecycle.Title,
-			UpdatedAt:      reflectionAnswer.UpdatedAt,
-		})
+	if results.furtherReflection != nil {
+		latest = pickLatest(latest, toLastUpdatedItemFurtherReflection(*results.furtherReflection))
 	}
-
-	var furtherReflectionAnswer models.FurtherReflectionAnswer
-	furtherTx := db.
-		Preload("Reflection").
-		Preload("Reflection.Phase").
-		Preload("Reflection.Phase.Lifecycle").
-		Where("user_id = ?", userId).
-		Order("updated_at DESC").
-		Limit(1).
-		Find(&furtherReflectionAnswer)
-	if furtherTx.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch further reflection answer"})
-		return
+	if results.recommendation != nil {
+		latest = pickLatest(latest, toLastUpdatedItemRecommendation(*results.recommendation))
 	}
-	if furtherTx.RowsAffected > 0 {
-		latest = pickLatest(latest, LastUpdatedItem{
-			Type:           "further_reflection",
-			Title:          furtherReflectionAnswer.Reflection.Title,
-			LifecycleID:    furtherReflectionAnswer.Reflection.Phase.LifecycleID,
-			LifecycleTitle: furtherReflectionAnswer.Reflection.Phase.Lifecycle.Title,
-			UpdatedAt:      furtherReflectionAnswer.UpdatedAt,
-		})
-	}
-
-	var recommendationAnswer models.RecommendationAnswer
-	recommendationTx := db.
-		Preload("Recommendation").
-		Preload("Recommendation.Reflection").
-		Preload("Recommendation.Reflection.Phase").
-		Preload("Recommendation.Reflection.Phase.Lifecycle").
-		Where("user_id = ?", userId).
-		Order("updated_at DESC").
-		Limit(1).
-		Find(&recommendationAnswer)
-	if recommendationTx.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch recommendation answer"})
-		return
-	}
-	if recommendationTx.RowsAffected > 0 {
-		latest = pickLatest(latest, LastUpdatedItem{
-			Type:           "recommendation",
-			Title:          recommendationAnswer.Recommendation.Reflection.Title,
-			LifecycleID:    recommendationAnswer.Recommendation.Reflection.Phase.LifecycleID,
-			LifecycleTitle: recommendationAnswer.Recommendation.Reflection.Phase.Lifecycle.Title,
-			UpdatedAt:      recommendationAnswer.UpdatedAt,
-		})
-	}
-
-	if latest == nil {
-		c.JSON(http.StatusOK, nil)
-		return
-	}
-
-	c.JSON(http.StatusOK, latest)
+	
+	c.JSON(http.StatusOK, gin.H{"data": latest})
 }
