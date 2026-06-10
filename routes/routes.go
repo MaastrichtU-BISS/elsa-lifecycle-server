@@ -34,7 +34,7 @@ func buildCORSConfigFromString(env string) cors.Config {
 
 	cfg := cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "x-e2e-reset-secret"},
 		AllowCredentials: true,
 	}
 
@@ -92,6 +92,11 @@ func SetupRouter() *gin.Engine {
 	r.POST("/auth/register", controllers.Register)
 	r.POST("/auth/login", controllers.Login)
 
+	// Test-only routes
+	if os.Getenv("APP_ENV") == "test" {
+		r.POST("/test/reset-db", controllers.ResetDatabase)
+	}
+
 	// Lifecycle routes
 	r.GET("/lifecycles", controllers.GetLifecycles)
 	r.GET("/lifecycles/:id", controllers.GetLifecyclesByID)
@@ -141,8 +146,8 @@ func SetupRouter() *gin.Engine {
 		protected.POST("/recommendationAnswers", controllers.CreateRecommendationAnswer)
 		protected.PUT("/recommendationAnswers/:id/edit", controllers.EditRecommendationAnswer)
 
-        // Progress routes
-        protected.GET("/progress/last-updated", controllers.GetLastUpdatedLifecycleItemForUser)
+		// Progress routes
+		protected.GET("/progress/last-updated", controllers.GetLastUpdatedLifecycleItemForUser)
 	}
 
 	return r
