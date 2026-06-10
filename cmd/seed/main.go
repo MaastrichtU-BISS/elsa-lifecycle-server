@@ -1,260 +1,26 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
+	"log"
 
-	"server/database"
-	"server/models"
+	"server/seeder"
 
-	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 )
 
-type UserSeed struct {
-	ID           string `json:"ID"`
-	Email        string `json:"Email"`
-	PasswordHash string `json:"PasswordHash"`
-}
-
-type LifecycleSeed struct {
-	Title        string `json:"Title"`
-	Description  string `json:"Description"`
-	Welcome      string `json:"Welcome"`
-	Introduction string `json:"Introduction"`
-	Journal      string `json:"Journal"`
-}
-
-type PhaseSeed struct {
-	Title       string `json:"Title"`
-	Description string `json:"Description"`
-	LifecycleID int    `json:"LifecycleID"`
-}
-
-type ToolSeed struct {
-	Title       string  `json:"Title"`
-	Description string  `json:"Description"`
-	URL         string  `json:"URL"`
-	Cover       string  `json:"Cover"`
-	Tags        *string `json:"Tags" gorm:"default:null"`
-	Type        *string `json:"Type" gorm:"default:null"`
-	FormFile    string  `json:"FormFile"`
-	Form        string  `json:"-"`
-	FileUpload  bool    `json:"FileUpload"`
-}
-
 func main() {
-	database.ConnectDB()
-	db := database.DB
-
-	// drop and recreate all tables
-	db.Migrator().DropTable(
-		&models.User{},
-		&models.Lifecycle{},
-		&models.Phase{},
-		&models.Tool{},
-		&models.Reflection{},
-		&models.ReflectionAnswer{},
-		&models.FurtherReflectionAnswer{},
-		&models.Recommendation{},
-		&models.RecommendationAnswer{},
-	)
-	db.AutoMigrate(&models.User{},
-		&models.Lifecycle{},
-		&models.Phase{},
-		&models.Tool{},
-		&models.Reflection{},
-		&models.ReflectionAnswer{},
-		&models.FurtherReflectionAnswer{},
-		&models.Recommendation{},
-		&models.RecommendationAnswer{})
-
-	// Users
-	var users []UserSeed
-	readSeed("database/seeds/users.json", &users)
-	for _, u := range users {
-		uuidVal, err := uuid.Parse(u.ID)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Invalid UUID for user: %s\n", u.ID)
-			continue
-		}
-		db.Create(&models.User{
-			ID:           uuidVal,
-			Email:        u.Email,
-			PasswordHash: u.PasswordHash,
-		})
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
 	}
 
-	// Lifecycles
-	var lifecycles []LifecycleSeed
-	readSeed("database/seeds/lifecycles.json", &lifecycles)
-	for _, l := range lifecycles {
-		db.Create(&models.Lifecycle{
-			Title:        l.Title,
-			Description:  l.Description,
-			Welcome:      l.Welcome,
-			Introduction: l.Introduction,
-			Journal:      l.Journal,
-		})
+	if err := seeder.RequireTestEnvironment(); err != nil {
+		log.Fatal(err)
 	}
 
-	// Phases
-	var phases []PhaseSeed
-	readSeed("database/seeds/phases.json", &phases)
-	for _, p := range phases {
-		db.Create(&models.Phase{
-			Title:       p.Title,
-			Description: p.Description,
-			LifecycleID: uint(p.LifecycleID),
-		})
-	}
-
-	// Tools (with JSON-LD form)
-	var tools []ToolSeed
-	readSeed("database/seeds/tools.json", &tools)
-	for i, t := range tools {
-		if t.FormFile != "" {
-			formData, err := os.ReadFile(filepath.Join("database/seeds", t.FormFile))
-			if err == nil {
-				tools[i].Form = string(formData)
-			}
-		}
-		db.Create(&models.Tool{
-			Title:       t.Title,
-			Description: t.Description,
-			URL:         t.URL,
-			Cover:       t.Cover,
-			Tags:        t.Tags,
-			Type:        t.Type,
-			Form:        tools[i].Form,
-			FileUpload:  t.FileUpload,
-		})
-	}
-
-	// Reflections (with JSON-LD form)
-	var reflections []struct {
-		FormFile                  string `json:"FormFile"`
-		Form                      string `json:"Form"`
-		FurtherReflectionFormFile string `json:"FurtherReflectionFormFile"`
-		FurtherReflectionForm     string `json:"-"`
-		Description               string `json:"Description"`
-		Title                     string `json:"Title"`
-		Considerations            string `json:"Considerations"`
-		PhaseID                   uint   `json:"PhaseID"`
-	}
-	readSeed("database/seeds/reflections.json", &reflections)
-	for i, r := range reflections {
-		if r.FormFile != "" {
-			formData, err := os.ReadFile(filepath.Join("database/seeds", r.FormFile))
-			if err == nil {
-				reflections[i].Form = string(formData)
-			}
-		}
-		if r.FurtherReflectionFormFile != "" {
-			formData, err := os.ReadFile(filepath.Join("database/seeds", r.FurtherReflectionFormFile))
-			if err == nil {
-				reflections[i].FurtherReflectionForm = string(formData)
-			}
-		}
-
-		db.Create(&models.Reflection{
-			Form:                  reflections[i].Form,
-			FurtherReflectionForm: reflections[i].FurtherReflectionForm,
-			Description:           r.Description,
-			Title:                 r.Title,
-			Considerations:        r.Considerations,
-			PhaseID:               r.PhaseID,
-		})
-	}
-
-	// ReflectionAnswers
-	var reflectionAnswers []struct {
-		Form         string `json:"Form"`
-		ReflectionID uint   `json:"ReflectionID"`
-		UserID       string `json:"UserID"`
-	}
-	readSeed("database/seeds/reflection_answers.json", &reflectionAnswers)
-	for _, ra := range reflectionAnswers {
-		userID, err := uuid.Parse(ra.UserID)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Invalid UUID for reflection answer: %s\n", ra.UserID)
-			continue
-		}
-		db.Create(&models.ReflectionAnswer{
-			Form:         ra.Form,
-			ReflectionID: ra.ReflectionID,
-			UserID:       userID,
-		})
-	}
-
-	// FurtherReflectionAnswers
-	var furtherReflectionAnswers []struct {
-		Form         string `json:"Form"`
-		ReflectionID uint   `json:"ReflectionID"`
-		UserID       string `json:"UserID"`
-	}
-	readSeed("database/seeds/further_reflection_answers.json", &furtherReflectionAnswers)
-	for _, fra := range furtherReflectionAnswers {
-		userID, err := uuid.Parse(fra.UserID)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Invalid UUID for further reflection answer: %s\n", fra.UserID)
-			continue
-		}
-		db.Create(&models.FurtherReflectionAnswer{
-			Form:         fra.Form,
-			ReflectionID: fra.ReflectionID,
-			UserID:       userID,
-		})
-	}
-
-	// Recommendations
-	var recommendations []struct {
-		ReflectionID     uint `json:"ReflectionID"`
-		ToolID           uint `json:"ToolID"`
-		BinaryEvaluation uint `json:"BinaryEvaluation"`
-	}
-	readSeed("database/seeds/recommendations.json", &recommendations)
-	for _, rec := range recommendations {
-		db.Create(&models.Recommendation{
-			ReflectionID: rec.ReflectionID,
-			ToolID:       rec.ToolID,
-		})
-	}
-
-	// RecommendationAnswers
-	var recommendationAnswers []struct {
-		Form             string `json:"Form"`
-		File             string `json:"File"`
-		RecommendationID uint   `json:"RecommendationID"`
-		UserID           string `json:"UserID"`
-	}
-	readSeed("database/seeds/recommendation_answers.json", &recommendationAnswers)
-	for _, ra := range recommendationAnswers {
-		userID, err := uuid.Parse(ra.UserID)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Invalid UUID for recommendation answer: %s\n", ra.UserID)
-			continue
-		}
-		db.Create(&models.RecommendationAnswer{
-			Form:             ra.Form,
-			File:             ra.File,
-			RecommendationID: ra.RecommendationID,
-			UserID:           userID,
-		})
+	if err := seeder.ResetAndSeedDatabase(); err != nil {
+		log.Fatal(err)
 	}
 
 	fmt.Println("Seeding complete.")
-}
-
-func readSeed(path string, v interface{}) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", path, err)
-		os.Exit(1)
-	}
-	if err := json.Unmarshal(data, v); err != nil {
-		fmt.Fprintf(os.Stderr, "Error parsing %s: %v\n", path, err)
-		os.Exit(1)
-	}
 }
