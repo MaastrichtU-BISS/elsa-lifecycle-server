@@ -1,18 +1,24 @@
 package main
 
 import (
+	"log"
+
 	"server/database"
 	"server/routes"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment variables")
+	}
 
-	// Initialize the database connection
 	database.ConnectDB()
 
-	// Initialize the router
 	r := routes.SetupRouter()
 
-	// Start server
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }
