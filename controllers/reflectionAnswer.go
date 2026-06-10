@@ -94,3 +94,35 @@ func EditReflectionAnswer(c *gin.Context) {
 
 	c.JSON(http.StatusOK, updatedAnswer)
 }
+
+func GetLatestReflectionAnswerForUser(c *gin.Context) {
+       userId := c.GetString("user_id")
+       type LatestReflectionAnswerForUser struct {
+	       ReflectionTitle  string `json:"reflectionTitle"`
+		   LifecycleID uint   `json:"lifecycleId"`
+		   LifecycleTitle string `json:"lifecycleTitle"`
+       }
+
+       var result LatestReflectionAnswerForUser
+
+       err := database.DB.
+	       Table("reflection_answers").
+	       Select("reflections.title as reflection_title, phases.lifecycle_id as lifecycle_id, lifecycles.title as lifecycle_title").
+	       Joins("JOIN reflections ON reflection_answers.reflection_id = reflections.id").
+	       Joins("JOIN phases ON reflections.phase_id = phases.id").
+	       Joins("JOIN lifecycles ON phases.lifecycle_id = lifecycles.id").
+	       Where("reflection_answers.user_id = ?", userId).
+	       Order("reflection_answers.updated_at DESC").
+	       Limit(1).
+	       Scan(&result).Error
+
+       if err != nil {
+	       if errors.Is(err, gorm.ErrRecordNotFound) {
+		       c.JSON(http.StatusOK, nil)
+		       return
+	       }
+	       c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch item"})
+	       return
+       }
+       c.JSON(http.StatusOK, result)
+}
