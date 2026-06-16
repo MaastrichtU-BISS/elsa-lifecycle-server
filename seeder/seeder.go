@@ -211,56 +211,6 @@ func ResetAndSeedDatabase() error {
 		}
 	}
 
-	var reflectionAnswers []struct {
-		Form         string `json:"Form"`
-		ReflectionID uint   `json:"ReflectionID"`
-		UserID       string `json:"UserID"`
-	}
-
-	if err := readSeed("database/seeds/reflection_answers.json", &reflectionAnswers); err != nil {
-		return err
-	}
-
-	for _, ra := range reflectionAnswers {
-		userID, err := uuid.Parse(ra.UserID)
-		if err != nil {
-			return fmt.Errorf("invalid UUID for reflection answer %s: %w", ra.UserID, err)
-		}
-
-		if err := db.Create(&models.ReflectionAnswer{
-			Form:         ra.Form,
-			ReflectionID: ra.ReflectionID,
-			UserID:       userID,
-		}).Error; err != nil {
-			return err
-		}
-	}
-
-	var furtherReflectionAnswers []struct {
-		Form         string `json:"Form"`
-		ReflectionID uint   `json:"ReflectionID"`
-		UserID       string `json:"UserID"`
-	}
-
-	if err := readSeed("database/seeds/further_reflection_answers.json", &furtherReflectionAnswers); err != nil {
-		return err
-	}
-
-	for _, fra := range furtherReflectionAnswers {
-		userID, err := uuid.Parse(fra.UserID)
-		if err != nil {
-			return fmt.Errorf("invalid UUID for further reflection answer %s: %w", fra.UserID, err)
-		}
-
-		if err := db.Create(&models.FurtherReflectionAnswer{
-			Form:         fra.Form,
-			ReflectionID: fra.ReflectionID,
-			UserID:       userID,
-		}).Error; err != nil {
-			return err
-		}
-	}
-
 	var recommendations []struct {
 		ReflectionID     uint `json:"ReflectionID"`
 		ToolID           uint `json:"ToolID"`
@@ -275,33 +225,6 @@ func ResetAndSeedDatabase() error {
 		if err := db.Create(&models.Recommendation{
 			ReflectionID: rec.ReflectionID,
 			ToolID:       rec.ToolID,
-		}).Error; err != nil {
-			return err
-		}
-	}
-
-	var recommendationAnswers []struct {
-		Form             string `json:"Form"`
-		File             string `json:"File"`
-		RecommendationID uint   `json:"RecommendationID"`
-		UserID           string `json:"UserID"`
-	}
-
-	if err := readSeed("database/seeds/recommendation_answers.json", &recommendationAnswers); err != nil {
-		return err
-	}
-
-	for _, ra := range recommendationAnswers {
-		userID, err := uuid.Parse(ra.UserID)
-		if err != nil {
-			return fmt.Errorf("invalid UUID for recommendation answer %s: %w", ra.UserID, err)
-		}
-
-		if err := db.Create(&models.RecommendationAnswer{
-			Form:             ra.Form,
-			File:             ra.File,
-			RecommendationID: ra.RecommendationID,
-			UserID:           userID,
 		}).Error; err != nil {
 			return err
 		}

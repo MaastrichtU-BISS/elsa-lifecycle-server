@@ -124,13 +124,11 @@ func SetupRouter() *gin.Engine {
 		// User routes
 		protected.GET("/user", controllers.GetUser)
 
-		// PDF generation routes
-		protected.GET("/lifecycles/:id/pdf", controllers.GenerateLifecyclePDF)
-
 		// Journal routes
 		protected.GET("/journals/:id", controllers.GetJournalByID)
 		protected.GET("/journals", controllers.GetJournalByUserIdAndLifecycleID)
 		protected.POST("/journals", controllers.CreateJournal)
+		protected.GET("/journals/:id/pdf", controllers.GenerateJournalPDF)
 
 		// ReflectionAnswer routes
 		protected.GET("/reflectionAnswers/:id", controllers.GetReflectionAnswerByID)
@@ -151,8 +149,6 @@ func SetupRouter() *gin.Engine {
 		protected.POST("/recommendationAnswers", controllers.CreateRecommendationAnswer)
 		protected.PUT("/recommendationAnswers/:id/edit", controllers.EditRecommendationAnswer)
 
-		// Progress routes
-		protected.GET("/progress/last-updated", controllers.GetLastUpdatedLifecycleItemForUser)
 	}
 
 	return r

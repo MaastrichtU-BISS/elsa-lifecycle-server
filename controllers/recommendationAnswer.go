@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -67,7 +66,7 @@ func CreateRecommendationAnswer(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse recommendationId to uint64"})
 		return
 	}
-	
+
 	// Parse checked_done boolean field
 	checkedDone := c.PostForm("checked_done") == "true"
 
@@ -97,8 +96,6 @@ func CreateRecommendationAnswer(c *gin.Context) {
 		CheckedDone:      checkedDone,
 	}
 
-	newRecommendationAnswer.UserID = uuid.MustParse(c.GetString("user_id"))
-
 	// Step 1: Create the record
 	if err := database.DB.Create(&newRecommendationAnswer).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -125,7 +122,7 @@ func EditRecommendationAnswer(c *gin.Context) {
 
 	// Read fields from the form
 	form := c.PostForm("form")
-	
+
 	// Parse checked_done boolean field
 	checkedDone := c.PostForm("checked_done") == "true"
 

@@ -7,7 +7,6 @@ import (
 	"server/models"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -55,7 +54,6 @@ func CreateFurtherReflectionAnswer(c *gin.Context) {
 		return
 	}
 
-	newAnswer.UserID = uuid.MustParse(c.GetString("user_id"))
 	database.DB.Create(&newAnswer)
 	c.JSON(http.StatusOK, newAnswer)
 }

@@ -1,6 +1,10 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Journal struct {
 	ID          uint      `json:"id" gorm:"primaryKey;autoIncrement"`
@@ -9,4 +13,6 @@ type Journal struct {
 	User        User      `gorm:"foreignKey:UserID"` // Relationship to the user
 	LifecycleID uint      `json:"lifecycleId"`
 	Lifecycle   Lifecycle `gorm:"foreignKey:LifecycleID"` // Relationship to the lifecycle
+	CreatedAt   time.Time `json:"createdAt" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time `json:"updatedAt" gorm:"autoUpdateTime;index:idx_reflection_user_updated,sort:desc"`
 }
