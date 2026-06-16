@@ -21,7 +21,6 @@ type UserSeed struct {
 type LifecycleSeed struct {
 	Title        string `json:"Title"`
 	Description  string `json:"Description"`
-	Welcome      string `json:"Welcome"`
 	Introduction string `json:"Introduction"`
 	Journal      string `json:"Journal"`
 }
@@ -120,7 +119,6 @@ func ResetAndSeedDatabase() error {
 		if err := db.Create(&models.Lifecycle{
 			Title:        l.Title,
 			Description:  l.Description,
-			Welcome:      l.Welcome,
 			Introduction: l.Introduction,
 			Journal:      l.Journal,
 		}).Error; err != nil {

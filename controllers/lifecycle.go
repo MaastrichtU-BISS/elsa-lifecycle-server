@@ -167,14 +167,6 @@ func GenerateLifecyclePDF(c *gin.Context) {
 			pdf.Ln(3)
 		}
 
-		// Welcome section
-		if lifecycle.Welcome != "" {
-			pdf.SetFont("Arial", "B", 16)
-			pdf.CellFormat(0, 10, "Welcome", "", 1, "L", false, 0, "")
-			renderMarkdownText(pdf, lifecycle.Welcome, 12)
-			pdf.Ln(5)
-		}
-
 		// Introduction section
 		if lifecycle.Introduction != "" {
 			pdf.SetFont("Arial", "B", 16)
