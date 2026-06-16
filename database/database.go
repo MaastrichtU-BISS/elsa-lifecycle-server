@@ -26,9 +26,6 @@ func ConnectDB() {
 		log.Fatalf("failed to connect database (%s): %v", dbPath, err)
 	}
 
-	// Remove deprecated tables that are no longer part of the data model.
-	DB.Migrator().DropTable("journal_answers", "journals")
-
 	DB.AutoMigrate(&models.Lifecycle{},
 		&models.Phase{},
 		&models.Reflection{},

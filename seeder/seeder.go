@@ -22,7 +22,6 @@ type LifecycleSeed struct {
 	Title        string `json:"Title"`
 	Description  string `json:"Description"`
 	Introduction string `json:"Introduction"`
-	Journal      string `json:"Journal"`
 }
 
 type PhaseSeed struct {
@@ -120,7 +119,6 @@ func ResetAndSeedDatabase() error {
 			Title:        l.Title,
 			Description:  l.Description,
 			Introduction: l.Introduction,
-			Journal:      l.Journal,
 		}).Error; err != nil {
 			return err
 		}
