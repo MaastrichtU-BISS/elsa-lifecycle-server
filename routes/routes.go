@@ -127,6 +127,11 @@ func SetupRouter() *gin.Engine {
 		// PDF generation routes
 		protected.GET("/lifecycles/:id/pdf", controllers.GenerateLifecyclePDF)
 
+		// Journal routes
+		protected.GET("/journals/:id", controllers.GetJournalByID)
+		protected.GET("/journals", controllers.GetJournalByUserIdAndLifecycleID)
+		protected.POST("/journals", controllers.CreateJournal)
+
 		// ReflectionAnswer routes
 		protected.GET("/reflectionAnswers/:id", controllers.GetReflectionAnswerByID)
 		protected.GET("/reflectionAnswers", controllers.GetReflectionAnswerByUserIdAndReflectionID)

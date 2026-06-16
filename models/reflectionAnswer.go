@@ -1,8 +1,10 @@
 package models
 
-import "time"
-import "github.com/google/uuid"
+import (
+	"time"
 
+	"github.com/google/uuid"
+)
 
 type ReflectionAnswer struct {
 	ID           uint       `json:"id" gorm:"primaryKey;autoIncrement"`
