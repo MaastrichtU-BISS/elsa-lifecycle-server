@@ -33,8 +33,7 @@ func GetReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 	userId := c.GetString("user_id")
 
 	// Validate journal ownership and existence
-	err := utils.CheckJournalAuthentication(jid, userId)
-	if err != nil {
+	if err := utils.CheckJournalAuthentication(jid, userId); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
@@ -68,8 +67,7 @@ func CreateReflectionAnswer(c *gin.Context) {
 	userId := c.GetString("user_id")
 
 	// Validate journal ownership and existence
-	err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId)
-	if err != nil {
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
@@ -88,8 +86,7 @@ func EditReflectionAnswer(c *gin.Context) {
 
 	userId := c.GetString("user_id")
 	// Validate journal ownership and existence
-	err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId)
-	if err != nil {
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
