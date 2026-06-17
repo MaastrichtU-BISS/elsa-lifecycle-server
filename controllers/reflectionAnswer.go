@@ -23,24 +23,36 @@ func GetReflectionAnswerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
-// GET /reflectionAnswers?rid=:rid - Fetch reflectionAnswer by ID
-func GetReflectionAnswerByUserIdAndReflectionID(c *gin.Context) {
+// GET /reflectionAnswers/:id?jid=:jid
+func GetReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 	var answer models.ReflectionAnswer
-	rid := c.Query("rid")
-	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+	jid := c.Query("jid")
+	rid := c.Query("id")
+	userId := c.GetString("user_id")
+
+	// load the journal to check ownership and existence
+	var journal models.Journal
+	if err := database.DB.First(&journal, jid).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Journal not found"})
+		return
+	}
+
+	// (Authentication) check if the journal belongs to the user
+	if journal.UserID.String() != userId {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have access to this journal"})
+		return
+	}
 
 	result := database.DB.
 		Preload("Reflection").
-		Where("reflection_id = ? AND user_id = ?", rid, userId).
+		Where("reflection_id = ? AND journal_id = ?", rid, jid).
 		First(&answer)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			// Not found — return null or empty response, not 404
 			c.JSON(http.StatusOK, nil)
 			return
 		}
-		// Some other DB error
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch item"})
 		return
 	}
@@ -91,36 +103,4 @@ func EditReflectionAnswer(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, updatedAnswer)
-}
-
-func GetLatestReflectionAnswerForUser(c *gin.Context) {
-	userId := c.GetString("user_id")
-	type LatestReflectionAnswerForUser struct {
-		ReflectionTitle string `json:"reflectionTitle"`
-		LifecycleID     uint   `json:"lifecycleId"`
-		LifecycleTitle  string `json:"lifecycleTitle"`
-	}
-
-	var result LatestReflectionAnswerForUser
-
-	err := database.DB.
-		Table("reflection_answers").
-		Select("reflections.title as reflection_title, phases.lifecycle_id as lifecycle_id, lifecycles.title as lifecycle_title").
-		Joins("JOIN reflections ON reflection_answers.reflection_id = reflections.id").
-		Joins("JOIN phases ON reflections.phase_id = phases.id").
-		Joins("JOIN lifecycles ON phases.lifecycle_id = lifecycles.id").
-		Where("reflection_answers.user_id = ?", userId).
-		Order("reflection_answers.updated_at DESC").
-		Limit(1).
-		Scan(&result).Error
-
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusOK, nil)
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch item"})
-		return
-	}
-	c.JSON(http.StatusOK, result)
 }
