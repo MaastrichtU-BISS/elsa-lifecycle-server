@@ -132,20 +132,19 @@ func SetupRouter() *gin.Engine {
 
 		// ReflectionAnswer routes
 		protected.GET("/reflectionAnswers/:id", controllers.GetReflectionAnswerByID)
-		protected.GET("/reflectionAnswers", controllers.GetReflectionAnswerByUserIdAndReflectionID)
+		protected.GET("/reflectionAnswers", controllers.GetReflectionAnswerByJournalIdAndReflectionID)
 		protected.POST("/reflectionAnswers", controllers.CreateReflectionAnswer)
 		protected.PUT("/reflectionAnswers/:id/edit", controllers.EditReflectionAnswer)
-		protected.GET("/reflectionAnswers/latest-lifecycle", controllers.GetLatestReflectionAnswerForUser)
 
 		// FurtherReflectionAnswer routes
 		protected.GET("/furtherReflectionAnswers/:id", controllers.GetFurtherReflectionAnswerByID)
-		protected.GET("/furtherReflectionAnswers", controllers.GetFurtherReflectionAnswerByUserIdAndReflectionID)
+		protected.GET("/furtherReflectionAnswers", controllers.GetFurtherReflectionAnswerByJournalIdAndReflectionID)
 		protected.POST("/furtherReflectionAnswers", controllers.CreateFurtherReflectionAnswer)
 		protected.PUT("/furtherReflectionAnswers/:id/edit", controllers.EditFurtherReflectionAnswer)
 
 		// RecommendationAnswer routes
 		protected.GET("/recommendationAnswers/:id", controllers.GetRecommendationAnswerByID)
-		protected.GET("/recommendationAnswers", controllers.GetRecommendationAnswerByUserIdAndRecommendationID)
+		protected.GET("/recommendationAnswers", controllers.GetRecommendationAnswerByJournalIdAndRecommendationID)
 		protected.POST("/recommendationAnswers", controllers.CreateRecommendationAnswer)
 		protected.PUT("/recommendationAnswers/:id/edit", controllers.EditRecommendationAnswer)
 
