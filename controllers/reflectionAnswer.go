@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"server/database"
 	"server/models"
+	"server/utils"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -30,16 +32,10 @@ func GetReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 	rid := c.Query("id")
 	userId := c.GetString("user_id")
 
-	// load the journal to check ownership and existence
-	var journal models.Journal
-	if err := database.DB.First(&journal, jid).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Journal not found"})
-		return
-	}
-
-	// (Authentication) check if the journal belongs to the user
-	if journal.UserID.String() != userId {
-		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have access to this journal"})
+	// Validate journal ownership and existence
+	err := utils.CheckJournalAuthentication(jid, userId)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -62,9 +58,19 @@ func GetReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 
 // POST /reflectionAnswers - Insert a new reflectionAnswer
 func CreateReflectionAnswer(c *gin.Context) {
+
 	var newAnswer models.ReflectionAnswer
 	if err := c.ShouldBindJSON(&newAnswer); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.GetString("user_id")
+
+	// Validate journal ownership and existence
+	err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -77,6 +83,14 @@ func EditReflectionAnswer(c *gin.Context) {
 	var newAnswer models.ReflectionAnswer
 	if err := c.ShouldBindJSON(&newAnswer); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence
+	err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
