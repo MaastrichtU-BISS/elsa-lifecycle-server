@@ -17,30 +17,15 @@ import (
 	"gorm.io/gorm"
 )
 
-// GET /journals/:id - Fetch journal by ID
-func GetJournalByID(c *gin.Context) {
-	var journal models.Journal
-	id := c.Param("id")
-
-	if err := database.DB.Preload("User").Preload("Lifecycle").First(&journal, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, journal)
-}
-
-// GET /journals?userId=:userId&lifecycleId=:lifecycleId - Fetch journal by user ID and lifecycle ID
-func GetJournalByUserIdAndLifecycleID(c *gin.Context) {
-	var journal models.Journal
-	userId := c.Query("userId")
-	lifecycleId := c.Query("lifecycleId")
+// GET /journals - Fetch journal by user ID
+func GetAllJournals(c *gin.Context) {
+	var journals []models.Journal
+	userId := c.GetString("user_id")
 
 	result := database.DB.
-		Preload("User").
 		Preload("Lifecycle").
-		Where("user_id = ? AND lifecycle_id = ?", userId, lifecycleId).
-		First(&journal)
+		Where("user_id = ?", userId).
+		Find(&journals)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -50,6 +35,19 @@ func GetJournalByUserIdAndLifecycleID(c *gin.Context) {
 		}
 		// Some other DB error
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch item"})
+		return
+	}
+
+	c.JSON(http.StatusOK, journals)
+}
+
+// GET /journals/:id - Fetch journal by ID
+func GetJournalByID(c *gin.Context) {
+	var journal models.Journal
+	id := c.Param("id")
+
+	if err := database.DB.Preload("User").Preload("Lifecycle").First(&journal, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
 

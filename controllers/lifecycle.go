@@ -9,14 +9,14 @@ import (
 )
 
 // GET /lifecycles - Fetch all lifecycles
-func GetLifecycles(c *gin.Context) {
+func GetAllLifecycles(c *gin.Context) {
 	var lifecycles []models.Lifecycle
 	database.DB.Find(&lifecycles)
 	c.JSON(http.StatusOK, lifecycles)
 }
 
 // GET /lifecycles/:id - Fetch lifecycle by ID
-func GetLifecyclesByID(c *gin.Context) {
+func GetLifecycleByID(c *gin.Context) {
 	var lifecycles models.Lifecycle
 	id := c.Param("id")
 

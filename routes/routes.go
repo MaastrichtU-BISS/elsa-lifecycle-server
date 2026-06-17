@@ -98,8 +98,8 @@ func SetupRouter() *gin.Engine {
 	}
 
 	// Lifecycle routes
-	r.GET("/lifecycles", controllers.GetLifecycles)
-	r.GET("/lifecycles/:id", controllers.GetLifecyclesByID)
+	r.GET("/lifecycles", controllers.GetAllLifecycles)
+	r.GET("/lifecycles/:id", controllers.GetLifecycleByID)
 	// r.GET("/lifecycles/:id/phases", controllers.GetPhases)
 
 	// Phase routes
@@ -125,8 +125,8 @@ func SetupRouter() *gin.Engine {
 		protected.GET("/user", controllers.GetUser)
 
 		// Journal routes
+		protected.GET("/journals", controllers.GetAllJournals)
 		protected.GET("/journals/:id", controllers.GetJournalByID)
-		protected.GET("/journals", controllers.GetJournalByUserIdAndLifecycleID)
 		protected.POST("/journals", controllers.CreateJournal)
 		protected.GET("/journals/:id/pdf", controllers.GenerateJournalPDF)
 
