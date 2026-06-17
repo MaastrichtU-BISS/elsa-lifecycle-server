@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"server/database"
 	"server/models"
+	"server/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -26,15 +27,22 @@ func GetRecommendationAnswerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
-// GET /recommendationAnswers?jid=:rid - Fetch recommendationAnswer by userId and recommendationlId
-func GetRecommendationAnswerByUserIdAndRecommendationID(c *gin.Context) {
+// GET /recommendationAnswers/:id?jid=:jid - Fetch recommendationAnswer by journalId and recommendationlId
+func GetRecommendationAnswerByJournalIdAndRecommendationID(c *gin.Context) {
 	var answer models.RecommendationAnswer
-	rid := c.Query("rid")
+	rid := c.Query("id")
+	jid := c.Query("jid")
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(jid, userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
 
 	result := database.DB.
 		Preload("Recommendation.Tool").
-		Where("recommendation_id = ? AND user_id = ?", rid, userId).
+		Where("recommendation_id = ? AND journal_id = ?", rid, jid).
 		First(&answer)
 
 	if result.Error != nil {
@@ -94,6 +102,13 @@ func CreateRecommendationAnswer(c *gin.Context) {
 		RecommendationID: uint(recommendationId),
 		File:             filePath, // Save the relative path
 		CheckedDone:      checkedDone,
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newRecommendationAnswer.JournalID), 10), userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
 	}
 
 	// Step 1: Create the record
@@ -156,6 +171,13 @@ func EditRecommendationAnswer(c *gin.Context) {
 		Form:        form,
 		File:        filePath, // Save the relative path
 		CheckedDone: checkedDone,
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newRecommendationAnswer.JournalID), 10), userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
 	}
 
 	// Update only the fields sent in the request
