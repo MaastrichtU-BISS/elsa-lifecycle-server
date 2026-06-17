@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"server/database"
 	"server/models"
+	"server/utils"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -23,15 +25,23 @@ func GetFurtherReflectionAnswerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
-// GET /furtherReflectionAnswers?rid=:rid - Fetch furtherReflectionAnswer by userId and reflectionId
-func GetFurtherReflectionAnswerByUserIdAndReflectionID(c *gin.Context) {
+// GET /furtherReflectionAnswers/:id?jid=:jid - Fetch furtherReflectionAnswer by journalId and reflectionId
+func GetFurtherReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 	var answer models.FurtherReflectionAnswer
-	rid := c.Query("rid")
+	frid := c.Query("id")
+	jid := c.Query("jid")
 	userId := c.GetString("user_id")
+
+	// Validate journal ownership and existence
+	err := utils.CheckJournalAuthentication(jid, userId)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
 
 	result := database.DB.
 		Preload("Reflection").
-		Where("reflection_id = ? AND user_id = ?", rid, userId).
+		Where("reflection_id = ? AND journal_id = ?", frid, jid).
 		First(&answer)
 
 	if result.Error != nil {
@@ -54,6 +64,14 @@ func CreateFurtherReflectionAnswer(c *gin.Context) {
 		return
 	}
 
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence
+	err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+
 	database.DB.Create(&newAnswer)
 	c.JSON(http.StatusOK, newAnswer)
 }
@@ -63,6 +81,14 @@ func EditFurtherReflectionAnswer(c *gin.Context) {
 	var newAnswer models.FurtherReflectionAnswer
 	if err := c.ShouldBindJSON(&newAnswer); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence
+	err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
