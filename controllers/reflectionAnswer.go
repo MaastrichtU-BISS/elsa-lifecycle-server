@@ -25,11 +25,11 @@ func GetReflectionAnswerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
-// GET /reflectionAnswers/:id?jid=:jid
+// GET /reflectionAnswers?rid=:rid&jid=:jid
 func GetReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 	var answer models.ReflectionAnswer
 	jid := c.Query("jid")
-	rid := c.Query("id")
+	rid := c.Query("rid")
 	userId := c.GetString("user_id")
 
 	// Validate journal ownership and existence

@@ -27,10 +27,10 @@ func GetRecommendationAnswerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
-// GET /recommendationAnswers/:id?jid=:jid - Fetch recommendationAnswer by journalId and recommendationlId
+// GET /recommendationAnswers?rid=:rid&jid=:jid - Fetch recommendationAnswer by journalId and recommendationId
 func GetRecommendationAnswerByJournalIdAndRecommendationID(c *gin.Context) {
 	var answer models.RecommendationAnswer
-	rid := c.Query("id")
+	rid := c.Query("rid")
 	jid := c.Query("jid")
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
 

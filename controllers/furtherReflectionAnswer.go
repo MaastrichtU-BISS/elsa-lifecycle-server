@@ -25,10 +25,10 @@ func GetFurtherReflectionAnswerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
-// GET /furtherReflectionAnswers/:id?jid=:jid - Fetch furtherReflectionAnswer by journalId and reflectionId
+// GET /furtherReflectionAnswers?rid=:rid&jid=:jid - Fetch furtherReflectionAnswer by journalId and reflectionId
 func GetFurtherReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 	var answer models.FurtherReflectionAnswer
-	frid := c.Query("id")
+	rid := c.Query("rid")
 	jid := c.Query("jid")
 	userId := c.GetString("user_id")
 
@@ -40,7 +40,7 @@ func GetFurtherReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 
 	result := database.DB.
 		Preload("Reflection").
-		Where("reflection_id = ? AND journal_id = ?", frid, jid).
+		Where("reflection_id = ? AND journal_id = ?", rid, jid).
 		First(&answer)
 
 	if result.Error != nil {
