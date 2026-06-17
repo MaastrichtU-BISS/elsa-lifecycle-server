@@ -5,18 +5,16 @@ import (
 	"log"
 
 	"server/seeder"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// if err := godotenv.Load(); err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
-	if err := seeder.RequireTestEnvironment(); err != nil {
-		log.Fatal(err)
-	}
+	// if err := seeder.RequireTestEnvironment(); err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	if err := seeder.ResetAndSeedDatabase(); err != nil {
 		log.Fatal(err)

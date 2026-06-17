@@ -29,6 +29,7 @@ func ConnectDB() {
 	DB.AutoMigrate(&models.Lifecycle{},
 		&models.Phase{},
 		&models.Reflection{},
+		&models.Journal{},
 		&models.ReflectionAnswer{},
 		&models.FurtherReflectionAnswer{},
 		&models.Tool{},

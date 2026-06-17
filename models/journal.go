@@ -14,5 +14,5 @@ type Journal struct {
 	LifecycleID uint      `json:"lifecycleId"`
 	Lifecycle   Lifecycle `gorm:"foreignKey:LifecycleID"` // Relationship to the lifecycle
 	CreatedAt   time.Time `json:"createdAt" gorm:"autoCreateTime"`
-	UpdatedAt   time.Time `json:"updatedAt" gorm:"autoUpdateTime;index:idx_reflection_user_updated,sort:desc"`
+	UpdatedAt   time.Time `json:"updatedAt" gorm:"autoUpdateTime"`
 }
