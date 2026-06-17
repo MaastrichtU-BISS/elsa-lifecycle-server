@@ -2,6 +2,9 @@
 package utils
 
 import (
+	"errors"
+	"server/database"
+	"server/models"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -27,4 +30,18 @@ func GenerateJWT(userID uuid.UUID) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwtKey)
+}
+
+func CheckJournalAuthentication(journalID string, userID string) error {
+	// load the journal to check ownership and existence
+	var journal models.Journal
+	if err := database.DB.First(&journal, journalID).Error; err != nil {
+		return err
+	}
+
+	// (Authentication) check if the journal belongs to the user
+	if journal.UserID.String() != userID {
+		return errors.New("you do not have access to this journal")
+	}
+	return nil
 }
