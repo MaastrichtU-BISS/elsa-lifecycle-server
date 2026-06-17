@@ -62,8 +62,20 @@ func CreateJournal(c *gin.Context) {
 		return
 	}
 
+	// Step 1: create the tuple
 	newJournal.UserID = uuid.MustParse(c.GetString("user_id")) // Assuming user ID is stored in context after authentication
-	database.DB.Create(&newJournal)
+	if err := database.DB.Create(&newJournal).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Step 2: Load to preload the Lifecycle
+	if err := database.DB.Preload("Lifecycle").
+		First(&newJournal, newJournal.ID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, newJournal)
 }
 
