@@ -22,6 +22,14 @@ func GetReflectionAnswerByID(c *gin.Context) {
 		return
 	}
 
+	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(answer.JournalID), 10), userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, answer)
 }
 
@@ -84,13 +92,6 @@ func EditReflectionAnswer(c *gin.Context) {
 		return
 	}
 
-	userId := c.GetString("user_id")
-	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-		return
-	}
-
 	id := c.Param("id")
 	var existingAnswer models.ReflectionAnswer
 	if err := database.DB.Preload("Reflection").First(&existingAnswer, id).Error; err != nil {
@@ -103,6 +104,14 @@ func EditReflectionAnswer(c *gin.Context) {
 		Select("Form", "BinaryEvaluation").
 		Updates(&newAnswer).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update answer"})
+		return
+	}
+
+	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(existingAnswer.JournalID), 10), userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
