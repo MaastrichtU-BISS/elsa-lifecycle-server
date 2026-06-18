@@ -54,7 +54,9 @@ func GetJournalByID(c *gin.Context) {
 		return
 	}
 
-	if err := database.DB.Preload("User").Preload("Lifecycle").First(&journal, id).Error; err != nil {
+	if err := database.DB.
+		Preload("Lifecycle.Phases.Reflections").
+		First(&journal, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
