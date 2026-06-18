@@ -90,13 +90,6 @@ func EditFurtherReflectionAnswer(c *gin.Context) {
 		return
 	}
 
-	userId := c.GetString("user_id")
-	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-		return
-	}
-
 	id := c.Param("id")
 	var existingAnswer models.FurtherReflectionAnswer
 	if err := database.DB.Preload("Reflection").First(&existingAnswer, id).Error; err != nil {
@@ -108,6 +101,13 @@ func EditFurtherReflectionAnswer(c *gin.Context) {
 		Select("Form").
 		Updates(&newAnswer).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update answer"})
+		return
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(existingAnswer.JournalID), 10), userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
