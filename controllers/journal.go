@@ -138,11 +138,6 @@ func GenerateJournalPDF(c *gin.Context) {
 				continue
 			}
 
-			var journal models.Journal
-			if err := database.DB.Where("user_id = ? AND lifecycle_id = ?", journal.UserID, journal.Lifecycle.ID).First(&journal).Error; err != nil {
-				c.JSON(http.StatusNotFound, gin.H{"error": "Journal not found for user and lifecycle"})
-			}
-
 			// Get user's answer to this reflection
 			answer := models.ReflectionAnswer{ReflectionID: reflection.ID, Reflection: reflection, JournalID: journal.ID, UpdatedAt: time.Now()}
 			answerPtr := &answer
@@ -199,7 +194,11 @@ func GenerateJournalPDF(c *gin.Context) {
 
 		// Title
 		pdf.SetFont("Arial", "B", 24)
-		pdf.CellFormat(0, 15, stripMarkdown(journal.Lifecycle.Title), "", 1, "C", false, 0, "")
+		pdf.CellFormat(0, 15, stripMarkdown(journal.Title), "", 1, "C", false, 0, "")
+		pdf.Ln(5)
+
+		pdf.SetFont("Arial", "B", 14)
+		pdf.CellFormat(0, 15, stripMarkdown(journal.Lifecycle.Description), "", 1, "C", false, 0, "")
 		pdf.Ln(5)
 
 		// Username (without "User:" prefix)
@@ -209,13 +208,6 @@ func GenerateJournalPDF(c *gin.Context) {
 		// Date and time of generation
 		pdf.CellFormat(0, 6, fmt.Sprintf("Generated: %s", time.Now().Format("January 2, 2006 at 3:04 PM")), "", 1, "L", false, 0, "")
 		pdf.Ln(8)
-
-		// Description
-		if journal.Lifecycle.Description != "" {
-			pdf.SetFont("Arial", "", 12)
-			renderMarkdownText(pdf, journal.Lifecycle.Description, 12)
-			pdf.Ln(3)
-		}
 
 		// Introduction section
 		if journal.Lifecycle.Introduction != "" {
