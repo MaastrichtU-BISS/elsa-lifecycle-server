@@ -83,6 +83,12 @@ func CreateRecommendationAnswer(c *gin.Context) {
 		return
 	}
 
+	journalId, err := strconv.ParseUint(c.PostForm("journalId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse journalId to uint64"})
+		return
+	}
+
 	// Parse checked_done boolean field
 	checkedDone := c.PostForm("checked_done") == "true"
 
@@ -108,6 +114,7 @@ func CreateRecommendationAnswer(c *gin.Context) {
 	newRecommendationAnswer := models.RecommendationAnswer{
 		Form:             form,
 		RecommendationID: uint(recommendationId),
+		JournalID:        uint(journalId),
 		File:             filePath, // Save the relative path
 		CheckedDone:      checkedDone,
 	}
