@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"server/database"
 	"server/models"
+	"server/utils"
 	"strings"
 	"time"
 
@@ -45,6 +46,13 @@ func GetAllJournals(c *gin.Context) {
 func GetJournalByID(c *gin.Context) {
 	var journal models.Journal
 	id := c.Param("id")
+	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(id, userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
 
 	if err := database.DB.Preload("User").Preload("Lifecycle").First(&journal, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
@@ -82,6 +90,13 @@ func CreateJournal(c *gin.Context) {
 // GET /journals/:id/pdf - Generate PDF for a journal with user's answers
 func GenerateJournalPDF(c *gin.Context) {
 	journalID := c.Param("id")
+	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(journalID, userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Fetch journal with all related data
 	var journal models.Journal

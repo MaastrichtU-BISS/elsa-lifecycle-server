@@ -22,6 +22,14 @@ func GetFurtherReflectionAnswerByID(c *gin.Context) {
 		return
 	}
 
+	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
+
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(answer.JournalID), 10), userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, answer)
 }
 
