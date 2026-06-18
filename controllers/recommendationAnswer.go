@@ -112,13 +112,6 @@ func CreateRecommendationAnswer(c *gin.Context) {
 		CheckedDone:      checkedDone,
 	}
 
-	userId := c.GetString("user_id")
-	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newRecommendationAnswer.JournalID), 10), userId); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-		return
-	}
-
 	// Step 1: Create the record
 	if err := database.DB.Create(&newRecommendationAnswer).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -183,7 +176,7 @@ func EditRecommendationAnswer(c *gin.Context) {
 
 	userId := c.GetString("user_id")
 	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newRecommendationAnswer.JournalID), 10), userId); err != nil {
+	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(existingAnswer.JournalID), 10), userId); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
