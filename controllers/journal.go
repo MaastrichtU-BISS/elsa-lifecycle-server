@@ -198,7 +198,7 @@ func GenerateJournalPDF(c *gin.Context) {
 		pdf.Ln(5)
 
 		pdf.SetFont("Arial", "B", 14)
-		pdf.CellFormat(0, 15, stripMarkdown(journal.Lifecycle.Description), "", 1, "C", false, 0, "")
+		pdf.CellFormat(0, 15, stripMarkdown(journal.Lifecycle.Title), "", 1, "C", false, 0, "")
 		pdf.Ln(5)
 
 		// Username (without "User:" prefix)
