@@ -8,8 +8,10 @@ import (
 	"server/database"
 	"server/models"
 	"server/utils"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -78,6 +80,54 @@ func GetRecommendationAnswerByJournalIdAndRecommendationID(c *gin.Context) {
 	c.JSON(http.StatusOK, answer)
 }
 
+// uploaded files are private: only served through DownloadRecommendationAnswerFile
+const recommendationAnswerUploadDir = "uploads/recommendation_answers"
+
+// saveRecommendationAnswerFile stores an upload as <uploadDir>/<random id>/<original name>,
+// so files with the same name never overwrite each other and the name stays readable
+func saveRecommendationAnswerFile(c *gin.Context) (path string, uploaded bool, err error) {
+	fileHeader, err := c.FormFile("file")
+	if err != nil {
+		return "", false, nil
+	}
+
+	name := filepath.Base(strings.ReplaceAll(fileHeader.Filename, "\\", "/"))
+	if name == "." || name == "/" || name == ".." {
+		name = "file"
+	}
+
+	dir := filepath.Join(recommendationAnswerUploadDir, uuid.NewString())
+	if err := os.MkdirAll(dir, 0o750); err != nil {
+		return "", true, err
+	}
+
+	path = filepath.Join(dir, name)
+	if err := c.SaveUploadedFile(fileHeader, path); err != nil {
+		os.RemoveAll(dir)
+		return "", true, err
+	}
+	return path, true, nil
+}
+
+// removeRecommendationAnswerFile deletes a stored upload, ignoring paths outside the upload directory
+func removeRecommendationAnswerFile(path string) {
+	if !isInRecommendationAnswerUploadDir(path) {
+		return
+	}
+	dir := filepath.Dir(filepath.Clean(path))
+	if dir == filepath.Clean(recommendationAnswerUploadDir) {
+		// file saved before per-upload directories
+		os.Remove(path)
+		return
+	}
+	os.RemoveAll(dir)
+}
+
+func isInRecommendationAnswerUploadDir(path string) bool {
+	rel, err := filepath.Rel(recommendationAnswerUploadDir, filepath.Clean(path))
+	return err == nil && rel != "." && !strings.HasPrefix(rel, "..")
+}
+
 // POST /recommendationAnswers - Insert a new recommendationAnswers
 func CreateRecommendationAnswer(c *gin.Context) {
 	// Parse form data (10 MB max)
@@ -111,21 +161,10 @@ func CreateRecommendationAnswer(c *gin.Context) {
 	checkedDone := c.PostForm("checked_done") == "true"
 
 	// Handle file upload
-	fileHeader, err := c.FormFile("file")
-	var filePath string
-	if err == nil {
-		// Save the uploaded file to the "uploads" directory
-		uploadDir := "./uploads/recommendation_answers"
-		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload/recommendations directory"})
-			return
-		}
-
-		filePath = filepath.Join(uploadDir, fileHeader.Filename)
-		if err := c.SaveUploadedFile(fileHeader, filePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
-			return
-		}
+	filePath, _, err := saveRecommendationAnswerFile(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
 	}
 
 	// Create new recommendation_answer entry
@@ -139,25 +178,27 @@ func CreateRecommendationAnswer(c *gin.Context) {
 
 	// Step 1: Create the record
 	if err := database.DB.Create(&newRecommendationAnswer).Error; err != nil {
+		removeRecommendationAnswerFile(filePath)
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Recommendation or journal does not exist"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item"})
 		return
 	}
 
 	// Step 2: Reload with preloads
 	if err := database.DB.Preload("Recommendation.Tool").
 		First(&newRecommendationAnswer, newRecommendationAnswer.ID).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch item"})
 		return
 	}
 
 	c.JSON(http.StatusOK, newRecommendationAnswer)
 }
 
-// PUT /recommendationAnswers/:id/edit - Edit an recommendationAnswer
+// PUT /recommendationAnswers/:id/edit - Edit an recommendationAnswer.
+// Only the fields present in the request (form, file, checked_done) are updated.
 func EditRecommendationAnswer(c *gin.Context) {
 	// Parse form data (10 MB max)
 	if err := c.Request.ParseMultipartForm(10 << 20); err != nil {
@@ -183,44 +224,40 @@ func EditRecommendationAnswer(c *gin.Context) {
 		return
 	}
 
-	// Read fields from the form
-	form := c.PostForm("form")
-
-	// Parse checked_done boolean field
-	checkedDone := c.PostForm("checked_done") == "true"
-
-	// Handle file upload
-	fileHeader, err := c.FormFile("file")
-	var filePath string
-	if err == nil {
-		// Save the uploaded file to the "uploads" directory
-		uploadDir := "./uploads/recommendation_answers"
-		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload/recommendations directory"})
-			return
-		}
-
-		filePath = filepath.Join(uploadDir, fileHeader.Filename)
-		if err := c.SaveUploadedFile(fileHeader, filePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
-			return
-		}
+	// a map (not a struct) so false and empty values are written too
+	updates := map[string]interface{}{}
+	if form, ok := c.GetPostForm("form"); ok {
+		updates["form"] = form
+	}
+	if checkedDone, ok := c.GetPostForm("checked_done"); ok {
+		updates["checked_done"] = checkedDone == "true"
 	}
 
-	// Create new recommendation_answer entry
-	newRecommendationAnswer := models.RecommendationAnswer{
-		Form:        form,
-		File:        filePath, // Save the relative path
-		CheckedDone: checkedDone,
+	filePath, uploaded, err := saveRecommendationAnswerFile(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+	if uploaded {
+		updates["file"] = filePath
 	}
 
-	// Update only the fields sent in the request
-	if err := database.DB.Model(&existingAnswer).
-		// Without Select, checkedDone would not be updated if false
-		Select("form", "file", "checked_done").
-		Updates(&newRecommendationAnswer).Error; err != nil {
+	if len(updates) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Nothing to update: send form, file or checked_done"})
+		return
+	}
+
+	// Updates writes the new values into existingAnswer, so keep the previous file path
+	previousFile := existingAnswer.File
+	if err := database.DB.Model(&existingAnswer).Updates(updates).Error; err != nil {
+		removeRecommendationAnswerFile(filePath)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update item"})
 		return
+	}
+
+	// the new file replaced the previous one
+	if uploaded && previousFile != "" && previousFile != filePath {
+		removeRecommendationAnswerFile(previousFile)
 	}
 
 	//fetch the updated answer
@@ -231,4 +268,37 @@ func EditRecommendationAnswer(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, updatedAnswer)
+}
+
+// GET /recommendationAnswers/:id/file - Download the uploaded file of a recommendationAnswer
+func DownloadRecommendationAnswerFile(c *gin.Context) {
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
+
+	var answer models.RecommendationAnswer
+	if err := database.DB.First(&answer, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
+		return
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence
+	if err := utils.CheckJournalAuthentication(answer.JournalID, userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+
+	if answer.File == "" || !isInRecommendationAnswerUploadDir(answer.File) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+	if _, err := os.Stat(answer.File); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+
+	c.FileAttachment(answer.File, filepath.Base(answer.File))
 }

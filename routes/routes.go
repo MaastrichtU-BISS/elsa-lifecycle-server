@@ -85,9 +85,6 @@ func SetupRouter() *gin.Engine {
 	cfg := buildCORSConfigFromString(os.Getenv("CORS_ALLOW_ORIGINS"))
 	r.Use(cors.New(cfg))
 
-	// images
-	r.Static("/uploads", "./uploads") // Serve static files from the "uploads" directory
-
 	// authentication routes
 	r.POST("/auth/register", controllers.Register)
 	r.POST("/auth/login", controllers.Login)
@@ -111,8 +108,6 @@ func SetupRouter() *gin.Engine {
 	// Tool routes
 	r.GET("/tools", controllers.GetTools)
 	r.GET("/tools/:id", controllers.GetToolByID)
-	r.POST("/tools", controllers.CreateTool)
-	r.PUT("/tools/:id/edit", controllers.EditTool)
 
 	// Recommendation routes
 	r.GET("/recommendations/:reflectionId", controllers.GetRecommendations)
@@ -147,6 +142,7 @@ func SetupRouter() *gin.Engine {
 		protected.GET("/recommendationAnswers", controllers.GetRecommendationAnswerByJournalIdAndRecommendationID)
 		protected.POST("/recommendationAnswers", controllers.CreateRecommendationAnswer)
 		protected.PUT("/recommendationAnswers/:id/edit", controllers.EditRecommendationAnswer)
+		protected.GET("/recommendationAnswers/:id/file", controllers.DownloadRecommendationAnswerFile)
 
 	}
 
