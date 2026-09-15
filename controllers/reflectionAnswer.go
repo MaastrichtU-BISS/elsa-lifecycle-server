@@ -99,6 +99,7 @@ func CreateReflectionAnswer(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item"})
 		return
 	}
+	touchJournal(newAnswer.JournalID)
 	c.JSON(http.StatusOK, newAnswer)
 }
 
@@ -136,6 +137,8 @@ func EditReflectionAnswer(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update answer"})
 		return
 	}
+
+	touchJournal(existingAnswer.JournalID)
 
 	//fetch the updated answer
 	var updatedAnswer models.ReflectionAnswer

@@ -97,6 +97,7 @@ func CreateFurtherReflectionAnswer(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item"})
 		return
 	}
+	touchJournal(newAnswer.JournalID)
 	c.JSON(http.StatusOK, newAnswer)
 }
 
@@ -132,6 +133,8 @@ func EditFurtherReflectionAnswer(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update answer"})
 		return
 	}
+
+	touchJournal(existingAnswer.JournalID)
 
 	var updatedAnswer models.FurtherReflectionAnswer
 	if err := database.DB.Preload("Reflection").First(&updatedAnswer, id).Error; err != nil {

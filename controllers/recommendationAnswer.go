@@ -187,6 +187,8 @@ func CreateRecommendationAnswer(c *gin.Context) {
 		return
 	}
 
+	touchJournal(journalId)
+
 	// Step 2: Reload with preloads
 	if err := database.DB.Preload("Recommendation.Tool").
 		First(&newRecommendationAnswer, newRecommendationAnswer.ID).Error; err != nil {
@@ -254,6 +256,8 @@ func EditRecommendationAnswer(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update item"})
 		return
 	}
+
+	touchJournal(existingAnswer.JournalID)
 
 	// the new file replaced the previous one
 	if uploaded && previousFile != "" && previousFile != filePath {

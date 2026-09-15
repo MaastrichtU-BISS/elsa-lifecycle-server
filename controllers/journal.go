@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"mime"
 	"net/http"
 	"server/database"
@@ -20,6 +21,16 @@ import (
 	"gorm.io/gorm"
 )
 
+// touchJournal marks a journal as updated. Call it after saving any of its answers,
+// so the journals list can show and sort by the last time something was saved.
+func touchJournal(journalID uint) {
+	if err := database.DB.Model(&models.Journal{}).
+		Where("id = ?", journalID).
+		UpdateColumn("updated_at", time.Now()).Error; err != nil {
+		log.Printf("failed to update timestamp of journal %d: %v", journalID, err)
+	}
+}
+
 // orderBy returns a preload condition that sorts the preloaded rows.
 // Postgres doesn't guarantee row order without ORDER BY.
 func orderBy(column string) func(*gorm.DB) *gorm.DB {
@@ -28,7 +39,7 @@ func orderBy(column string) func(*gorm.DB) *gorm.DB {
 	}
 }
 
-// GET /journals - Fetch journal by user ID
+// GET /journals - Fetch the user's journals, most recently updated first
 func GetAllJournals(c *gin.Context) {
 	var journals []models.Journal
 	userId := c.GetString("user_id")
@@ -36,7 +47,7 @@ func GetAllJournals(c *gin.Context) {
 	result := database.DB.
 		Preload("Lifecycle").
 		Where("user_id = ?", userId).
-		Order("id").
+		Order("updated_at DESC, id DESC").
 		Find(&journals)
 
 	if result.Error != nil {
