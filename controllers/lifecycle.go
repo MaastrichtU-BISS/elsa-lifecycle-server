@@ -25,7 +25,7 @@ func GetLifecycleByID(c *gin.Context) {
 		return
 	}
 
-	if err := database.DB.Preload("Phases", orderBy("phases.id")).Preload("Phases.Reflections", orderBy("reflections.id")).First(&lifecycles, id).Error; err != nil {
+	if err := database.DB.Preload("Reflections", orderBy("reflections.id")).First(&lifecycles, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}

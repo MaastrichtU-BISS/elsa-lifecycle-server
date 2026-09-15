@@ -61,13 +61,6 @@ All seed data is located in the `database/seeds/` directory. The following files
 	- `General` (string, markdown)
 	- `Introduction` (string, markdown)
 
-### phases.json
-- **Schema:**
-	- `Number` (integer)
-	- `Title` (string)
-	- `Description` (string)
-	- `LifecycleID` (integer, foreign key)
-
 ### tools.json
 - **Schema:**
 	- `Title` (string)
@@ -79,11 +72,15 @@ All seed data is located in the `database/seeds/` directory. The following files
 	- `FormFile` (string, path to JSON-LD in `database/seeds/forms/`)
 
 ### reflections.json
+The sections of a lifecycle's journal, shown in the order of this file.
 - **Schema:**
-	- `Title` (string)
-	- `Description` (string)
+	- `Title` (string, section label shown in the journal index)
+	- `Context` (string, introductory paragraph)
+	- `Description` (string, the question the user answers)
+	- `Considerations` (string, JSON array of strings)
 	- `FormFile` (string, path to JSON-LD in `database/seeds/forms/`)
-	- `PhaseID` (integer, foreign key)
+	- `FurtherReflectionFormFile` (string, path to JSON-LD in `database/seeds/forms/`)
+	- `LifecycleID` (integer, foreign key)
 
 ### reflection_answers.json
 - **Schema:**
@@ -94,9 +91,8 @@ All seed data is located in the `database/seeds/` directory. The following files
 
 ### recommendations.json
 - **Schema:**
-	- `ReflectionID` (integer, foreign key)
-	- `ToolID` (integer, foreign key)
-	- `BinaryEvaluation` (integer)
+	- `ReflectionID` (integer, foreign key: position of the section in `reflections.json`, starting at 1)
+	- `ToolID` (integer, foreign key: position of the tool in `tools.json`, starting at 1)
 
 ### recommendation_answers.json
 - **Schema:**
@@ -107,8 +103,9 @@ All seed data is located in the `database/seeds/` directory. The following files
 
 ### forms/ (directory)
 - Contains referenced JSON-LD form files, e.g.:
-	- `value_sensitive_design.jsonld`
-	- `reflection_phase1.jsonld`
+	- `value_sensitive_design.json`
+	- `reflections/generic_reflection_form.jsonld`
+	- `reflections/generic_further_reflection_form.jsonld`
 
 **Warning:** Seeding will clear and repopulate the relevant tables. Only use this in development or when you want to reset the database.
 

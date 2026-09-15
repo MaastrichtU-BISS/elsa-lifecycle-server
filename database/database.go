@@ -43,7 +43,6 @@ func ConnectDB() {
 	sqlDB.SetConnMaxLifetime(30 * time.Minute)
 
 	if err := DB.AutoMigrate(&models.Lifecycle{},
-		&models.Phase{},
 		&models.Reflection{},
 		&models.Journal{},
 		&models.ReflectionAnswer{},

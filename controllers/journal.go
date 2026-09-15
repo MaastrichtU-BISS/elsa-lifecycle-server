@@ -70,8 +70,7 @@ func GetJournalByID(c *gin.Context) {
 	}
 
 	if err := database.DB.
-		Preload("Lifecycle.Phases", orderBy("phases.id")).
-		Preload("Lifecycle.Phases.Reflections", orderBy("reflections.id")).
+		Preload("Lifecycle.Reflections", orderBy("reflections.id")).
 		First(&journal, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
@@ -123,8 +122,7 @@ func GenerateJournalPDF(c *gin.Context) {
 	// Fetch journal with all related data
 	var journal models.Journal
 	if err := database.DB.
-		Preload("Lifecycle.Phases", orderBy("phases.id")).
-		Preload("Lifecycle.Phases.Reflections", orderBy("reflections.id")).
+		Preload("Lifecycle.Reflections", orderBy("reflections.id")).
 		Preload("User").
 		First(&journal, journalID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Journal not found"})
@@ -140,11 +138,6 @@ func GenerateJournalPDF(c *gin.Context) {
 		RecommendationAnswers map[uint]*models.RecommendationAnswer
 	}
 
-	type PhaseData struct {
-		Phase              models.Phase
-		ReflectionDataList []ReflectionData
-	}
-
 	// Optional reflectionId filter
 	reflectionIDParam := c.Query("reflectionId")
 	var reflectionIDFilter uint
@@ -156,68 +149,57 @@ func GenerateJournalPDF(c *gin.Context) {
 		}
 	}
 
-	var phaseDataList []PhaseData
+	var reflectionDataList []ReflectionData
 
-	for _, phase := range journal.Lifecycle.Phases {
-		var reflectionDataList []ReflectionData
-
-		for _, reflection := range phase.Reflections {
-			if reflectionIDFilter != 0 && reflection.ID != reflectionIDFilter {
-				continue
-			}
-
-			// Get user's answer to this reflection
-			var answer models.ReflectionAnswer
-			var answerPtr *models.ReflectionAnswer
-			if err := database.DB.
-				Where("reflection_id = ? AND journal_id = ?", reflection.ID, journal.ID).
-				First(&answer).Error; err == nil {
-				answerPtr = &answer
-			}
-
-			// Get user's further reflection answer
-			var furtherAnswer models.FurtherReflectionAnswer
-			var furtherAnswerPtr *models.FurtherReflectionAnswer
-			if err := database.DB.
-				Where("reflection_id = ? AND journal_id = ?", reflection.ID, journal.ID).
-				First(&furtherAnswer).Error; err == nil {
-				furtherAnswerPtr = &furtherAnswer
-			}
-
-			// Get recommendations for this reflection
-			var recommendations []models.Recommendation
-			database.DB.
-				Preload("Tool").
-				Where("reflection_id = ?", reflection.ID).
-				Order("id").
-				Find(&recommendations)
-
-			// Get user's recommendation answers that are checked done
-			recommendationAnswers := make(map[uint]*models.RecommendationAnswer)
-			for _, rec := range recommendations {
-				var recAnswer models.RecommendationAnswer
-				if err := database.DB.
-					Where("recommendation_id = ? AND journal_id = ? AND checked_done = ?", rec.ID, journal.ID, true).
-					First(&recAnswer).Error; err == nil {
-					recommendationAnswers[rec.ID] = &recAnswer
-				}
-			}
-
-			reflectionDataList = append(reflectionDataList, ReflectionData{
-				Reflection:            reflection,
-				Answer:                answerPtr,
-				FurtherAnswer:         furtherAnswerPtr,
-				Recommendations:       recommendations,
-				RecommendationAnswers: recommendationAnswers,
-			})
+	for _, reflection := range journal.Lifecycle.Reflections {
+		if reflectionIDFilter != 0 && reflection.ID != reflectionIDFilter {
+			continue
 		}
 
-		if len(reflectionDataList) > 0 {
-			phaseDataList = append(phaseDataList, PhaseData{
-				Phase:              phase,
-				ReflectionDataList: reflectionDataList,
-			})
+		// Get user's answer to this reflection
+		var answer models.ReflectionAnswer
+		var answerPtr *models.ReflectionAnswer
+		if err := database.DB.
+			Where("reflection_id = ? AND journal_id = ?", reflection.ID, journal.ID).
+			First(&answer).Error; err == nil {
+			answerPtr = &answer
 		}
+
+		// Get user's further reflection answer
+		var furtherAnswer models.FurtherReflectionAnswer
+		var furtherAnswerPtr *models.FurtherReflectionAnswer
+		if err := database.DB.
+			Where("reflection_id = ? AND journal_id = ?", reflection.ID, journal.ID).
+			First(&furtherAnswer).Error; err == nil {
+			furtherAnswerPtr = &furtherAnswer
+		}
+
+		// Get recommendations for this reflection
+		var recommendations []models.Recommendation
+		database.DB.
+			Preload("Tool").
+			Where("reflection_id = ?", reflection.ID).
+			Order("id").
+			Find(&recommendations)
+
+		// Get user's recommendation answers that are checked done
+		recommendationAnswers := make(map[uint]*models.RecommendationAnswer)
+		for _, rec := range recommendations {
+			var recAnswer models.RecommendationAnswer
+			if err := database.DB.
+				Where("recommendation_id = ? AND journal_id = ? AND checked_done = ?", rec.ID, journal.ID, true).
+				First(&recAnswer).Error; err == nil {
+				recommendationAnswers[rec.ID] = &recAnswer
+			}
+		}
+
+		reflectionDataList = append(reflectionDataList, ReflectionData{
+			Reflection:            reflection,
+			Answer:                answerPtr,
+			FurtherAnswer:         furtherAnswerPtr,
+			Recommendations:       recommendations,
+			RecommendationAnswers: recommendationAnswers,
+		})
 	}
 
 	// Create PDF
@@ -252,137 +234,124 @@ func GenerateJournalPDF(c *gin.Context) {
 		}
 	}
 
-	// Phases
-	for _, phaseData := range phaseDataList {
-		// Check page break before phase title
+	// Journal sections
+	for _, reflData := range reflectionDataList {
+		// Check page break before section title
 		if pdf.GetY() > 250 {
 			pdf.AddPage()
 		}
 
-		// Phase Title
+		// Section Title
 		pdf.SetFont("Arial", "B", 18)
-		pdf.CellFormat(0, 10, cleanText(stripMarkdown(phaseData.Phase.Title)), "", 1, "L", false, 0, "")
+		pdf.CellFormat(0, 10, cleanText(stripMarkdown(reflData.Reflection.Title)), "", 1, "L", false, 0, "")
 		pdf.Ln(2)
 
-		// Phase Description
-		if phaseData.Phase.Description != "" {
-			renderMarkdownText(pdf, phaseData.Phase.Description, 12)
-			pdf.Ln(5)
+		// Section Context
+		if reflData.Reflection.Context != "" {
+			renderMarkdownText(pdf, reflData.Reflection.Context, 12)
+			pdf.Ln(3)
 		}
 
-		// Reflections for this phase
-		for _, reflData := range phaseData.ReflectionDataList {
-			// Check page break before reflection title
+		// Question
+		if reflData.Reflection.Description != "" {
+			pdf.SetFont("Arial", "B", 12)
+			pdf.MultiCell(0, 6, cleanText(stripMarkdown(reflData.Reflection.Description)), "", "L", false)
+			pdf.Ln(2)
+		}
+
+		// Considerations
+		if reflData.Reflection.Considerations != "" {
+			// Check page break
 			if pdf.GetY() > 250 {
 				pdf.AddPage()
 			}
-			// Reflection Title
-			pdf.SetFont("Arial", "B", 14)
-			pdf.CellFormat(0, 8, cleanText(stripMarkdown(reflData.Reflection.Title)), "", 1, "L", false, 0, "")
-			pdf.Ln(1)
 
-			// Reflection Description
-			if reflData.Reflection.Description != "" {
-				renderMarkdownText(pdf, reflData.Reflection.Description, 11)
-				pdf.Ln(2)
+			pdf.SetFont("Arial", "B", 11)
+			pdf.CellFormat(0, 6, "In your answer, you might consider:", "", 1, "L", false, 0, "")
+
+			// Parse considerations as JSON array
+			var considerations []string
+			if err := json.Unmarshal([]byte(reflData.Reflection.Considerations), &considerations); err == nil {
+				pdf.SetFont("Arial", "", 11)
+				for _, consideration := range considerations {
+					pdf.MultiCell(0, 5, fmt.Sprintf("  - %s", cleanText(stripMarkdown(consideration))), "", "L", false)
+				}
+			} else {
+				// Fallback if not JSON, just render as text
+				renderMarkdownText(pdf, reflData.Reflection.Considerations, 11)
+			}
+			pdf.Ln(2)
+		}
+
+		// Answer
+		if reflData.Answer != nil && reflData.Answer.Form != "" {
+			// Check page break
+			if pdf.GetY() > 250 {
+				pdf.AddPage()
 			}
 
-			// Considerations
-			if reflData.Reflection.Considerations != "" {
-				// Check page break
-				if pdf.GetY() > 250 {
-					pdf.AddPage()
-				}
-
-				pdf.SetFont("Arial", "B", 11)
-				pdf.CellFormat(0, 6, "In your answer, you might consider:", "", 1, "L", false, 0, "")
-
-				// Parse considerations as JSON array
-				var considerations []string
-				if err := json.Unmarshal([]byte(reflData.Reflection.Considerations), &considerations); err == nil {
-					pdf.SetFont("Arial", "", 11)
-					for _, consideration := range considerations {
-						pdf.MultiCell(0, 5, fmt.Sprintf("  - %s", cleanText(stripMarkdown(consideration))), "", "L", false)
-					}
-				} else {
-					// Fallback if not JSON, just render as text
-					renderMarkdownText(pdf, reflData.Reflection.Considerations, 11)
-				}
-				pdf.Ln(2)
-			}
-
-			// Answer
-			if reflData.Answer != nil && reflData.Answer.Form != "" {
-				// Check page break
-				if pdf.GetY() > 250 {
-					pdf.AddPage()
-				}
-
-				pdf.SetFont("Arial", "B", 12)
-				pdf.CellFormat(0, 6, "Answer:", "", 1, "L", false, 0, "")
-				// Parse and render reflection answer fields (without showing titles)
-				renderFields(pdf, reflData.Answer.Form, 11, []FieldConfig{
-					{Key: "free_text", Title: "", Style: ""},
-					{Key: "get_recommendations", Title: "", Style: "I"},
-				}, false)
-				pdf.Ln(4)
-			}
-
-			// Recommended Tools Used (only those checked done by user)
-			var usedRecommendations []models.Recommendation
-			for _, rec := range reflData.Recommendations {
-				if _, exists := reflData.RecommendationAnswers[rec.ID]; exists {
-					usedRecommendations = append(usedRecommendations, rec)
-				}
-			}
-
-			if len(usedRecommendations) > 0 {
-				// Check page break
-				if pdf.GetY() > 250 {
-					pdf.AddPage()
-				}
-
-				pdf.SetFont("Arial", "B", 12)
-				pdf.CellFormat(0, 6, "Recommended Tools Used:", "", 1, "L", false, 0, "")
-
-				for _, rec := range usedRecommendations {
-					pdf.SetFont("Arial", "", 10)
-					// Title and description in black
-					recText := fmt.Sprintf("  - %s", cleanText(stripMarkdown(rec.Tool.Title)))
-					pdf.MultiCell(0, 5, recText, "", "L", false)
-
-					// URL in light blue if present
-					if rec.Tool.URL != "" {
-						pdf.SetTextColor(70, 130, 180) // Light blue color (Steel Blue)
-						pdf.SetFont("Arial", "U", 10)  // Underlined
-						pdf.SetX(pdf.GetX() + 5)       // Indent 5mm from left margin
-						pdf.MultiCell(0, 5, cleanText(rec.Tool.URL), "", "L", false)
-						pdf.SetTextColor(0, 0, 0)    // Reset to black
-						pdf.SetFont("Arial", "", 10) // Reset font
-					}
-				}
-				pdf.Ln(4)
-			}
-
-			// Further Reflections
-			if reflData.FurtherAnswer != nil && reflData.FurtherAnswer.Form != "" {
-				// Check page break
-				if pdf.GetY() > 250 {
-					pdf.AddPage()
-				}
-
-				pdf.SetFont("Arial", "B", 12)
-				pdf.CellFormat(0, 6, "Further Reflections", "", 1, "L", false, 0, "")
-				renderFields(pdf, reflData.FurtherAnswer.Form, 11, []FieldConfig{
-					{Key: "further-reflection", Title: "", Style: ""},
-				}, false)
-				pdf.Ln(4)
-			}
-
+			pdf.SetFont("Arial", "B", 12)
+			pdf.CellFormat(0, 6, "Answer:", "", 1, "L", false, 0, "")
+			// Parse and render reflection answer fields (without showing titles)
+			renderFields(pdf, reflData.Answer.Form, 11, []FieldConfig{
+				{Key: "free_text", Title: "", Style: ""},
+				{Key: "get_recommendations", Title: "", Style: "I"},
+			}, false)
 			pdf.Ln(4)
 		}
 
-		pdf.Ln(3)
+		// Recommended Tools Used (only those checked done by user)
+		var usedRecommendations []models.Recommendation
+		for _, rec := range reflData.Recommendations {
+			if _, exists := reflData.RecommendationAnswers[rec.ID]; exists {
+				usedRecommendations = append(usedRecommendations, rec)
+			}
+		}
+
+		if len(usedRecommendations) > 0 {
+			// Check page break
+			if pdf.GetY() > 250 {
+				pdf.AddPage()
+			}
+
+			pdf.SetFont("Arial", "B", 12)
+			pdf.CellFormat(0, 6, "Recommended Tools Used:", "", 1, "L", false, 0, "")
+
+			for _, rec := range usedRecommendations {
+				pdf.SetFont("Arial", "", 10)
+				// Title and description in black
+				recText := fmt.Sprintf("  - %s", cleanText(stripMarkdown(rec.Tool.Title)))
+				pdf.MultiCell(0, 5, recText, "", "L", false)
+
+				// URL in light blue if present
+				if rec.Tool.URL != "" {
+					pdf.SetTextColor(70, 130, 180) // Light blue color (Steel Blue)
+					pdf.SetFont("Arial", "U", 10)  // Underlined
+					pdf.SetX(pdf.GetX() + 5)       // Indent 5mm from left margin
+					pdf.MultiCell(0, 5, cleanText(rec.Tool.URL), "", "L", false)
+					pdf.SetTextColor(0, 0, 0)    // Reset to black
+					pdf.SetFont("Arial", "", 10) // Reset font
+				}
+			}
+			pdf.Ln(4)
+		}
+
+		// Further Reflections
+		if reflData.FurtherAnswer != nil && reflData.FurtherAnswer.Form != "" {
+			// Check page break
+			if pdf.GetY() > 250 {
+				pdf.AddPage()
+			}
+
+			pdf.SetFont("Arial", "B", 12)
+			pdf.CellFormat(0, 6, "Further Reflections", "", 1, "L", false, 0, "")
+			renderFields(pdf, reflData.FurtherAnswer.Form, 11, []FieldConfig{
+				{Key: "further-reflection", Title: "", Style: ""},
+			}, false)
+			pdf.Ln(4)
+		}
+
+		pdf.Ln(7)
 	}
 
 	// Generate PDF to buffer

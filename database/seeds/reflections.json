@@ -1,50 +1,83 @@
 [
   {
     "Title": "Problem Definition",
+    "Context": "Before any data is collected or models are built, it's crucial to define the problem space. This stage shapes the project's direction and impact. Early ethical, legal, and societal reflections help ensure that the goals are clear, legitimate, and sensitive to the needs and rights of all stakeholders.",
     "Description": "Can you describe the problem that your project is trying to solve?",
-    "Considerations": "[\"What makes this problem important or worth addressing.\", \"How the problem could be seen from different perspectives (e.g. technical, social, ethical, or organisational).\", \"Whether reframing the problem might change how you would approach or solve it.\"]",
+    "Considerations": "[\"What makes this problem important or worth addressing.\", \"How the problem could be seen from different perspectives (e.g. technical, social, ethical, or organisational).\", \"Whether the proposed AI solution/model contributes positively to society.\", \"Whether this is the least invasive way to address the problem.\"]",
     "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
-    "PhaseID": 1
+    "LifecycleID": 1
   },
   {
     "Title": "Stakeholders",
+    "Context": "It is essential to identify who is affected by and involved in the project. This involves mapping the individuals, groups, and institutions with a stake in the system's development and outcomes. Understanding their perspectives, interests, and power dynamics helps ensure that the project remains accountable, inclusive, and responsive to those who will experience its consequences.",
     "Description": "Can you describe the people and groups connected to this project?",
     "Considerations": "[\"Who the key stakeholders are (e.g. users, communities, organisations, policymakers, or others indirectly affected).\", \"How different groups might experience the project’s outcomes differently — both positively and negatively.\", \"Whether any voices or perspectives might be missing.\", \"What kinds of engagement, dialogue, or collaboration could help make the project more inclusive or responsive to stakeholders’ needs.\"]",
     "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
-    "PhaseID": 1
+    "LifecycleID": 1
   },
   {
     "Title": "Data Collection",
+    "Context": "Gathering data introduces immediate ethical and legal responsibilities. Decisions about what data to collect, from whom, and how, can embed biases or privacy risks into the project from the start. This stage focuses on ensuring data is responsibly sourced and appropriate for the intended purpose.",
     "Description": "Can you describe your approach to data collection?",
     "Considerations": "[\"How appropriate, legitimate, and transparent your data sources are.\", \"Whether you’re collecting only the data that’s necessary for your purpose (data minimization).\", \"How you ensure that participants or data subjects are treated fairly and respectfully in the process.\", \"Whether the data you’re using could reflect or reinforce structural biases or inequalities.\"]",
     "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
-    "PhaseID": 2
-  },
-  {
-    "Title": "Privacy and Consent",
-    "Description": "Can you describe how your project will handle consent and privacy concerns?",
-    "Considerations": "[\"Whether informed consent has been clearly communicated and genuinely obtained where needed.\", \"How privacy is protected throughout data collection, storage, and sharing.\", \"Whether participants understand how their data will be used and what control they have over it.\", \"Any potential risks of surveillance, tracking, or unintended data exposure — and how these could be mitigated.\"]",
-    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
-    "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
-    "PhaseID": 2
+    "LifecycleID": 1
   },
   {
     "Title": "Documentation",
+    "Context": "Good documentation makes ethical and legal decision-making visible, understandable, and accountable. Communicating clearly about risks, limitations, and choices builds trust with users, stakeholders, and regulators, and ensures the system can be responsibly maintained and improved.",
     "Description": "Can you describe how you will manage and document your data?",
-    "Considerations": "[\"What kinds of preprocessing decisions you’ve made (e.g., handling missing data, imputation, filtering, normalization).\", \"Whether these decisions are clearly documented and can be explained or defended.\", \"How you ensure that data transformations don’t introduce bias or distort results.\", \"Whether your documentation would allow others to replicate or audit your process with confidence.\"]",
+    "Considerations": "[\"What kinds of preprocessing decisions you’ve made (e.g., handling missing data, imputation, filtering, normalization).\", \"Whether key decisions and justifications have been provided at different stages of the project.\", \"Whether these decisions are clearly documented and can be explained or defended.\", \"Whether the documentation is accessible to non-technical audiences (e.g., decision-makers, end users).\"]",
     "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
-    "PhaseID": 3
+    "LifecycleID": 1
   },
   {
-    "Title": "Missing Data",
+    "Title": "Privacy & Consent",
+    "Context": "Handling personal or sensitive data comes with responsibilities that go beyond legal compliance. This stage encourages reflection on how data is collected, stored, and used and whether individuals have meaningfully agreed to that use. Thoughtful attention to privacy and consent helps build trust and respects the autonomy of those whose data powers the system.",
+    "Description": "Can you describe how your project will handle privacy concerns and consent?",
+    "Considerations": "[\"Whether informed consent has been clearly communicated and genuinely obtained where needed.\", \"How privacy is protected throughout data collection, storage, and sharing.\", \"Whether participants understand how their data will be used and what control they have over it.\", \"Any potential risks of surveillance, tracking, or unintended data exposure and how these could be mitigated.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
+    "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
+    "LifecycleID": 1
+  },
+  {
+    "Title": "Bias & Fairness",
+    "Context": "How data is cleaned, labelled, transformed, and structured can introduce or amplify bias long before modelling begins. This stage invites reflection on where skewed representation, subjective labelling choices, or flawed assumptions might enter the pipeline and how they could disadvantage certain groups or distort outcomes downstream.",
     "Description": "Can you describe how bias might emerge during your data preparation process?",
     "Considerations": "[\"Whether missing or incomplete data could reflect hidden biases or structural inequalities.\", \"If any groups are disproportionately affected by how data is cleaned, filtered, or excluded.\", \"How sensitive variables (e.g., race, gender, location, income) are identified, used, or protected.\", \"What checks or safeguards you have in place to ensure fairness and transparency in these steps.\"]",
     "FormFile": "forms/reflections/generic_reflection_form.jsonld",
     "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
-    "PhaseID": 3
+    "LifecycleID": 1
+  },
+  {
+    "Title": "Evaluation",
+    "Context": "Testing a model's performance must go beyond standard accuracy metrics. It’s essential to evaluate how well the model performs across different groups and whether it behaves consistently with ethical and legal expectations. Critical evaluation ensures models are not only effective but also just and trustworthy.",
+    "Description": "Can you describe how you will evaluate your model's performance?",
+    "Considerations": "[\"Whether evaluation metrics align with social and ethical goals.\", \"Whether model performance is being tested across different demographic or social groups.\", \"Whether unexpected results have emerged from interactions with the model across different demographic or social groups.\", \"The extent to which limitations and uncertainties have been clearly identified.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
+    "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
+    "LifecycleID": 1
+  },
+  {
+    "Title": "Implementation",
+    "Context": "Deploying a system in the real world brings new challenges: user interaction, societal impact, and regulatory compliance. Ethical deployment involves ensuring transparency, accountability, and safeguards for those affected by the system’s outcomes.",
+    "Description": "Can you describe how your system will be deployed?",
+    "Considerations": "[\"Whether the deployment context has been clearly understood and relevant stakeholders have been considered.\", \"Whether mechanisms are in place for human oversight, feedback, or redress.\", \"If relevant legal and regulatory requirements have been adhered to.\", \"The extent to which potential unidentified consequences have been considered, identified, and (where possible) mitigated.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
+    "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
+    "LifecycleID": 1
+  },
+  {
+    "Title": "Maintenance",
+    "Context": "Once deployed, systems continue to affect people and environments, and they can drift, degrade, or produce unforeseen effects. Thinking about longer term monitoring ensures that problems are detected early and that the system remains aligned with its intended ethical and legal commitments over time.",
+    "Description": "Can you describe how your system will be monitored and maintained?",
+    "Considerations": "[\"How you will monitor ongoing performance.\", \"How you will track unintended impacts or model drift over time.\", \"Whether the model be updated, corrected, or decommissioned (if necessary).\", \"How affected users are able to provide feedback and/or raise concerns.\"]",
+    "FormFile": "forms/reflections/generic_reflection_form.jsonld",
+    "FurtherReflectionFormFile": "forms/reflections/generic_further_reflection_form.jsonld",
+    "LifecycleID": 1
   }
 ]

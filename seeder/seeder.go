@@ -25,12 +25,6 @@ type LifecycleSeed struct {
 	Introduction string `json:"Introduction"`
 }
 
-type PhaseSeed struct {
-	Title       string `json:"Title"`
-	Description string `json:"Description"`
-	LifecycleID int    `json:"LifecycleID"`
-}
-
 type ToolSeed struct {
 	Title       string  `json:"Title"`
 	Description string  `json:"Description"`
@@ -113,11 +107,15 @@ func ResetAndSeedDatabase(opts Options) error {
 	}
 	db := database.DB
 
+	// phases were removed: reflections now belong directly to a lifecycle
+	if err := db.Migrator().DropTable("phases"); err != nil {
+		return err
+	}
+
 	if err := db.Migrator().DropTable(
 		&models.Journal{},
 		&models.User{},
 		&models.Lifecycle{},
-		&models.Phase{},
 		&models.Tool{},
 		&models.Reflection{},
 		&models.ReflectionAnswer{},
@@ -132,7 +130,6 @@ func ResetAndSeedDatabase(opts Options) error {
 		&models.Journal{},
 		&models.User{},
 		&models.Lifecycle{},
-		&models.Phase{},
 		&models.Tool{},
 		&models.Reflection{},
 		&models.ReflectionAnswer{},
@@ -180,21 +177,6 @@ func ResetAndSeedDatabase(opts Options) error {
 		}
 	}
 
-	var phases []PhaseSeed
-	if err := readSeed("database/seeds/phases.json", &phases); err != nil {
-		return err
-	}
-
-	for _, p := range phases {
-		if err := db.Create(&models.Phase{
-			Title:       p.Title,
-			Description: p.Description,
-			LifecycleID: uint(p.LifecycleID),
-		}).Error; err != nil {
-			return err
-		}
-	}
-
 	var tools []ToolSeed
 	if err := readSeed("database/seeds/tools.json", &tools); err != nil {
 		return err
@@ -228,10 +210,11 @@ func ResetAndSeedDatabase(opts Options) error {
 		Form                      string `json:"Form"`
 		FurtherReflectionFormFile string `json:"FurtherReflectionFormFile"`
 		FurtherReflectionForm     string `json:"-"`
-		Description               string `json:"Description"`
 		Title                     string `json:"Title"`
+		Context                   string `json:"Context"`
+		Description               string `json:"Description"`
 		Considerations            string `json:"Considerations"`
-		PhaseID                   uint   `json:"PhaseID"`
+		LifecycleID               uint   `json:"LifecycleID"`
 	}
 
 	if err := readSeed("database/seeds/reflections.json", &reflections); err != nil {
@@ -258,10 +241,11 @@ func ResetAndSeedDatabase(opts Options) error {
 		if err := db.Create(&models.Reflection{
 			Form:                  reflections[i].Form,
 			FurtherReflectionForm: reflections[i].FurtherReflectionForm,
-			Description:           r.Description,
 			Title:                 r.Title,
+			Context:               r.Context,
+			Description:           r.Description,
 			Considerations:        r.Considerations,
-			PhaseID:               r.PhaseID,
+			LifecycleID:           r.LifecycleID,
 		}).Error; err != nil {
 			return err
 		}

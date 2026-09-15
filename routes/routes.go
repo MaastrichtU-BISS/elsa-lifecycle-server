@@ -97,10 +97,6 @@ func SetupRouter() *gin.Engine {
 	// Lifecycle routes
 	r.GET("/lifecycles", controllers.GetAllLifecycles)
 	r.GET("/lifecycles/:id", controllers.GetLifecycleByID)
-	// r.GET("/lifecycles/:id/phases", controllers.GetPhases)
-
-	// Phase routes
-	r.GET("/phases/:id", controllers.GetPhaseById)
 
 	// Reflection routes
 	r.GET("/reflections/:id", controllers.GetReflectionByID)
