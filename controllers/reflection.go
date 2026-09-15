@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"server/database"
 	"server/models"
+	"server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +12,11 @@ import (
 // GET /reflections/:id - Fetch reflection by ID
 func GetReflectionByID(c *gin.Context) {
 	var reflection models.Reflection
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 
 	if err := database.DB.First(&reflection, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
@@ -24,7 +29,11 @@ func GetReflectionByID(c *gin.Context) {
 // DELETE /reflections/:id - Delete reflection by ID
 func DeleteReflection(c *gin.Context) {
 	var reflection models.Reflection
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 
 	if err := database.DB.First(&reflection, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
@@ -46,7 +55,10 @@ func CreateReflection(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	database.DB.Create(&newReflection)
+	if err := database.DB.Create(&newReflection).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item"})
+		return
+	}
 	c.JSON(http.StatusOK, newReflection)
 }
 

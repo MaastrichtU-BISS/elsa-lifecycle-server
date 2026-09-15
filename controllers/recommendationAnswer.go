@@ -8,7 +8,6 @@ import (
 	"server/database"
 	"server/models"
 	"server/utils"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -17,7 +16,11 @@ import (
 // GET /recommendationAnswers/:id - Fetch recommendationAnswers by ID
 func GetRecommendationAnswerByID(c *gin.Context) {
 	var answer models.RecommendationAnswer
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 
 	if err := database.DB.Preload("Recommendation.Tool").First(&answer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
@@ -27,7 +30,7 @@ func GetRecommendationAnswerByID(c *gin.Context) {
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
 
 	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(answer.JournalID), 10), userId); err != nil {
+	if err := utils.CheckJournalAuthentication(answer.JournalID, userId); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
@@ -38,8 +41,16 @@ func GetRecommendationAnswerByID(c *gin.Context) {
 // GET /recommendationAnswers?rid=:rid&jid=:jid - Fetch recommendationAnswer by journalId and recommendationId
 func GetRecommendationAnswerByJournalIdAndRecommendationID(c *gin.Context) {
 	var answer models.RecommendationAnswer
-	rid := c.Query("rid")
-	jid := c.Query("jid")
+	rid, err := utils.ParseID(c.Query("rid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "rid must be a positive integer"})
+		return
+	}
+	jid, err := utils.ParseID(c.Query("jid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "jid must be a positive integer"})
+		return
+	}
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
 
 	// Validate journal ownership and existence
@@ -77,15 +88,22 @@ func CreateRecommendationAnswer(c *gin.Context) {
 
 	// Read fields from the form
 	form := c.PostForm("form")
-	recommendationId, err := strconv.ParseUint(c.PostForm("recommendationId"), 10, 64)
+	recommendationId, err := utils.ParseID(c.PostForm("recommendationId"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse recommendationId to uint64"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "recommendationId must be a positive integer"})
 		return
 	}
 
-	journalId, err := strconv.ParseUint(c.PostForm("journalId"), 10, 64)
+	journalId, err := utils.ParseID(c.PostForm("journalId"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse journalId to uint64"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "journalId must be a positive integer"})
+		return
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence before saving anything
+	if err := utils.CheckJournalAuthentication(journalId, userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -113,14 +131,18 @@ func CreateRecommendationAnswer(c *gin.Context) {
 	// Create new recommendation_answer entry
 	newRecommendationAnswer := models.RecommendationAnswer{
 		Form:             form,
-		RecommendationID: uint(recommendationId),
-		JournalID:        uint(journalId),
+		RecommendationID: recommendationId,
+		JournalID:        journalId,
 		File:             filePath, // Save the relative path
 		CheckedDone:      checkedDone,
 	}
 
 	// Step 1: Create the record
 	if err := database.DB.Create(&newRecommendationAnswer).Error; err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Recommendation or journal does not exist"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -140,6 +162,24 @@ func EditRecommendationAnswer(c *gin.Context) {
 	// Parse form data (10 MB max)
 	if err := c.Request.ParseMultipartForm(10 << 20); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse multipart form"})
+		return
+	}
+
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
+	var existingAnswer models.RecommendationAnswer
+	if err := database.DB.First(&existingAnswer, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
+		return
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence before saving anything
+	if err := utils.CheckJournalAuthentication(existingAnswer.JournalID, userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -167,25 +207,11 @@ func EditRecommendationAnswer(c *gin.Context) {
 		}
 	}
 
-	id := c.Param("id")
-	var existingAnswer models.RecommendationAnswer
-	if err := database.DB.First(&existingAnswer, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
-		return
-	}
-
 	// Create new recommendation_answer entry
 	newRecommendationAnswer := models.RecommendationAnswer{
 		Form:        form,
 		File:        filePath, // Save the relative path
 		CheckedDone: checkedDone,
-	}
-
-	userId := c.GetString("user_id")
-	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(existingAnswer.JournalID), 10), userId); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-		return
 	}
 
 	// Update only the fields sent in the request

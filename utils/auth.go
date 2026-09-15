@@ -3,6 +3,8 @@ package utils
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"server/database"
 	"server/models"
 	"time"
@@ -12,7 +14,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtKey = []byte("my_secret_key") // TODO: Replace with your secret key fom environment variable
+const minJWTSecretLength = 32
+
+var jwtKey []byte
+
+// LoadJWTKey reads the token signing key from JWT_SECRET. Call it at startup, after loading .env
+func LoadJWTKey() error {
+	secret := os.Getenv("JWT_SECRET")
+	if len(secret) < minJWTSecretLength {
+		return fmt.Errorf("JWT_SECRET must be set to at least %d characters", minJWTSecretLength)
+	}
+	jwtKey = []byte(secret)
+	return nil
+}
 
 func HashPassword(p string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(p), 14)
@@ -24,6 +38,9 @@ func CheckPasswordHash(p, hash string) bool {
 }
 
 func GenerateJWT(userID uuid.UUID) (string, error) {
+	if len(jwtKey) == 0 {
+		return "", errors.New("JWT key not loaded")
+	}
 	claims := jwt.MapClaims{
 		"user_id": userID.String(),
 		"exp":     time.Now().Add(24 * time.Hour).Unix(),
@@ -32,7 +49,7 @@ func GenerateJWT(userID uuid.UUID) (string, error) {
 	return token.SignedString(jwtKey)
 }
 
-func CheckJournalAuthentication(journalID string, userID string) error {
+func CheckJournalAuthentication(journalID uint, userID string) error {
 	// load the journal to check ownership and existence
 	var journal models.Journal
 	if err := database.DB.First(&journal, journalID).Error; err != nil {

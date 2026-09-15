@@ -5,6 +5,7 @@ import (
 
 	"server/database"
 	"server/routes"
+	"server/utils"
 
 	"github.com/joho/godotenv"
 )
@@ -12,6 +13,10 @@ import (
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system environment variables")
+	}
+
+	if err := utils.LoadJWTKey(); err != nil {
+		log.Fatal(err)
 	}
 
 	database.ConnectDB()

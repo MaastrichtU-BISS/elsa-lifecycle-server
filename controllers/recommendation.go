@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"server/database"
 	"server/models"
+	"server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +12,11 @@ import (
 // GET /recommendations/:reflectionId?binaryEvaluation - Fetch recommendations by reflection ID and binaryEvaluation
 func GetRecommendations(c *gin.Context) {
 	var recommendations []models.Recommendation
-	reflectionId := c.Param("reflectionId")
+	reflectionId, err := utils.ParseID(c.Param("reflectionId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "reflectionId must be a positive integer"})
+		return
+	}
 	getRecommendations := c.Query("getRecommendations") == "true"
 
 	if !getRecommendations {

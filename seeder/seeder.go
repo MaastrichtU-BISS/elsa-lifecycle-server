@@ -10,6 +10,7 @@ import (
 	"server/models"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type UserSeed struct {
@@ -42,28 +43,78 @@ type ToolSeed struct {
 	FileUpload  bool    `json:"FileUpload"`
 }
 
+type Options struct {
+	// SkipUsers leaves out the demo users from users.json (use in production)
+	SkipUsers bool
+}
+
+// HasUserData reports whether the database contains journals or users that did not come from
+// the seed files, i.e. data that a reset would destroy
+func HasUserData() (bool, error) {
+	if database.DB == nil {
+		database.ConnectDB()
+	}
+	db := database.DB
+
+	var journals int64
+	if err := db.Model(&models.Journal{}).Count(&journals).Error; err != nil {
+		return false, err
+	}
+	if journals > 0 {
+		return true, nil
+	}
+
+	var seedUsers []UserSeed
+	if err := readSeed("database/seeds/users.json", &seedUsers); err != nil {
+		return false, err
+	}
+	seedEmails := make([]string, 0, len(seedUsers))
+	for _, u := range seedUsers {
+		seedEmails = append(seedEmails, u.Email)
+	}
+
+	query := db.Model(&models.User{})
+	if len(seedEmails) > 0 {
+		query = query.Where("email NOT IN ?", seedEmails)
+	}
+	var users int64
+	if err := query.Count(&users).Error; err != nil {
+		return false, err
+	}
+	return users > 0, nil
+}
+
 func RequireTestEnvironment() error {
 	if os.Getenv("APP_ENV") != "test" {
 		return fmt.Errorf("refusing to reset database outside test environment")
 	}
 
-	dbPath := os.Getenv("DB_PATH")
-	if dbPath == "" {
-		return fmt.Errorf("DB_PATH must be set when running test seed")
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		return fmt.Errorf("DATABASE_URL must be set when running test seed")
 	}
 
-	if filepath.Base(dbPath) == "elsa.db" {
-		return fmt.Errorf("refusing to reset main database elsa.db")
+	config, err := pgconn.ParseConfig(databaseURL)
+	if err != nil {
+		return fmt.Errorf("invalid DATABASE_URL: %w", err)
+	}
+
+	if config.Database == "elsa" {
+		return fmt.Errorf("refusing to reset main database elsa")
 	}
 
 	return nil
 }
 
-func ResetAndSeedDatabase() error {
-	database.ConnectDB()
+func ResetAndSeedDatabase(opts Options) error {
+	// reuse the server's connection when called from the reset endpoint
+	if database.DB == nil {
+		database.ConnectDB()
+	}
 	db := database.DB
 
-	db.Migrator().DropTable(
+	if err := db.Migrator().DropTable(
+		&models.Journal{},
 		&models.User{},
 		&models.Lifecycle{},
 		&models.Phase{},
@@ -73,9 +124,12 @@ func ResetAndSeedDatabase() error {
 		&models.FurtherReflectionAnswer{},
 		&models.Recommendation{},
 		&models.RecommendationAnswer{},
-	)
+	); err != nil {
+		return err
+	}
 
 	if err := db.AutoMigrate(
+		&models.Journal{},
 		&models.User{},
 		&models.Lifecycle{},
 		&models.Phase{},
@@ -90,8 +144,10 @@ func ResetAndSeedDatabase() error {
 	}
 
 	var users []UserSeed
-	if err := readSeed("database/seeds/users.json", &users); err != nil {
-		return err
+	if !opts.SkipUsers {
+		if err := readSeed("database/seeds/users.json", &users); err != nil {
+			return err
+		}
 	}
 
 	for _, u := range users {

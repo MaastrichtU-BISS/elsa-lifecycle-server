@@ -22,6 +22,10 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// Parse token
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+			// only accept the HMAC tokens this server signs
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || len(jwtKey) == 0 {
+				return nil, jwt.ErrSignatureInvalid
+			}
 			return jwtKey, nil
 		})
 		if err != nil || !token.Valid {
@@ -30,8 +34,9 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// Extract user_id from token claims
-		if claims, ok := token.Claims.(jwt.MapClaims); ok {
-			userID := claims["user_id"].(string)
+		claims, ok := token.Claims.(jwt.MapClaims)
+		userID, hasUserID := claims["user_id"].(string)
+		if ok && hasUserID {
 			c.Set("user_id", userID) // save in context
 			c.Next()
 		} else {

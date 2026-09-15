@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"server/database"
 	"server/models"
+	"server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,9 +21,13 @@ func GetTools(c *gin.Context) {
 // GET /tools/:id - Fetch tool by ID
 func GetToolByID(c *gin.Context) {
 	var tool models.Tool
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 
-	if err := database.DB.Preload("Tool").First(&tool, id).Error; err != nil {
+	if err := database.DB.First(&tool, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}
@@ -87,7 +92,11 @@ func EditTool(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 	var existingTool models.Tool
 	if err := database.DB.First(&existingTool, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})

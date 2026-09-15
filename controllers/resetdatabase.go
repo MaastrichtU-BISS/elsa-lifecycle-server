@@ -34,7 +34,7 @@ func ResetDatabase(c *gin.Context) {
 		return
 	}
 
-	if err := seeder.ResetAndSeedDatabase(); err != nil {
+	if err := seeder.ResetAndSeedDatabase(seeder.Options{}); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})

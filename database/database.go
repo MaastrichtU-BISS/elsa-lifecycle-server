@@ -4,29 +4,45 @@ import (
 	"log"
 	"os"
 	"server/models"
+	"time"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
+// default connection string, matching the Postgres service in docker-compose.yml
+const defaultDatabaseURL = "postgres://elsa:elsa@localhost:5432/elsa?sslmode=disable"
+
+// DatabaseURL returns the connection string from DATABASE_URL, or the local default
+func DatabaseURL() string {
+	if url := os.Getenv("DATABASE_URL"); url != "" {
+		return url
+	}
+	return defaultDatabaseURL
+}
+
 func ConnectDB() {
 	var err error
-	// default path (relative path used both local and Docker environments)
-	defaultPath := "./database/db/elsa.db"
-	// allow override from environment variable DB_PATH
-	dbPath := os.Getenv("DB_PATH")
-	if dbPath == "" {
-		dbPath = defaultPath
-	}
 
-	DB, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(DatabaseURL()), &gorm.Config{
+		// map constraint violations to gorm.ErrForeignKeyViolated / gorm.ErrDuplicatedKey
+		TranslateError: true,
+	})
 	if err != nil {
-		log.Fatalf("failed to connect database (%s): %v", dbPath, err)
+		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	DB.AutoMigrate(&models.Lifecycle{},
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatalf("failed to get database handle: %v", err)
+	}
+	sqlDB.SetMaxOpenConns(25)
+	sqlDB.SetMaxIdleConns(5)
+	sqlDB.SetConnMaxLifetime(30 * time.Minute)
+
+	if err := DB.AutoMigrate(&models.Lifecycle{},
 		&models.Phase{},
 		&models.Reflection{},
 		&models.Journal{},
@@ -35,5 +51,7 @@ func ConnectDB() {
 		&models.Tool{},
 		&models.Recommendation{},
 		&models.RecommendationAnswer{},
-		&models.User{})
+		&models.User{}); err != nil {
+		log.Fatalf("failed to migrate database: %v", err)
+	}
 }

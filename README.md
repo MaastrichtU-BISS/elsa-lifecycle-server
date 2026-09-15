@@ -2,17 +2,19 @@
 
 ## How to run?
 
-Install Go on your system https://go.dev/doc/install
+Install Go on your system https://go.dev/doc/install and Docker (for the local Postgres database).
 
-### Windows?
-Also install mingw-w64 GCC through https://www.msys2.org/. GCC is used to run C code.
-
-Enable C code to run using Go, since sqlite relies on it (see [go.mod](./go.mod))
+Start Postgres (creates the `elsa` database, plus `elsa_test` for e2e tests):
 
 ```bash
-go env -w CGO_ENABLED=1
+docker compose up -d
 ```
 
+Create a `.env` file from the example and set `JWT_SECRET` (the server won't start without it):
+
+```bash
+cp .env.example .env
+```
 
 To run the project locally in development mode:
 
@@ -31,10 +33,15 @@ go run cmd/seed/main.go
 
 This will load all seed data from the `database/seeds/` directory (including JSON and JSON-LD files) and populate the database accordingly.
 
-You can also specify a custom database path by setting the `DB_PATH` environment variable:
+Flags:
+
+- `-skip-users`: don't create the demo users from `users.json`. Use this in production, since the demo user has a publicly known password.
+- `-force`: seed even if the database contains journals or registered users. Seeding refuses by default, because it deletes them.
+
+You can also seed a different database by setting the `DATABASE_URL` environment variable:
 
 ```bash
-DB_PATH="/tmp/my-elsa.db" go run cmd/seed/main.go
+DATABASE_URL="postgres://elsa:elsa@localhost:5432/elsa_test?sslmode=disable" go run cmd/seed/main.go
 ```
 
 ## Seed Files and Schemas
@@ -133,32 +140,43 @@ Notes:
 - Patterns are converted to regular expressions internally. For safety, malformed patterns are ignored.
 - If the variable is empty or unset, the server defaults to `http://localhost` and `http://localhost:*`.
 
-## Configuration: DB_PATH
+## Configuration: JWT_SECRET
 
-The server uses a SQLite database file. By default the project uses the file at `database/db/elsa.db`.
+Required. The key used to sign login tokens, at least 32 characters. The server refuses to start without it. Generate one with:
 
-You can override the path to the SQLite database file with the environment variable `DB_PATH`.
+```bash
+openssl rand -base64 48
+```
+
+Use a different secret per environment. Changing it logs out all users.
+
+## Configuration: DATABASE_URL
+
+The server uses a PostgreSQL database, configured with the `DATABASE_URL` environment variable (see [.env.example](./.env.example)).
 
 Examples:
 
-- Use a custom database file:
+- URL format:
 
-	DB_PATH="/tmp/my-elsa.db"
+	DATABASE_URL="postgres://user:password@host:5432/elsa?sslmode=require"
 
-- Use the default (unset the variable):
+- Key/value format:
 
-	unset DB_PATH
+	DATABASE_URL="host=localhost user=elsa password=elsa dbname=elsa port=5432 sslmode=disable"
 
 Notes:
 
-- If `DB_PATH` is not set or is empty, the server falls back to `database/db/elsa.db`.
-- The path can be absolute or relative to the project working directory.
+- If `DATABASE_URL` is not set or is empty, the server falls back to the `docker compose` database: `postgres://elsa:elsa@localhost:5432/elsa?sslmode=disable`.
+- Tables are created and migrated automatically on startup.
+- When running inside Docker, `localhost` refers to the container itself. Use the database host name instead (for example `host.docker.internal` or the compose service name).
 
-When running inside the provided Docker image the application runs from `/app`, so the container-friendly default path is:
+## E2E tests
 
-	/app/database/db/elsa.db
+`POST /test/reset-db` drops and reseeds the database. It is only registered when `APP_ENV=test`, requires the `x-e2e-reset-secret` header to match `E2E_RESET_SECRET`, and refuses to run when `DATABASE_URL` points at the main `elsa` database. Use `elsa_test` instead:
 
-Use an absolute `DB_PATH` when running the container to avoid ambiguity.
+```bash
+APP_ENV=test E2E_RESET_SECRET=<secret> JWT_SECRET=<secret> DATABASE_URL="postgres://elsa:elsa@localhost:5432/elsa_test?sslmode=disable" go run .
+```
 
 # Run as Docker image
 
@@ -168,10 +186,10 @@ Use an absolute `DB_PATH` when running the container to avoid ambiguity.
 To seed the database when running in Docker, run the seeder CLI inside the container. For example:
 
 ```bash
-docker run --rm -e DB_PATH="/app/database/db/elsa.db" -v $(pwd)/database:/app/database ghcr.io/maastrichtu-biss/elsa-lifecycle-server go run cmd/seed/main.go
+docker run --rm -e DATABASE_URL="postgres://elsa:elsa@host.docker.internal:5432/elsa?sslmode=disable" ghcr.io/maastrichtu-biss/elsa-lifecycle-server go run cmd/seed/main.go
 ```
 
-Adjust the `DB_PATH` and volume mounts as needed for your setup.
+Adjust `DATABASE_URL` as needed for your setup.
 
 **Warning:** Seeding will clear and repopulate the relevant tables. Only use this in development or when you want to reset the database.
 

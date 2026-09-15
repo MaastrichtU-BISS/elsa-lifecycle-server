@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"server/database"
 	"server/models"
+	"server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +12,11 @@ import (
 // GET /phases/:id - Fetch phase by id
 func GetPhaseById(c *gin.Context) {
 	var phase models.Phase
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 
 	if err := database.DB.Preload("Reflections").
 		First(&phase, id).Error; err != nil {

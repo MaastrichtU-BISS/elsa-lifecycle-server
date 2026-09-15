@@ -1,22 +1,33 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 
 	"server/seeder"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	// if err := godotenv.Load(); err != nil {
-	// 	log.Fatal("Error loading .env file")
-	// }
+	force := flag.Bool("force", false, "reset even if the database contains journals or registered users")
+	skipUsers := flag.Bool("skip-users", false, "don't create the demo users from users.json (use in production)")
+	flag.Parse()
 
-	// if err := seeder.RequireTestEnvironment(); err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment variables")
+	}
 
-	if err := seeder.ResetAndSeedDatabase(); err != nil {
+	hasUserData, err := seeder.HasUserData()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if hasUserData && !*force {
+		log.Fatal("refusing to seed: the database contains journals or registered users, which seeding deletes. Run with -force to wipe them anyway.")
+	}
+
+	if err := seeder.ResetAndSeedDatabase(seeder.Options{SkipUsers: *skipUsers}); err != nil {
 		log.Fatal(err)
 	}
 

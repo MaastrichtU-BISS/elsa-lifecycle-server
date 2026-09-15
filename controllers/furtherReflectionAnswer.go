@@ -6,7 +6,6 @@ import (
 	"server/database"
 	"server/models"
 	"server/utils"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -15,7 +14,11 @@ import (
 // GET /furtherReflectionAnswers/:id - Fetch furtherReflectionAnswer by ID
 func GetFurtherReflectionAnswerByID(c *gin.Context) {
 	var answer models.FurtherReflectionAnswer
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 
 	if err := database.DB.Preload("Reflection").First(&answer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
@@ -25,7 +28,7 @@ func GetFurtherReflectionAnswerByID(c *gin.Context) {
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
 
 	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(answer.JournalID), 10), userId); err != nil {
+	if err := utils.CheckJournalAuthentication(answer.JournalID, userId); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
@@ -36,8 +39,16 @@ func GetFurtherReflectionAnswerByID(c *gin.Context) {
 // GET /furtherReflectionAnswers?rid=:rid&jid=:jid - Fetch furtherReflectionAnswer by journalId and reflectionId
 func GetFurtherReflectionAnswerByJournalIdAndReflectionID(c *gin.Context) {
 	var answer models.FurtherReflectionAnswer
-	rid := c.Query("rid")
-	jid := c.Query("jid")
+	rid, err := utils.ParseID(c.Query("rid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "rid must be a positive integer"})
+		return
+	}
+	jid, err := utils.ParseID(c.Query("jid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "jid must be a positive integer"})
+		return
+	}
 	userId := c.GetString("user_id")
 
 	// Validate journal ownership and existence
@@ -73,12 +84,19 @@ func CreateFurtherReflectionAnswer(c *gin.Context) {
 
 	userId := c.GetString("user_id")
 	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(newAnswer.JournalID), 10), userId); err != nil {
+	if err := utils.CheckJournalAuthentication(newAnswer.JournalID, userId); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
-	database.DB.Create(&newAnswer)
+	if err := database.DB.Create(&newAnswer).Error; err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Reflection or journal does not exist"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item"})
+		return
+	}
 	c.JSON(http.StatusOK, newAnswer)
 }
 
@@ -90,10 +108,21 @@ func EditFurtherReflectionAnswer(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 	var existingAnswer models.FurtherReflectionAnswer
 	if err := database.DB.Preload("Reflection").First(&existingAnswer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
+		return
+	}
+
+	userId := c.GetString("user_id")
+	// Validate journal ownership and existence before updating
+	if err := utils.CheckJournalAuthentication(existingAnswer.JournalID, userId); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -101,13 +130,6 @@ func EditFurtherReflectionAnswer(c *gin.Context) {
 		Select("Form").
 		Updates(&newAnswer).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update answer"})
-		return
-	}
-
-	userId := c.GetString("user_id")
-	// Validate journal ownership and existence
-	if err := utils.CheckJournalAuthentication(strconv.FormatUint(uint64(existingAnswer.JournalID), 10), userId); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 

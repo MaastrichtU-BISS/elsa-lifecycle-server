@@ -45,7 +45,11 @@ func GetAllJournals(c *gin.Context) {
 // GET /journals/:id - Fetch journal by ID
 func GetJournalByID(c *gin.Context) {
 	var journal models.Journal
-	id := c.Param("id")
+	id, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
 
 	// Validate journal ownership and existence
@@ -91,7 +95,11 @@ func CreateJournal(c *gin.Context) {
 
 // GET /journals/:id/pdf - Generate PDF for a journal with user's answers
 func GenerateJournalPDF(c *gin.Context) {
-	journalID := c.Param("id")
+	journalID, err := utils.ParseID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be a positive integer"})
+		return
+	}
 	userId := c.GetString("user_id") // Assuming user ID is stored in context after authentication
 
 	// Validate journal ownership and existence
@@ -146,7 +154,7 @@ func GenerateJournalPDF(c *gin.Context) {
 			var furtherAnswer models.FurtherReflectionAnswer
 			var furtherAnswerPtr *models.FurtherReflectionAnswer
 			if err := database.DB.
-				Where("reflection_id = ? AND user_id = ?", reflection.ID, journal.UserID).
+				Where("reflection_id = ? AND journal_id = ?", reflection.ID, journal.ID).
 				First(&furtherAnswer).Error; err == nil {
 				furtherAnswerPtr = &furtherAnswer
 			}
@@ -163,7 +171,7 @@ func GenerateJournalPDF(c *gin.Context) {
 			for _, rec := range recommendations {
 				var recAnswer models.RecommendationAnswer
 				if err := database.DB.
-					Where("recommendation_id = ? AND user_id = ? AND checked_done = ?", rec.ID, journal.UserID, true).
+					Where("recommendation_id = ? AND journal_id = ? AND checked_done = ?", rec.ID, journal.ID, true).
 					First(&recAnswer).Error; err == nil {
 					recommendationAnswers[rec.ID] = &recAnswer
 				}

@@ -13,6 +13,9 @@ type User struct {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	u.ID = uuid.New()
+	// keep a preset ID (e.g. from seed data)
+	if u.ID == uuid.Nil {
+		u.ID = uuid.New()
+	}
 	return
 }

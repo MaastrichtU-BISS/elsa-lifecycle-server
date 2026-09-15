@@ -1,0 +1,21 @@
+# Local Postgres for development and e2e tests
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: elsa
+      POSTGRES_PASSWORD: elsa
+      POSTGRES_DB: elsa
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elsa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres-data:
