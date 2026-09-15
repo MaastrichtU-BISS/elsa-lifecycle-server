@@ -18,7 +18,7 @@ func GetPhaseById(c *gin.Context) {
 		return
 	}
 
-	if err := database.DB.Preload("Reflections").
+	if err := database.DB.Preload("Reflections", orderBy("reflections.id")).
 		First(&phase, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return

@@ -12,7 +12,7 @@ import (
 // GET /lifecycles - Fetch all lifecycles
 func GetAllLifecycles(c *gin.Context) {
 	var lifecycles []models.Lifecycle
-	database.DB.Find(&lifecycles)
+	database.DB.Order("id").Find(&lifecycles)
 	c.JSON(http.StatusOK, lifecycles)
 }
 
@@ -25,7 +25,7 @@ func GetLifecycleByID(c *gin.Context) {
 		return
 	}
 
-	if err := database.DB.Preload("Phases.Reflections").First(&lifecycles, id).Error; err != nil {
+	if err := database.DB.Preload("Phases", orderBy("phases.id")).Preload("Phases.Reflections", orderBy("reflections.id")).First(&lifecycles, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
 	}

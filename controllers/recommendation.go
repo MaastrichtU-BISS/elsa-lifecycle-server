@@ -26,6 +26,7 @@ func GetRecommendations(c *gin.Context) {
 
 	if err := database.DB.Preload("Tool").
 		Where("reflection_id = ?", reflectionId).
+		Order("id").
 		Find(&recommendations).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Items not found"})
 		return

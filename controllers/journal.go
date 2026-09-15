@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"mime"
 	"net/http"
 	"server/database"
 	"server/models"
@@ -15,8 +16,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/jung-kurt/gofpdf"
+	"golang.org/x/text/encoding/charmap"
 	"gorm.io/gorm"
 )
+
+// orderBy returns a preload condition that sorts the preloaded rows.
+// Postgres doesn't guarantee row order without ORDER BY.
+func orderBy(column string) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Order(column)
+	}
+}
 
 // GET /journals - Fetch journal by user ID
 func GetAllJournals(c *gin.Context) {
@@ -26,6 +36,7 @@ func GetAllJournals(c *gin.Context) {
 	result := database.DB.
 		Preload("Lifecycle").
 		Where("user_id = ?", userId).
+		Order("id").
 		Find(&journals)
 
 	if result.Error != nil {
@@ -59,7 +70,8 @@ func GetJournalByID(c *gin.Context) {
 	}
 
 	if err := database.DB.
-		Preload("Lifecycle.Phases.Reflections").
+		Preload("Lifecycle.Phases", orderBy("phases.id")).
+		Preload("Lifecycle.Phases.Reflections", orderBy("reflections.id")).
 		First(&journal, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
 		return
@@ -111,10 +123,10 @@ func GenerateJournalPDF(c *gin.Context) {
 	// Fetch journal with all related data
 	var journal models.Journal
 	if err := database.DB.
-		Preload("Lifecycle.Phases.Reflections").
+		Preload("Lifecycle.Phases", orderBy("phases.id")).
+		Preload("Lifecycle.Phases.Reflections", orderBy("reflections.id")).
 		Preload("User").
-		Where("id = ?", journalID).
-		First(&journal).Error; err != nil {
+		First(&journal, journalID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Journal not found"})
 		return
 	}
@@ -135,6 +147,14 @@ func GenerateJournalPDF(c *gin.Context) {
 
 	// Optional reflectionId filter
 	reflectionIDParam := c.Query("reflectionId")
+	var reflectionIDFilter uint
+	if reflectionIDParam != "" {
+		reflectionIDFilter, err = utils.ParseID(reflectionIDParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "reflectionId must be a positive integer"})
+			return
+		}
+	}
 
 	var phaseDataList []PhaseData
 
@@ -142,13 +162,18 @@ func GenerateJournalPDF(c *gin.Context) {
 		var reflectionDataList []ReflectionData
 
 		for _, reflection := range phase.Reflections {
-			if reflectionIDParam != "" && fmt.Sprintf("%d", reflection.ID) != reflectionIDParam {
+			if reflectionIDFilter != 0 && reflection.ID != reflectionIDFilter {
 				continue
 			}
 
 			// Get user's answer to this reflection
-			answer := models.ReflectionAnswer{ReflectionID: reflection.ID, Reflection: reflection, JournalID: journal.ID, UpdatedAt: time.Now()}
-			answerPtr := &answer
+			var answer models.ReflectionAnswer
+			var answerPtr *models.ReflectionAnswer
+			if err := database.DB.
+				Where("reflection_id = ? AND journal_id = ?", reflection.ID, journal.ID).
+				First(&answer).Error; err == nil {
+				answerPtr = &answer
+			}
 
 			// Get user's further reflection answer
 			var furtherAnswer models.FurtherReflectionAnswer
@@ -164,6 +189,7 @@ func GenerateJournalPDF(c *gin.Context) {
 			database.DB.
 				Preload("Tool").
 				Where("reflection_id = ?", reflection.ID).
+				Order("id").
 				Find(&recommendations)
 
 			// Get user's recommendation answers that are checked done
@@ -202,16 +228,16 @@ func GenerateJournalPDF(c *gin.Context) {
 
 		// Title
 		pdf.SetFont("Arial", "B", 24)
-		pdf.CellFormat(0, 15, stripMarkdown(journal.Title), "", 1, "C", false, 0, "")
+		pdf.CellFormat(0, 15, cleanText(stripMarkdown(journal.Title)), "", 1, "C", false, 0, "")
 		pdf.Ln(5)
 
 		pdf.SetFont("Arial", "B", 14)
-		pdf.CellFormat(0, 15, stripMarkdown(journal.Lifecycle.Title), "", 1, "C", false, 0, "")
+		pdf.CellFormat(0, 15, cleanText(stripMarkdown(journal.Lifecycle.Title)), "", 1, "C", false, 0, "")
 		pdf.Ln(5)
 
 		// Username (without "User:" prefix)
 		pdf.SetFont("Arial", "I", 11)
-		pdf.CellFormat(0, 6, journal.User.Email, "", 1, "L", false, 0, "")
+		pdf.CellFormat(0, 6, cleanText(journal.User.Email), "", 1, "L", false, 0, "")
 
 		// Date and time of generation
 		pdf.CellFormat(0, 6, fmt.Sprintf("Generated: %s", time.Now().Format("January 2, 2006 at 3:04 PM")), "", 1, "L", false, 0, "")
@@ -330,7 +356,7 @@ func GenerateJournalPDF(c *gin.Context) {
 						pdf.SetTextColor(70, 130, 180) // Light blue color (Steel Blue)
 						pdf.SetFont("Arial", "U", 10)  // Underlined
 						pdf.SetX(pdf.GetX() + 5)       // Indent 5mm from left margin
-						pdf.MultiCell(0, 5, rec.Tool.URL, "", "L", false)
+						pdf.MultiCell(0, 5, cleanText(rec.Tool.URL), "", "L", false)
 						pdf.SetTextColor(0, 0, 0)    // Reset to black
 						pdf.SetFont("Arial", "", 10) // Reset font
 					}
@@ -371,7 +397,7 @@ func GenerateJournalPDF(c *gin.Context) {
 
 	c.Header("Content-Description", "File Transfer")
 	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
+	c.Header("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": filename}))
 	c.Header("Content-Type", "application/pdf")
 	c.Data(http.StatusOK, "application/pdf", buf.Bytes())
 }
@@ -403,7 +429,7 @@ func renderFields(pdf *gofpdf.Fpdf, formJSON string, fontSize float64, fields []
 			// Render title in bold if showTitles is true
 			if showTitles && field.Title != "" {
 				pdf.SetFont("Arial", "B", fontSize)
-				pdf.MultiCell(0, 6, field.Title, "", "L", false)
+				pdf.MultiCell(0, 6, cleanText(field.Title), "", "L", false)
 				pdf.Ln(1)
 			}
 
@@ -434,15 +460,15 @@ func renderMarkdownText(pdf *gofpdf.Fpdf, text string, fontSize float64) {
 		// Handle headers
 		if strings.HasPrefix(line, "### ") {
 			pdf.SetFont("Arial", "B", fontSize+2)
-			pdf.MultiCell(0, 5, strings.TrimPrefix(line, "### "), "", "L", false)
+			pdf.MultiCell(0, 5, cleanText(strings.TrimPrefix(line, "### ")), "", "L", false)
 			pdf.SetFont("Arial", "", fontSize)
 		} else if strings.HasPrefix(line, "## ") {
 			pdf.SetFont("Arial", "B", fontSize+4)
-			pdf.MultiCell(0, 6, strings.TrimPrefix(line, "## "), "", "L", false)
+			pdf.MultiCell(0, 6, cleanText(strings.TrimPrefix(line, "## ")), "", "L", false)
 			pdf.SetFont("Arial", "", fontSize)
 		} else if strings.HasPrefix(line, "# ") {
 			pdf.SetFont("Arial", "B", fontSize+6)
-			pdf.MultiCell(0, 7, strings.TrimPrefix(line, "# "), "", "L", false)
+			pdf.MultiCell(0, 7, cleanText(strings.TrimPrefix(line, "# ")), "", "L", false)
 			pdf.SetFont("Arial", "", fontSize)
 		} else if strings.HasPrefix(line, "- ") || strings.HasPrefix(line, "* ") {
 			// Bullet points - strip ** from them
@@ -473,7 +499,8 @@ func stripMarkdown(text string) string {
 	return strings.TrimSpace(text)
 }
 
-// cleanText removes problematic UTF-8 characters
+// cleanText converts text for the PDF core fonts (Arial), which only support Windows-1252.
+// Apply it exactly once to every string written to the PDF.
 func cleanText(text string) string {
 	// Replace common UTF-8 encoding issues using hex codes
 	replacements := map[string]string{
@@ -484,14 +511,22 @@ func cleanText(text string) string {
 		"\xe2\x80\x94": "-",   // Em dash
 		"\xe2\x80\xa6": "...", // Ellipsis
 		"\xc2\xa0":     " ",   // Non-breaking space
-		"\xc2":         "",    // Stray Â character
 	}
 
 	for old, new := range replacements {
 		text = strings.ReplaceAll(text, old, new)
 	}
 
-	return text
+	// without this, accented characters (é, ë, €) render as mojibake
+	var encoded strings.Builder
+	for _, r := range text {
+		if b, ok := charmap.Windows1252.EncodeRune(r); ok {
+			encoded.WriteByte(b)
+		} else {
+			encoded.WriteByte('?')
+		}
+	}
+	return encoded.String()
 }
 
 // FieldConfig defines a field to extract from form JSON

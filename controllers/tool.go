@@ -12,7 +12,7 @@ import (
 // GET /tools/:id/tools - Fetch all tools
 func GetTools(c *gin.Context) {
 	var tools []models.Tool
-	database.DB.Find(&tools)
+	database.DB.Order("id").Find(&tools)
 	c.JSON(http.StatusOK, tools)
 }
 
