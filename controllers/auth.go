@@ -7,6 +7,7 @@ import (
 	"server/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func Register(c *gin.Context) {
@@ -17,11 +18,6 @@ func Register(c *gin.Context) {
 	}
 	if err := c.BindJSON(&input); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid input"})
-		return
-	}
-
-	if input.Password == "" {
-		c.JSON(400, gin.H{"error": "Password is required"})
 		return
 	}
 
@@ -40,14 +36,21 @@ func Register(c *gin.Context) {
 		c.JSON(500, gin.H{"error": "Could not hash password"})
 		return
 	}
-	user := models.User{Email: input.Email, PasswordHash: hashed}
+
+	// Generate the session token before inserting the user, so a signing failure
+	// cannot leave behind an account the client never received a token for.
+	user := models.User{ID: uuid.New(), Email: input.Email, PasswordHash: hashed}
+	token, err := utils.GenerateJWT(user.ID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Could not create session"})
+		return
+	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
 		c.JSON(400, gin.H{"error": "User already exists"})
 		return
 	}
 
-	token, _ := utils.GenerateJWT(user.ID)
 	c.JSON(200, gin.H{"token": token})
 }
 
@@ -77,6 +80,10 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, _ := utils.GenerateJWT(user.ID)
+	token, err := utils.GenerateJWT(user.ID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Could not create session"})
+		return
+	}
 	c.JSON(200, gin.H{"token": token})
 }
