@@ -16,6 +16,16 @@ import (
 
 const minJWTSecretLength = 32
 
+// bcryptCost is the work factor used when hashing passwords.
+const bcryptCost = 14
+
+// MaxPasswordBytes is bcrypt's upper limit; longer inputs cannot be hashed safely
+// (bcrypt silently truncates beyond this point).
+const MaxPasswordBytes = 72
+
+// ErrPasswordTooLong is returned when a password exceeds bcrypt's input limit.
+var ErrPasswordTooLong = fmt.Errorf("password must be at most %d bytes", MaxPasswordBytes)
+
 var jwtKey []byte
 
 // LoadJWTKey reads the token signing key from JWT_SECRET. Call it at startup, after loading .env
@@ -28,9 +38,27 @@ func LoadJWTKey() error {
 	return nil
 }
 
+// ValidatePassword checks a plaintext password against bcrypt's input constraints.
+func ValidatePassword(p string) error {
+	if p == "" {
+		return errors.New("password is required")
+	}
+	if len(p) > MaxPasswordBytes {
+		return ErrPasswordTooLong
+	}
+	return nil
+}
+
 func HashPassword(p string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(p), 14)
-	return string(bytes), err
+	if err := ValidatePassword(p); err != nil {
+		return "", err
+	}
+
+	hashed, err := bcrypt.GenerateFromPassword([]byte(p), bcryptCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashed), nil
 }
 
 func CheckPasswordHash(p, hash string) bool {

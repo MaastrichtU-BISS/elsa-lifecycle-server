@@ -20,12 +20,26 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	if input.Password == "" {
+		c.JSON(400, gin.H{"error": "Password is required"})
+		return
+	}
+
 	if input.Password != input.ConfirmPassword {
 		c.JSON(400, gin.H{"error": "Passwords do not match"})
 		return
 	}
 
-	hashed, _ := utils.HashPassword(input.Password)
+	if err := utils.ValidatePassword(input.Password); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	hashed, err := utils.HashPassword(input.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Could not hash password"})
+		return
+	}
 	user := models.User{Email: input.Email, PasswordHash: hashed}
 
 	if err := database.DB.Create(&user).Error; err != nil {
@@ -50,6 +64,11 @@ func Login(c *gin.Context) {
 	var user models.User
 	if err := database.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
 		c.JSON(401, gin.H{"error": "User not found"})
+		return
+	}
+
+	if err := utils.ValidatePassword(input.Password); err != nil {
+		c.JSON(401, gin.H{"error": "Wrong password"})
 		return
 	}
 
